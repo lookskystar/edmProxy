@@ -1,0 +1,812 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0040)http://xiayingjie.iteye.com/blog/1419536 -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" dir="ltr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站</title>
+    <meta name="description" content="   HttpClient 是 Apache Jakarta Common 下的子项目，可以用来提供高效的、最新的、功能丰富的支持 HTTP 协议的客户端编程工具包，并且它支持 HTTP 协议最新的版本和建议。    对于某些页面的爬取有些链接使用javascript加密的话需要使用htmlunit，这个工具可以直接执行javascript    个人写的工具类，仅供参考：   package co ...">
+    <meta name="keywords" content=" Http协议客户端工具之Httpclient">
+    <link rel="shortcut icon" href="http://xiayingjie.iteye.com/images/favicon.ico" type="image/x-icon">
+    <link rel="search" type="application/opensearchdescription+xml" href="http://xiayingjie.iteye.com/open_search.xml" title="ITeye">
+    <link href="http://xiayingjie.iteye.com/rss" rel="alternate" title="xiaoxin5230" type="application/rss+xml">
+    <link href="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/blog.css" media="screen" rel="stylesheet" type="text/css">
+<link href="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/blue.css" media="screen" rel="stylesheet" type="text/css">
+    <script type="text/javascript" async="" src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/ga.js"></script><script src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/application.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-535605-1']);
+  _gaq.push(['_setDomainName', 'iteye.com']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+
+      <link href="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/SyntaxHighlighter.css" media="screen" rel="stylesheet" type="text/css">
+  <script src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/shCoreCommon.js" type="text/javascript"></script>
+<script src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/hotkey.js" type="text/javascript"></script>
+  <script src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/code_favorites.js" type="text/javascript"></script>
+<script src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/weiboshare.js" type="text/javascript"></script>
+  <style type="text/css">.dp-j .annotation { color: #646464; }.dp-j .number { color: #C00000; }</style></head>
+  <body class="">
+    <div id="header">
+      <div id="blog_site_nav">
+  <a href="http://www.iteye.com/" class="homepage">首页</a>
+  <a href="http://www.iteye.com/news">资讯</a>
+  <a href="http://www.iteye.com/magazines">精华</a>
+  <a href="http://www.iteye.com/forums">论坛</a>
+  <a href="http://www.iteye.com/ask">问答</a>
+  <a href="http://www.iteye.com/blogs">博客</a>
+  <a href="http://www.iteye.com/blogs/subjects">专栏</a>
+  <a href="http://www.iteye.com/groups">群组</a>
+  <a href="http://xiayingjie.iteye.com/blog/1419536#" onclick="return false;" id="msna"><u>更多</u> <small>▼</small></a>
+  <div class="quick_menu" style="display:none;">
+    <a target="_blank" href="http://job.iteye.com/iteye">招聘</a>
+    <a href="http://www.iteye.com/search">搜索</a>
+  </div>
+</div>
+
+      <div id="user_nav">
+      <a href="http://xiayingjie.iteye.com/login" class="welcome" title="登录">您还未登录 !</a>
+    <a href="http://xiayingjie.iteye.com/login">登录</a>
+    <a href="http://xiayingjie.iteye.com/signup" class="nobg">注册</a>
+  </div>
+
+    </div>
+
+    <div id="page">
+      <div id="branding" class="clearfix">
+        <div id="blog_name">
+          <h1><a href="http://xiayingjie.iteye.com/">xiaoxin5230</a></h1>
+        </div>
+        <div id="fd"></div>
+        <div id="blog_navbar">
+          <ul>
+            <li class="blog_navbar_for"><a href="http://xiayingjie.iteye.com/"><strong>博客</strong></a></li>
+            <li><a href="http://xiayingjie.iteye.com/weibo">微博</a></li>
+            <li><a href="http://xiayingjie.iteye.com/album">相册</a></li>
+            <li><a href="http://xiayingjie.iteye.com/link">收藏</a></li>
+            <li><a href="http://xiayingjie.iteye.com/blog/guest_book">留言</a></li>
+            <li><a href="http://xiayingjie.iteye.com/blog/profile">关于我</a></li>
+          </ul>
+    
+          <div class="search">
+            <form action="http://xiayingjie.iteye.com/blog/search" method="get">
+              <input class="search_text" id="query" name="query" style="margin-left: 10px;width: 110px;" type="text" value="">
+              <input class="submit_search" type="submit" value="">
+            </form>
+          </div> 
+          <div id="fd"></div>         
+        </div>
+      </div>
+      
+      <div id="content" class="clearfix">
+        <div id="main">
+          
+
+
+
+          
+
+
+<div class="h-entry" style="display:none">
+  <a href="http://xiayingjie.iteye.com/" class="p-author" target="_blank">xiaoxin5230</a>
+</div>
+
+
+<div class="blog_main">
+  <div class="blog_title">
+    <h3>
+      <a href="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站.htm">Http协议客户端工具之Httpclient</a>
+      <em class="actions">      </em>
+    </h3>
+    
+        <div class="news_tag">&nbsp;</div>
+  </div>
+
+  <div id="blog_content" class="blog_content">
+    &nbsp;&nbsp; HttpClient 是 Apache Jakarta Common 下的子项目，可以用来提供高效的、最新的、功能丰富的支持 HTTP 协议的客户端编程工具包，并且它支持 HTTP 协议最新的版本和建议。
+<br>&nbsp;&nbsp; 对于某些页面的爬取有些链接使用javascript加密的话需要使用htmlunit，这个工具可以直接执行javascript
+<br>
+<br>&nbsp;&nbsp; 个人写的工具类，仅供参考：
+<br><div class="dp-highlighter" id=""><div class="bar"><div class="tools">Java代码 <embed wmode="transparent" src="/javascripts/syntaxhighlighter/clipboard_new.swf" width="14" height="15" flashvars="clipboard=package%20com.xyj.com.tool.util%3B%0A%0Aimport%20java.io.File%3B%0Aimport%20java.io.IOException%3B%0Aimport%20java.net.URISyntaxException%3B%0Aimport%20java.nio.charset.Charset%3B%0Aimport%20java.security.cert.CertificateException%3B%0Aimport%20java.util.List%3B%0Aimport%20java.util.Map%3B%0A%0Aimport%20javax.net.ssl.SSLContext%3B%0Aimport%20javax.net.ssl.SSLHandshakeException%3B%0Aimport%20javax.net.ssl.TrustManager%3B%0Aimport%20javax.net.ssl.X509TrustManager%3B%0A%0Aimport%20org.apache.http.HttpEntity%3B%0Aimport%20org.apache.http.HttpEntityEnclosingRequest%3B%0Aimport%20org.apache.http.HttpHost%3B%0Aimport%20org.apache.http.HttpRequest%3B%0Aimport%20org.apache.http.HttpResponse%3B%0Aimport%20org.apache.http.NameValuePair%3B%0Aimport%20org.apache.http.NoHttpResponseException%3B%0Aimport%20org.apache.http.client.ClientProtocolException%3B%0Aimport%20org.apache.http.client.HttpRequestRetryHandler%3B%0Aimport%20org.apache.http.client.ResponseHandler%3B%0Aimport%20org.apache.http.client.methods.HttpGet%3B%0Aimport%20org.apache.http.client.methods.HttpPost%3B%0Aimport%20org.apache.http.client.params.ClientPNames%3B%0Aimport%20org.apache.http.client.params.CookiePolicy%3B%0Aimport%20org.apache.http.client.utils.URLEncodedUtils%3B%0Aimport%20org.apache.http.conn.params.ConnRoutePNames%3B%0Aimport%20org.apache.http.conn.scheme.Scheme%3B%0Aimport%20org.apache.http.conn.ssl.SSLSocketFactory%3B%0Aimport%20org.apache.http.entity.StringEntity%3B%0Aimport%20org.apache.http.entity.mime.MultipartEntity%3B%0Aimport%20org.apache.http.entity.mime.content.ByteArrayBody%3B%0Aimport%20org.apache.http.entity.mime.content.FileBody%3B%0Aimport%20org.apache.http.entity.mime.content.StringBody%3B%0Aimport%20org.apache.http.impl.client.DefaultHttpClient%3B%0Aimport%20org.apache.http.params.CoreProtocolPNames%3B%0Aimport%20org.apache.http.protocol.ExecutionContext%3B%0Aimport%20org.apache.http.protocol.HttpContext%3B%0Aimport%20org.apache.http.util.EntityUtils%3B%0A%0A%2F**%0A%20*%20%40className%3AHttpClientUtil.java%0A%20*%20%40classDescription%3AHttpClient%E5%B7%A5%E5%85%B7%E7%B1%BB%2F%2F%E5%BE%85%E5%AE%8C%E5%96%84%E6%A8%A1%E6%8B%9F%E7%99%BB%E5%BD%95%EF%BC%8Ccookie%2C%E8%AF%81%E4%B9%A6%E7%99%BB%E5%BD%95%0A%20*%20%40author%3Axiayingjie%0A%20*%20%40createTime%3A2011-8-31%0A%20*%2F%0A%0Apublic%20class%20HttpClientUtil%20%7B%0A%0A%09public%20static%20String%20CHARSET_ENCODING%20%3D%20%22UTF-8%22%3B%0A%09%2F%2F%20private%20static%20String%0A%09%2F%2F%20USER_AGENT%3D%22Mozilla%2F4.0%20(compatible%3B%20MSIE%206.0%3B%20Win32)%22%3B%2F%2Fie6%0A%09public%20static%20String%20USER_AGENT%20%3D%20%22Mozilla%2F4.0%20(compatible%3B%20MSIE%207.0%3B%20Win32)%22%3B%2F%2F%20ie7%0A%0A%09%2F%2F%20private%20static%20String%0A%09%2F%2F%20USER_AGENT%3D%22Mozilla%2F4.0%20(compatible%3B%20MSIE%208.0%3B%20Win32)%22%3B%2F%2Fie8%0A%0A%09%2F**%0A%09%20*%20%E8%8E%B7%E5%8F%96DefaultHttpClient%E5%AF%B9%E8%B1%A1%0A%09%20*%20%0A%09%20*%20%40param%20charset%0A%09%20*%20%20%20%20%20%20%20%20%20%20%20%20%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%0A%09%20*%20%40return%20DefaultHttpClient%E5%AF%B9%E8%B1%A1%0A%09%20*%2F%0A%09private%20static%20DefaultHttpClient%20getDefaultHttpClient(final%20String%20charset)%20%7B%0A%09%09DefaultHttpClient%20httpclient%20%3D%20new%20DefaultHttpClient()%3B%0A%09%09%2F%2F%20%E6%A8%A1%E6%8B%9F%E6%B5%8F%E8%A7%88%E5%99%A8%EF%BC%8C%E8%A7%A3%E5%86%B3%E4%B8%80%E4%BA%9B%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%A8%8B%E5%BA%8F%E5%8F%AA%E5%85%81%E8%AE%B8%E6%B5%8F%E8%A7%88%E5%99%A8%E8%AE%BF%E9%97%AE%E7%9A%84%E9%97%AE%E9%A2%98%0A%09%09httpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT%2C%0A%09%09%09%09USER_AGENT)%3B%0A%09%09httpclient.getParams().setParameter(%0A%09%09%09%09CoreProtocolPNames.USE_EXPECT_CONTINUE%2C%20Boolean.FALSE)%3B%0A%09%09httpclient.getParams().setParameter(%0A%09%09%09%09CoreProtocolPNames.HTTP_CONTENT_CHARSET%2C%0A%09%09%09%09charset%20%3D%3D%20null%20%3F%20CHARSET_ENCODING%20%3A%20charset)%3B%0A%09%09%0A%09%09%2F%2F%20%E6%B5%8F%E8%A7%88%E5%99%A8%E5%85%BC%E5%AE%B9%E6%80%A7%0A%09%09httpclient.getParams().setParameter(ClientPNames.COOKIE_POLICY%2C%0A%09%09%09%09CookiePolicy.BROWSER_COMPATIBILITY)%3B%0A%09%09%2F%2F%20%E5%AE%9A%E4%B9%89%E9%87%8D%E8%AF%95%E7%AD%96%E7%95%A5%0A%09%09httpclient.setHttpRequestRetryHandler(requestRetryHandler)%3B%0A%09%09%0A%09%09return%20httpclient%3B%0A%09%7D%0A%09%2F**%0A%09%20*%20%E8%AE%BF%E9%97%AEhttps%E7%9A%84%E7%BD%91%E7%AB%99%0A%09%20*%20%40param%20httpclient%0A%09%20*%2F%0A%09private%20static%20void%20enableSSL(DefaultHttpClient%20httpclient)%7B%0A%09%09%2F%2F%E8%B0%83%E7%94%A8ssl%0A%09%09%20try%20%7B%0A%09%20%20%20%20%20%20%20%20%20%20%20%20SSLContext%20sslcontext%20%3D%20SSLContext.getInstance(%22TLS%22)%3B%0A%09%20%20%20%20%20%20%20%20%20%20%20%20sslcontext.init(null%2C%20new%20TrustManager%5B%5D%20%7B%20truseAllManager%20%7D%2C%20null)%3B%0A%09%20%20%20%20%20%20%20%20%20%20%20%20SSLSocketFactory%20sf%20%3D%20new%20SSLSocketFactory(sslcontext)%3B%0A%09%20%20%20%20%20%20%20%20%20%20%20%20sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER)%3B%0A%09%20%20%20%20%20%20%20%20%20%20%20%20Scheme%20https%20%3D%20new%20Scheme(%22https%22%2C%20sf%2C%20443)%3B%0A%09%20%20%20%20%20%20%20%20%20%20%20%20httpclient.getConnectionManager().getSchemeRegistry()%0A%09%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20.register(https)%3B%0A%09%20%20%20%20%20%20%20%20%7D%20catch%20(Exception%20e)%20%7B%0A%09%20%20%20%20%20%20%20%20%20%20%20%20e.printStackTrace()%3B%0A%09%20%20%20%20%20%20%20%20%7D%0A%09%7D%0A%09%2F**%0A%09%20*%20%E9%87%8D%E5%86%99%E9%AA%8C%E8%AF%81%E6%96%B9%E6%B3%95%EF%BC%8C%E5%8F%96%E6%B6%88%E6%A3%80%E6%B5%8Bssl%0A%09%20*%2F%0A%20%20%20%20private%20static%20TrustManager%20truseAllManager%20%3D%20new%20X509TrustManager()%7B%0A%0A%09%09public%20void%20checkClientTrusted(%0A%09%09%09%09java.security.cert.X509Certificate%5B%5D%20arg0%2C%20String%20arg1)%0A%09%09%09%09throws%20CertificateException%20%7B%0A%09%09%09%2F%2F%20TODO%20Auto-generated%20method%20stub%0A%09%09%09%0A%09%09%7D%0A%0A%09%09public%20void%20checkServerTrusted(%0A%09%09%09%09java.security.cert.X509Certificate%5B%5D%20arg0%2C%20String%20arg1)%0A%09%09%09%09throws%20CertificateException%20%7B%0A%09%09%09%2F%2F%20TODO%20Auto-generated%20method%20stub%0A%09%09%09%0A%09%09%7D%0A%0A%09%09public%20java.security.cert.X509Certificate%5B%5D%20getAcceptedIssuers()%20%7B%0A%09%09%09%2F%2F%20TODO%20Auto-generated%20method%20stub%0A%09%09%09return%20null%3B%0A%09%09%7D%0A%20%20%20%20%09%0A%20%20%20%20%7D%20%3B%0A%0A%09%2F**%0A%09%20*%20%E5%BC%82%E5%B8%B8%E8%87%AA%E5%8A%A8%E6%81%A2%E5%A4%8D%E5%A4%84%E7%90%86%2C%20%E4%BD%BF%E7%94%A8HttpRequestRetryHandler%E6%8E%A5%E5%8F%A3%E5%AE%9E%E7%8E%B0%E8%AF%B7%E6%B1%82%E7%9A%84%E5%BC%82%E5%B8%B8%E6%81%A2%E5%A4%8D%0A%09%20*%2F%0A%09private%20static%20HttpRequestRetryHandler%20requestRetryHandler%20%3D%20new%20HttpRequestRetryHandler()%20%7B%0A%09%09%2F%2F%20%E8%87%AA%E5%AE%9A%E4%B9%89%E7%9A%84%E6%81%A2%E5%A4%8D%E7%AD%96%E7%95%A5%0A%09%09public%20boolean%20retryRequest(IOException%20exception%2C%20int%20executionCount%2C%0A%09%09%09%09HttpContext%20context)%20%7B%0A%09%09%09%2F%2F%20%E8%AE%BE%E7%BD%AE%E6%81%A2%E5%A4%8D%E7%AD%96%E7%95%A5%EF%BC%8C%E5%9C%A8%E5%8F%91%E7%94%9F%E5%BC%82%E5%B8%B8%E6%97%B6%E5%80%99%E5%B0%86%E8%87%AA%E5%8A%A8%E9%87%8D%E8%AF%953%E6%AC%A1%0A%09%09%09if%20(executionCount%20%3E%3D%203)%20%7B%0A%09%09%09%09%2F%2F%20%E5%A6%82%E6%9E%9C%E8%BF%9E%E6%8E%A5%E6%AC%A1%E6%95%B0%E8%B6%85%E8%BF%87%E4%BA%86%E6%9C%80%E5%A4%A7%E5%80%BC%E5%88%99%E5%81%9C%E6%AD%A2%E9%87%8D%E8%AF%95%0A%09%09%09%09return%20false%3B%0A%09%09%09%7D%0A%09%09%09if%20(exception%20instanceof%20NoHttpResponseException)%20%7B%0A%09%09%09%09%2F%2F%20%E5%A6%82%E6%9E%9C%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%9E%E6%8E%A5%E5%A4%B1%E8%B4%A5%E9%87%8D%E8%AF%95%0A%09%09%09%09return%20true%3B%0A%09%09%09%7D%0A%09%09%09if%20(exception%20instanceof%20SSLHandshakeException)%20%7B%0A%09%09%09%09%2F%2F%20%E4%B8%8D%E8%A6%81%E9%87%8D%E8%AF%95ssl%E8%BF%9E%E6%8E%A5%E5%BC%82%E5%B8%B8%0A%09%09%09%09return%20false%3B%0A%09%09%09%7D%0A%09%09%09HttpRequest%20request%20%3D%20(HttpRequest)%20context%0A%09%09%09%09%09.getAttribute(ExecutionContext.HTTP_REQUEST)%3B%0A%09%09%09boolean%20idempotent%20%3D%20(request%20instanceof%20HttpEntityEnclosingRequest)%3B%0A%09%09%09if%20(!idempotent)%20%7B%0A%09%09%09%09%2F%2F%20%E9%87%8D%E8%AF%95%EF%BC%8C%E5%A6%82%E6%9E%9C%E8%AF%B7%E6%B1%82%E6%98%AF%E8%80%83%E8%99%91%E5%B9%82%E7%AD%89%0A%09%09%09%09return%20true%3B%0A%09%09%09%7D%0A%09%09%09return%20false%3B%0A%09%09%7D%0A%09%7D%3B%0A%0A%09%2F**%0A%09%20*%20%E4%BD%BF%E7%94%A8ResponseHandler%E6%8E%A5%E5%8F%A3%E5%A4%84%E7%90%86%E5%93%8D%E5%BA%94%EF%BC%8CHttpClient%E4%BD%BF%E7%94%A8ResponseHandler%E4%BC%9A%E8%87%AA%E5%8A%A8%E7%AE%A1%E7%90%86%E8%BF%9E%E6%8E%A5%E7%9A%84%E9%87%8A%E6%94%BE%EF%BC%8C%E8%A7%A3%E5%86%B3%E4%BA%86%E5%AF%B9%E8%BF%9E%E6%8E%A5%E7%9A%84%E9%87%8A%E6%94%BE%E7%AE%A1%E7%90%86%0A%09%20*%2F%0A%09private%20static%20ResponseHandler%3CString%3E%20responseHandler%20%3D%20new%20ResponseHandler%3CString%3E()%20%7B%0A%09%09%2F%2F%20%E8%87%AA%E5%AE%9A%E4%B9%89%E5%93%8D%E5%BA%94%E5%A4%84%E7%90%86%0A%09%09public%20String%20handleResponse(HttpResponse%20response)%0A%09%09%09%09throws%20ClientProtocolException%2C%20IOException%20%7B%0A%09%09%09HttpEntity%20entity%20%3D%20response.getEntity()%3B%0A%09%09%09if%20(entity%20!%3D%20null)%20%7B%0A%09%09%09%09String%20charset%20%3D%20EntityUtils.getContentCharSet(entity)%20%3D%3D%20null%20%3F%20CHARSET_ENCODING%0A%09%09%09%09%09%09%3A%20EntityUtils.getContentCharSet(entity)%3B%0A%09%09%09%09return%20new%20String(EntityUtils.toByteArray(entity)%2C%20charset)%3B%0A%09%09%09%7D%20else%20%7B%0A%09%09%09%09return%20null%3B%0A%09%09%09%7D%0A%09%09%7D%0A%09%7D%3B%0A%0A%09%2F**%0A%09%20*%20%E4%BD%BF%E7%94%A8post%E6%96%B9%E6%B3%95%E8%8E%B7%E5%8F%96%E7%9B%B8%E5%85%B3%E7%9A%84%E6%95%B0%E6%8D%AE%0A%09%20*%20%0A%09%20*%20%40param%20url%0A%09%20*%20%40param%20paramsList%0A%09%20*%20%40return%0A%09%20*%2F%0A%09public%20static%20String%20post(String%20url%2C%20List%3CNameValuePair%3E%20paramsList)%20%7B%0A%09%09return%20httpRequest(url%2C%20paramsList%2C%20%22POST%22%2C%20null)%3B%0A%09%7D%0A%0A%09%2F**%0A%09%20*%20%E4%BD%BF%E7%94%A8post%E6%96%B9%E6%B3%95%E5%B9%B6%E4%B8%94%E9%80%9A%E8%BF%87%E4%BB%A3%E7%90%86%E8%8E%B7%E5%8F%96%E7%9B%B8%E5%85%B3%E7%9A%84%E6%95%B0%E6%8D%AE%0A%09%20*%20%0A%09%20*%20%40param%20url%0A%09%20*%20%40param%20paramsList%0A%09%20*%20%40param%20proxy%0A%09%20*%20%40return%0A%09%20*%2F%0A%09public%20static%20String%20post(String%20url%2C%20List%3CNameValuePair%3E%20paramsList%2C%0A%09%09%09HttpHost%20proxy)%20%7B%0A%09%09return%20httpRequest(url%2C%20paramsList%2C%20%22POST%22%2C%20proxy)%3B%0A%09%7D%0A%0A%09%2F**%0A%09%20*%20%E4%BD%BF%E7%94%A8get%E6%96%B9%E6%B3%95%E8%8E%B7%E5%8F%96%E7%9B%B8%E5%85%B3%E7%9A%84%E6%95%B0%E6%8D%AE%0A%09%20*%20%0A%09%20*%20%40param%20url%0A%09%20*%20%40param%20paramsList%0A%09%20*%20%40return%0A%09%20*%2F%0A%09public%20static%20String%20get(String%20url%2C%20List%3CNameValuePair%3E%20paramsList)%20%7B%0A%09%09return%20httpRequest(url%2C%20paramsList%2C%20%22GET%22%2C%20null)%3B%0A%09%7D%0A%0A%09%2F**%0A%09%20*%20%E4%BD%BF%E7%94%A8get%E6%96%B9%E6%B3%95%E5%B9%B6%E4%B8%94%E9%80%9A%E8%BF%87%E4%BB%A3%E7%90%86%E8%8E%B7%E5%8F%96%E7%9B%B8%E5%85%B3%E7%9A%84%E6%95%B0%E6%8D%AE%0A%09%20*%20%0A%09%20*%20%40param%20url%0A%09%20*%20%40param%20paramsList%0A%09%20*%20%40param%20proxy%0A%09%20*%20%40return%0A%09%20*%2F%0A%09public%20static%20String%20get(String%20url%2C%20List%3CNameValuePair%3E%20paramsList%2C%0A%09%09%09HttpHost%20proxy)%20%7B%0A%09%09return%20httpRequest(url%2C%20paramsList%2C%20%22GET%22%2C%20proxy)%3B%0A%09%7D%0A%0A%09%2F**%0A%09%20*%20%E6%8F%90%E4%BA%A4%E6%95%B0%E6%8D%AE%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%0A%09%20*%20%0A%09%20*%20%40param%20url%0A%09%20*%20%40param%20params%0A%09%20*%20%40param%20authenticated%0A%09%20*%20%40throws%20IOException%0A%09%20*%20%40throws%20ClientProtocolException%0A%09%20*%2F%0A%09public%20static%20String%20httpRequest(String%20url%2C%0A%09%09%09List%3CNameValuePair%3E%20paramsList%2C%20String%20method%2C%20HttpHost%20proxy)%20%7B%0A%09%09String%20responseStr%20%3D%20null%3B%0A%09%09%2F%2F%20%E5%88%A4%E6%96%AD%E8%BE%93%E5%85%A5%E7%9A%84%E5%80%BC%E6%98%AF%E6%98%AF%E5%90%A6%E4%B8%BA%E7%A9%BA%0A%09%09if%20(null%20%3D%3D%20url%20%7C%7C%20%22%22.equals(url))%20%7B%0A%09%09%09return%20null%3B%0A%09%09%7D%0A%09%09%0A%09%09%2F%2F%20%E5%88%9B%E5%BB%BAHttpClient%E5%AE%9E%E4%BE%8B%0A%09%09DefaultHttpClient%20httpclient%20%3D%20getDefaultHttpClient(CHARSET_ENCODING)%3B%0A%09%09%0A%09%09%2F%2F%E5%88%A4%E6%96%AD%E6%98%AF%E5%90%A6%E6%98%AFhttps%E8%AF%B7%E6%B1%82%0A%09%09if(url.startsWith(%22https%22))%7B%0A%09%09%09enableSSL(httpclient)%3B%0A%09%09%7D%0A%09%09String%20formatParams%20%3D%20null%3B%0A%09%09%2F%2F%20%E5%B0%86%E5%8F%82%E6%95%B0%E8%BF%9B%E8%A1%8Cutf-8%E7%BC%96%E7%A0%81%0A%09%09if%20(null%20!%3D%20paramsList%20%26%26%20paramsList.size()%20%3E%200)%20%7B%0A%09%09%09formatParams%20%3D%20URLEncodedUtils.format(paramsList%2C%20CHARSET_ENCODING)%3B%0A%09%09%7D%0A%09%09%2F%2F%20%E5%A6%82%E6%9E%9C%E4%BB%A3%E7%90%86%E5%AF%B9%E8%B1%A1%E4%B8%8D%E4%B8%BA%E7%A9%BA%E5%88%99%E8%AE%BE%E7%BD%AE%E4%BB%A3%E7%90%86%0A%09%09if%20(null%20!%3D%20proxy)%20%7B%0A%09%09%09httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY%2C%0A%09%09%09%09%09proxy)%3B%0A%09%09%7D%0A%09%09try%20%7B%0A%09%09%09%2F%2F%20%E5%A6%82%E6%9E%9C%E6%96%B9%E6%B3%95%E4%B8%BAGet%0A%09%09%09if%20(%22GET%22.equalsIgnoreCase(method))%20%7B%0A%09%09%09%09if%20(formatParams%20!%3D%20null)%20%7B%0A%09%09%09%09%09url%20%3D%20(url.indexOf(%22%3F%22))%20%3C%200%20%3F%20(url%20%2B%20%22%3F%22%20%2B%20formatParams)%0A%09%09%09%09%09%09%09%3A%20(url.substring(0%2C%20url.indexOf(%22%3F%22)%20%2B%201)%20%2B%20formatParams)%3B%0A%09%09%09%09%7D%0A%09%09%09%09HttpGet%20hg%20%3D%20new%20HttpGet(url)%3B%0A%09%09%09%09responseStr%20%3D%20httpclient.execute(hg%2C%20responseHandler)%3B%0A%0A%09%09%09%09%2F%2F%20%E5%A6%82%E6%9E%9C%E6%96%B9%E6%B3%95%E4%B8%BAPost%0A%09%09%09%7D%20else%20if%20(%22POST%22.equalsIgnoreCase(method))%20%7B%0A%09%09%09%09HttpPost%20hp%20%3D%20new%20HttpPost(url)%3B%0A%09%09%09%09if%20(formatParams%20!%3D%20null)%20%7B%0A%09%09%09%09%09StringEntity%20entity%20%3D%20new%20StringEntity(formatParams)%3B%0A%09%09%09%09%09entity.setContentType(%22application%2Fx-www-form-urlencoded%22)%3B%0A%09%09%09%09%09hp.setEntity(entity)%3B%0A%09%09%09%09%7D%0A%09%09%09%09responseStr%20%3D%20httpclient.execute(hp%2C%20responseHandler)%3B%0A%09%09%09%09%0A%09%09%09%7D%0A%0A%09%09%7D%20catch%20(ClientProtocolException%20e)%20%7B%0A%09%09%09%2F%2F%20TODO%20Auto-generated%20catch%20block%0A%09%09%09e.printStackTrace()%3B%0A%09%09%7D%20catch%20(IOException%20e)%20%7B%0A%09%09%09%2F%2F%20TODO%20Auto-generated%20catch%20block%0A%09%09%09e.printStackTrace()%3B%0A%09%09%7D%0A%09%09return%20responseStr%3B%0A%09%7D%0A%0A%0A%09%2F**%0A%09%20*%20%E6%8F%90%E4%BA%A4%E6%95%B0%E6%8D%AE%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%0A%09%20*%20%0A%09%20*%20%40param%20url%0A%09%20*%20%40param%20params%0A%09%20*%20%40param%20authenticated%0A%09%20*%20%40throws%20IOException%0A%09%20*%20%40throws%20ClientProtocolException%0A%09%20*%2F%0A%09public%20static%20String%20httpFileRequest(String%20url%2C%0A%09%09%09%20Map%3CString%2C%20String%3E%20fileMap%2CMap%3CString%2C%20String%3E%20stringMap%2Cint%20type%2C%20HttpHost%20proxy)%20%7B%0A%09%09String%20responseStr%20%3D%20null%3B%0A%09%09%2F%2F%20%E5%88%A4%E6%96%AD%E8%BE%93%E5%85%A5%E7%9A%84%E5%80%BC%E6%98%AF%E6%98%AF%E5%90%A6%E4%B8%BA%E7%A9%BA%0A%09%09if%20(null%20%3D%3D%20url%20%7C%7C%20%22%22.equals(url))%20%7B%0A%09%09%09return%20null%3B%0A%09%09%7D%0A%09%09%2F%2F%20%E5%88%9B%E5%BB%BAHttpClient%E5%AE%9E%E4%BE%8B%0A%09%09DefaultHttpClient%20httpclient%20%3D%20getDefaultHttpClient(CHARSET_ENCODING)%3B%0A%09%09%0A%09%09%2F%2F%E5%88%A4%E6%96%AD%E6%98%AF%E5%90%A6%E6%98%AFhttps%E8%AF%B7%E6%B1%82%0A%09%09if(url.startsWith(%22https%22))%7B%0A%09%09%09enableSSL(httpclient)%3B%0A%09%09%7D%0A%09%09%0A%09%09%2F%2F%20%E5%A6%82%E6%9E%9C%E4%BB%A3%E7%90%86%E5%AF%B9%E8%B1%A1%E4%B8%8D%E4%B8%BA%E7%A9%BA%E5%88%99%E8%AE%BE%E7%BD%AE%E4%BB%A3%E7%90%86%0A%09%09if%20(null%20!%3D%20proxy)%20%7B%0A%09%09%09httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY%2C%0A%09%09%09%09%09proxy)%3B%0A%09%09%7D%0A%09%09%2F%2F%E5%8F%91%E9%80%81%E6%96%87%E4%BB%B6%0A%09%09HttpPost%20hp%20%3D%20new%20HttpPost(url)%3B%0A%09%09MultipartEntity%20multiEntity%20%3D%20new%20MultipartEntity()%3B%0A%09%09try%20%7B%0A%09%09%09%2F%2Ftype%3D0%E6%98%AF%E6%9C%AC%E5%9C%B0%E8%B7%AF%E5%BE%84%EF%BC%8C%E5%90%A6%E5%88%99%E6%98%AF%E7%BD%91%E7%BB%9C%E8%B7%AF%E5%BE%84%0A%09%09%09if(type%3D%3D0)%7B%0A%09%09%09%09for%20(String%20key%20%3A%20fileMap.keySet())%20%7B%0A%09%09%09%09%09multiEntity.addPart(key%2C%20new%20FileBody(new%20File(fileMap.get(key))))%3B%0A%09%09%09%09%7D%0A%09%09%09%7Delse%7B%0A%09%09%09%09for%20(String%20key%20%3A%20fileMap.keySet())%20%7B%09%09%09%09%0A%09%09%09%09%09multiEntity.addPart(key%2Cnew%20ByteArrayBody(getUrlFileBytes(fileMap.get(key))%2Ckey))%3B%0A%09%09%09%09%7D%0A%09%09%09%7D%0A%09%09%09%2F%2F%20%E5%8A%A0%E5%85%A5%E7%9B%B8%E5%85%B3%E5%8F%82%E6%95%B0%20%E9%BB%98%E8%AE%A4%E7%BC%96%E7%A0%81%E4%B8%BAutf-8%0A%09%09%09for%20(String%20key%20%3A%20stringMap.keySet())%20%7B%0A%09%09%09%09multiEntity.addPart(key%2C%20new%20StringBody(stringMap.get(key)%2CCharset.forName(CHARSET_ENCODING)))%3B%0A%09%09%09%7D%0A%09%09%09hp.setEntity(multiEntity)%3B%0A%09%09%09responseStr%20%3D%20httpclient.execute(hp%2C%20responseHandler)%3B%0A%09%09%7D%20catch%20(Exception%20e)%20%7B%0A%09%09%09%2F%2F%20TODO%20Auto-generated%20catch%20block%0A%09%09%09e.printStackTrace()%3B%0A%09%09%7D%0A%09%09return%20responseStr%3B%0A%09%7D%0A%09%0A%09%2F**%0A%09%20*%20%E5%B0%86%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6%E5%92%8C%E5%8F%82%E6%95%B0%E6%8F%90%E4%BA%A4%E5%88%B0%E7%9B%B8%E5%85%B3%E6%9C%8D%E5%8A%A1%E5%99%A8%0A%09%20*%20%40param%20url%0A%09%20*%20%40param%20fileMap%0A%09%20*%20%40param%20StringMap%0A%09%20*%20%40return%0A%09%20*%2F%0A%09public%20static%20String%20postFile(String%20url%2C%20Map%3CString%2C%20String%3E%20fileMap%2C%0A%09%09%09Map%3CString%2C%20String%3E%20stringMap)%20%7B%0A%09%09return%20httpFileRequest(%20url%2CfileMap%2CstringMap%2C0%2C%20null)%3B%20%0A%09%7D%0A%09%2F**%0A%09%20*%20%E5%B0%86%E7%9B%B8%E5%85%B3%E6%96%87%E4%BB%B6%E5%92%8C%E5%8F%82%E6%95%B0%E6%8F%90%E4%BA%A4%E5%88%B0%E7%9B%B8%E5%85%B3%E6%9C%8D%E5%8A%A1%E5%99%A8%0A%09%20*%20%40param%20url%0A%09%20*%20%40param%20fileMap%0A%09%20*%20%40param%20StringMap%0A%09%20*%20%40return%0A%09%20*%2F%0A%09public%20static%20String%20postUrlFile(String%20url%2C%20Map%3CString%2C%20String%3E%20urlMap%2C%0A%09%09%09Map%3CString%2C%20String%3E%20stringMap)%20%7B%0A%09%09return%20httpFileRequest(%20url%2CurlMap%2CstringMap%2C1%2C%20null)%3B%0A%09%7D%0A%0A%09%2F**%0A%09%20*%20%E8%8E%B7%E5%8F%96%E7%BD%91%E7%BB%9C%E6%96%87%E4%BB%B6%E7%9A%84%E5%AD%97%E8%8A%82%E6%95%B0%E7%BB%84%0A%09%20*%20%0A%09%20*%20%40param%20url%0A%09%20*%20%40return%0A%09%20*%20%40throws%20IOException%0A%09%20*%20%40throws%20ClientProtocolException%0A%09%20*%20%40throws%20ClientProtocolException%0A%09%20*%20%40throws%20IOException%0A%09%20*%2F%0A%09public%20static%20byte%5B%5D%20getUrlFileBytes(String%20url)%20throws%20ClientProtocolException%2C%0A%09%09%09IOException%20%7B%0A%09%09%0A%09%09byte%5B%5D%20bytes%20%3D%20null%3B%0A%09%09%2F%2F%20%E5%88%9B%E5%BB%BAHttpClient%E5%AE%9E%E4%BE%8B%0A%09%09DefaultHttpClient%20httpclient%20%3D%20getDefaultHttpClient(CHARSET_ENCODING)%3B%0A%09%09%2F%2F%20%E8%8E%B7%E5%8F%96url%E9%87%8C%E9%9D%A2%E7%9A%84%E4%BF%A1%E6%81%AF%0A%09%09HttpGet%20hg%20%3D%20new%20HttpGet(url)%3B%0A%09%09HttpResponse%20hr%20%3D%20httpclient.execute(hg)%3B%0A%09%09bytes%20%3D%20EntityUtils.toByteArray(hr.getEntity())%3B%0A%09%09%2F%2F%20%E8%BD%AC%E6%8D%A2%E5%86%85%E5%AE%B9%E4%B8%BA%E5%AD%97%E8%8A%82%0A%09%09return%20bytes%3B%0A%09%7D%0A%0A%09%2F**%0A%09%20*%20%E8%8E%B7%E5%8F%96%E5%9B%BE%E7%89%87%E7%9A%84%E5%AD%97%E8%8A%82%E6%95%B0%E7%BB%84%0A%09%20*%20%0A%09%20*%20%40createTime%202011-11-24%0A%09%20*%20%40param%20url%0A%09%20*%20%40return%0A%09%20*%20%40throws%20IOException%0A%09%20*%20%40throws%20ClientProtocolException%0A%09%20*%20%40throws%20ClientProtocolException%0A%09%20*%20%40throws%20IOException%0A%09%20*%2F%0A%09public%20static%20byte%5B%5D%20getImg(String%20url)%20throws%20ClientProtocolException%2C%0A%09%09%09IOException%20%7B%0A%09%09byte%5B%5D%20bytes%20%3D%20null%3B%0A%09%09%2F%2F%20%E5%88%9B%E5%BB%BAHttpClient%E5%AE%9E%E4%BE%8B%0A%09%09DefaultHttpClient%20httpclient%20%3D%20getDefaultHttpClient(CHARSET_ENCODING)%3B%0A%09%09%2F%2F%20%E8%8E%B7%E5%8F%96url%E9%87%8C%E9%9D%A2%E7%9A%84%E4%BF%A1%E6%81%AF%0A%09%09HttpGet%20hg%20%3D%20new%20HttpGet(url)%3B%0A%09%09HttpResponse%20hr%20%3D%20httpclient.execute(hg)%3B%0A%09%09bytes%20%3D%20EntityUtils.toByteArray(hr.getEntity())%3B%0A%09%09%2F%2F%20%E8%BD%AC%E6%8D%A2%E5%86%85%E5%AE%B9%E4%B8%BA%E5%AD%97%E8%8A%82%0A%09%09return%20bytes%3B%0A%09%7D%0A%0A%09public%20static%20void%20main(String%5B%5D%20args)%20throws%20URISyntaxException%2C%20ClientProtocolException%2C%20IOException%20%7B%0A%0A%09%20%20%20%20String%20url%3D%22http%3A%2F%2Fwww.baidu.com%2F%22%3B%0A%09%09String%20str%3DHttpClientUtil.get(url%2C%20null)%3B%0A%09%09System.out.println(str)%3B%0A%0A%09%7D%0A%0A%7D%0A%0A" quality="high" allowscriptaccess="always" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">&nbsp;<a href="javascript:void()" title="收藏这段代码" onclick="code_favorites_do_favorite(this);return false;"><img class="star" src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/icon_star.png" alt="收藏代码"><img class="spinner" src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/spinner.gif" style="display:none"></a></div></div><ol start="1" class="dp-j"><li><span><span class="keyword">package</span><span>&nbsp;com.xyj.com.tool.util;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li><span><span class="keyword">import</span><span>&nbsp;java.io.File;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;java.io.IOException;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;java.net.URISyntaxException;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;java.nio.charset.Charset;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;java.security.cert.CertificateException;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;java.util.List;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;java.util.Map;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li><span><span class="keyword">import</span><span>&nbsp;javax.net.ssl.SSLContext;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;javax.net.ssl.SSLHandshakeException;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;javax.net.ssl.TrustManager;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;javax.net.ssl.X509TrustManager;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.HttpEntity;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.HttpEntityEnclosingRequest;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.HttpHost;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.HttpRequest;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.HttpResponse;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.NameValuePair;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.NoHttpResponseException;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.client.ClientProtocolException;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.client.HttpRequestRetryHandler;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.client.ResponseHandler;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.client.methods.HttpGet;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.client.methods.HttpPost;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.client.params.ClientPNames;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.client.params.CookiePolicy;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.client.utils.URLEncodedUtils;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.conn.params.ConnRoutePNames;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.conn.scheme.Scheme;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.conn.ssl.SSLSocketFactory;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.entity.StringEntity;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.entity.mime.MultipartEntity;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.entity.mime.content.ByteArrayBody;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.entity.mime.content.FileBody;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.entity.mime.content.StringBody;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.impl.client.DefaultHttpClient;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.params.CoreProtocolPNames;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.protocol.ExecutionContext;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.protocol.HttpContext;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.apache.http.util.EntityUtils;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li><span><span class="comment">/**</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;*&nbsp;@className:HttpClientUtil.java</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;*&nbsp;@classDescription:HttpClient工具类//待完善模拟登录，cookie,证书登录</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;*&nbsp;@author:xiayingjie</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;*&nbsp;@createTime:2011-8-31</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li><span><span class="keyword">public</span><span>&nbsp;</span><span class="keyword">class</span><span>&nbsp;HttpClientUtil&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;String&nbsp;CHARSET_ENCODING&nbsp;=&nbsp;</span><span class="string">"UTF-8"</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;private&nbsp;static&nbsp;String</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;USER_AGENT="Mozilla/4.0&nbsp;(compatible;&nbsp;MSIE&nbsp;6.0;&nbsp;Win32)";//ie6</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;String&nbsp;USER_AGENT&nbsp;=&nbsp;</span><span class="string">"Mozilla/4.0&nbsp;(compatible;&nbsp;MSIE&nbsp;7.0;&nbsp;Win32)"</span><span>;</span><span class="comment">//&nbsp;ie7</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;private&nbsp;static&nbsp;String</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;USER_AGENT="Mozilla/4.0&nbsp;(compatible;&nbsp;MSIE&nbsp;8.0;&nbsp;Win32)";//ie8</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;获取DefaultHttpClient对象</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;charset</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;字符编码</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return&nbsp;DefaultHttpClient对象</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;DefaultHttpClient&nbsp;getDefaultHttpClient(</span><span class="keyword">final</span><span>&nbsp;String&nbsp;charset)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DefaultHttpClient&nbsp;httpclient&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;DefaultHttpClient();&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;模拟浏览器，解决一些服务器程序只允许浏览器访问的问题</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;httpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT,&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;USER_AGENT);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;httpclient.getParams().setParameter(&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CoreProtocolPNames.USE_EXPECT_CONTINUE,&nbsp;Boolean.FALSE);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;httpclient.getParams().setParameter(&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CoreProtocolPNames.HTTP_CONTENT_CHARSET,&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;charset&nbsp;==&nbsp;<span class="keyword">null</span><span>&nbsp;?&nbsp;CHARSET_ENCODING&nbsp;:&nbsp;charset);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;浏览器兼容性</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;httpclient.getParams().setParameter(ClientPNames.COOKIE_POLICY,&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CookiePolicy.BROWSER_COMPATIBILITY);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;定义重试策略</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;httpclient.setHttpRequestRetryHandler(requestRetryHandler);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;httpclient;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;访问https的网站</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;httpclient</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;enableSSL(DefaultHttpClient&nbsp;httpclient){&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//调用ssl</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">try</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SSLContext&nbsp;sslcontext&nbsp;=&nbsp;SSLContext.getInstance(<span class="string">"TLS"</span><span>);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sslcontext.init(<span class="keyword">null</span><span>,&nbsp;</span><span class="keyword">new</span><span>&nbsp;TrustManager[]&nbsp;{&nbsp;truseAllManager&nbsp;},&nbsp;</span><span class="keyword">null</span><span>);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SSLSocketFactory&nbsp;sf&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;SSLSocketFactory(sslcontext);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Scheme&nbsp;https&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;Scheme(</span><span class="string">"https"</span><span>,&nbsp;sf,&nbsp;</span><span class="number">443</span><span>);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;httpclient.getConnectionManager().getSchemeRegistry()&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.register(https);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">catch</span><span>&nbsp;(Exception&nbsp;e)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;重写验证方法，取消检测ssl</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;TrustManager&nbsp;truseAllManager&nbsp;=&nbsp;</span><span class="keyword">new</span><span>&nbsp;X509TrustManager(){&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;checkClientTrusted(&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;java.security.cert.X509Certificate[]&nbsp;arg0,&nbsp;String&nbsp;arg1)&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">throws</span><span>&nbsp;CertificateException&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;TODO&nbsp;Auto-generated&nbsp;method&nbsp;stub</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;checkServerTrusted(&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;java.security.cert.X509Certificate[]&nbsp;arg0,&nbsp;String&nbsp;arg1)&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">throws</span><span>&nbsp;CertificateException&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;TODO&nbsp;Auto-generated&nbsp;method&nbsp;stub</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;java.security.cert.X509Certificate[]&nbsp;getAcceptedIssuers()&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;TODO&nbsp;Auto-generated&nbsp;method&nbsp;stub</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;</span><span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;;&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;异常自动恢复处理,&nbsp;使用HttpRequestRetryHandler接口实现请求的异常恢复</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;HttpRequestRetryHandler&nbsp;requestRetryHandler&nbsp;=&nbsp;</span><span class="keyword">new</span><span>&nbsp;HttpRequestRetryHandler()&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;自定义的恢复策略</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">boolean</span><span>&nbsp;retryRequest(IOException&nbsp;exception,&nbsp;</span><span class="keyword">int</span><span>&nbsp;executionCount,&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpContext&nbsp;context)&nbsp;{&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;设置恢复策略，在发生异常时候将自动重试3次</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(executionCount&nbsp;&gt;=&nbsp;</span><span class="number">3</span><span>)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;如果连接次数超过了最大值则停止重试</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;</span><span class="keyword">false</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(exception&nbsp;</span><span class="keyword">instanceof</span><span>&nbsp;NoHttpResponseException)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;如果服务器连接失败重试</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;</span><span class="keyword">true</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(exception&nbsp;</span><span class="keyword">instanceof</span><span>&nbsp;SSLHandshakeException)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;不要重试ssl连接异常</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;</span><span class="keyword">false</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpRequest&nbsp;request&nbsp;=&nbsp;(HttpRequest)&nbsp;context&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.getAttribute(ExecutionContext.HTTP_REQUEST);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">boolean</span><span>&nbsp;idempotent&nbsp;=&nbsp;(request&nbsp;</span><span class="keyword">instanceof</span><span>&nbsp;HttpEntityEnclosingRequest);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(!idempotent)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;重试，如果请求是考虑幂等</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;</span><span class="keyword">true</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;</span><span class="keyword">false</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;};&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;使用ResponseHandler接口处理响应，HttpClient使用ResponseHandler会自动管理连接的释放，解决了对连接的释放管理</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;ResponseHandler&lt;String&gt;&nbsp;responseHandler&nbsp;=&nbsp;</span><span class="keyword">new</span><span>&nbsp;ResponseHandler&lt;String&gt;()&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;自定义响应处理</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;String&nbsp;handleResponse(HttpResponse&nbsp;response)&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">throws</span><span>&nbsp;ClientProtocolException,&nbsp;IOException&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpEntity&nbsp;entity&nbsp;=&nbsp;response.getEntity();&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(entity&nbsp;!=&nbsp;</span><span class="keyword">null</span><span>)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;charset&nbsp;=&nbsp;EntityUtils.getContentCharSet(entity)&nbsp;==&nbsp;<span class="keyword">null</span><span>&nbsp;?&nbsp;CHARSET_ENCODING&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;EntityUtils.getContentCharSet(entity);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;</span><span class="keyword">new</span><span>&nbsp;String(EntityUtils.toByteArray(entity),&nbsp;charset);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">else</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;</span><span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;};&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;使用post方法获取相关的数据</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;url</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;paramsList</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;String&nbsp;post(String&nbsp;url,&nbsp;List&lt;NameValuePair&gt;&nbsp;paramsList)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;httpRequest(url,&nbsp;paramsList,&nbsp;</span><span class="string">"POST"</span><span>,&nbsp;</span><span class="keyword">null</span><span>);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;使用post方法并且通过代理获取相关的数据</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;url</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;paramsList</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;proxy</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;String&nbsp;post(String&nbsp;url,&nbsp;List&lt;NameValuePair&gt;&nbsp;paramsList,&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpHost&nbsp;proxy)&nbsp;{&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;httpRequest(url,&nbsp;paramsList,&nbsp;</span><span class="string">"POST"</span><span>,&nbsp;proxy);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;使用get方法获取相关的数据</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;url</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;paramsList</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;String&nbsp;get(String&nbsp;url,&nbsp;List&lt;NameValuePair&gt;&nbsp;paramsList)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;httpRequest(url,&nbsp;paramsList,&nbsp;</span><span class="string">"GET"</span><span>,&nbsp;</span><span class="keyword">null</span><span>);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;使用get方法并且通过代理获取相关的数据</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;url</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;paramsList</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;proxy</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;String&nbsp;get(String&nbsp;url,&nbsp;List&lt;NameValuePair&gt;&nbsp;paramsList,&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpHost&nbsp;proxy)&nbsp;{&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;httpRequest(url,&nbsp;paramsList,&nbsp;</span><span class="string">"GET"</span><span>,&nbsp;proxy);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;提交数据到服务器</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;url</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;params</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;authenticated</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@throws&nbsp;IOException</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@throws&nbsp;ClientProtocolException</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;String&nbsp;httpRequest(String&nbsp;url,&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;List&lt;NameValuePair&gt;&nbsp;paramsList,&nbsp;String&nbsp;method,&nbsp;HttpHost&nbsp;proxy)&nbsp;{&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;responseStr&nbsp;=&nbsp;<span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;判断输入的值是是否为空</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(</span><span class="keyword">null</span><span>&nbsp;==&nbsp;url&nbsp;||&nbsp;</span><span class="string">""</span><span>.equals(url))&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;</span><span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;创建HttpClient实例</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DefaultHttpClient&nbsp;httpclient&nbsp;=&nbsp;getDefaultHttpClient(CHARSET_ENCODING);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//判断是否是https请求</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(url.startsWith(</span><span class="string">"https"</span><span>)){&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;enableSSL(httpclient);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;formatParams&nbsp;=&nbsp;<span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;将参数进行utf-8编码</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(</span><span class="keyword">null</span><span>&nbsp;!=&nbsp;paramsList&nbsp;&amp;&amp;&nbsp;paramsList.size()&nbsp;&gt;&nbsp;</span><span class="number">0</span><span>)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;formatParams&nbsp;=&nbsp;URLEncodedUtils.format(paramsList,&nbsp;CHARSET_ENCODING);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;如果代理对象不为空则设置代理</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(</span><span class="keyword">null</span><span>&nbsp;!=&nbsp;proxy)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;proxy);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">try</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;如果方法为Get</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(</span><span class="string">"GET"</span><span>.equalsIgnoreCase(method))&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(formatParams&nbsp;!=&nbsp;</span><span class="keyword">null</span><span>)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;url&nbsp;=&nbsp;(url.indexOf(<span class="string">"?"</span><span>))&nbsp;&lt;&nbsp;</span><span class="number">0</span><span>&nbsp;?&nbsp;(url&nbsp;+&nbsp;</span><span class="string">"?"</span><span>&nbsp;+&nbsp;formatParams)&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;(url.substring(<span class="number">0</span><span>,&nbsp;url.indexOf(</span><span class="string">"?"</span><span>)&nbsp;+&nbsp;</span><span class="number">1</span><span>)&nbsp;+&nbsp;formatParams);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpGet&nbsp;hg&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;HttpGet(url);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;responseStr&nbsp;=&nbsp;httpclient.execute(hg,&nbsp;responseHandler);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;如果方法为Post</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">else</span><span>&nbsp;</span><span class="keyword">if</span><span>&nbsp;(</span><span class="string">"POST"</span><span>.equalsIgnoreCase(method))&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpPost&nbsp;hp&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;HttpPost(url);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(formatParams&nbsp;!=&nbsp;</span><span class="keyword">null</span><span>)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;StringEntity&nbsp;entity&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;StringEntity(formatParams);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;entity.setContentType(<span class="string">"application/x-www-form-urlencoded"</span><span>);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hp.setEntity(entity);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;responseStr&nbsp;=&nbsp;httpclient.execute(hp,&nbsp;responseHandler);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">catch</span><span>&nbsp;(ClientProtocolException&nbsp;e)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;TODO&nbsp;Auto-generated&nbsp;catch&nbsp;block</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">catch</span><span>&nbsp;(IOException&nbsp;e)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;TODO&nbsp;Auto-generated&nbsp;catch&nbsp;block</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;responseStr;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;提交数据到服务器</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;url</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;params</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;authenticated</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@throws&nbsp;IOException</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@throws&nbsp;ClientProtocolException</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;String&nbsp;httpFileRequest(String&nbsp;url,&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Map&lt;String,&nbsp;String&gt;&nbsp;fileMap,Map&lt;String,&nbsp;String&gt;&nbsp;stringMap,<span class="keyword">int</span><span>&nbsp;type,&nbsp;HttpHost&nbsp;proxy)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;responseStr&nbsp;=&nbsp;<span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;判断输入的值是是否为空</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(</span><span class="keyword">null</span><span>&nbsp;==&nbsp;url&nbsp;||&nbsp;</span><span class="string">""</span><span>.equals(url))&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;</span><span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;创建HttpClient实例</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DefaultHttpClient&nbsp;httpclient&nbsp;=&nbsp;getDefaultHttpClient(CHARSET_ENCODING);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//判断是否是https请求</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(url.startsWith(</span><span class="string">"https"</span><span>)){&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;enableSSL(httpclient);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;如果代理对象不为空则设置代理</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(</span><span class="keyword">null</span><span>&nbsp;!=&nbsp;proxy)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;proxy);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//发送文件</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpPost&nbsp;hp&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;HttpPost(url);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MultipartEntity&nbsp;multiEntity&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;MultipartEntity();&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">try</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//type=0是本地路径，否则是网络路径</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>(type==</span><span class="number">0</span><span>){&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span><span>&nbsp;(String&nbsp;key&nbsp;:&nbsp;fileMap.keySet())&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;multiEntity.addPart(key,&nbsp;<span class="keyword">new</span><span>&nbsp;FileBody(</span><span class="keyword">new</span><span>&nbsp;File(fileMap.get(key))));&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<span class="keyword">else</span><span>{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span><span>&nbsp;(String&nbsp;key&nbsp;:&nbsp;fileMap.keySet())&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;multiEntity.addPart(key,<span class="keyword">new</span><span>&nbsp;ByteArrayBody(getUrlFileBytes(fileMap.get(key)),key));&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;加入相关参数&nbsp;默认编码为utf-8</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span><span>&nbsp;(String&nbsp;key&nbsp;:&nbsp;stringMap.keySet())&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;multiEntity.addPart(key,&nbsp;<span class="keyword">new</span><span>&nbsp;StringBody(stringMap.get(key),Charset.forName(CHARSET_ENCODING)));&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hp.setEntity(multiEntity);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;responseStr&nbsp;=&nbsp;httpclient.execute(hp,&nbsp;responseHandler);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">catch</span><span>&nbsp;(Exception&nbsp;e)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;TODO&nbsp;Auto-generated&nbsp;catch&nbsp;block</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;responseStr;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;将相关文件和参数提交到相关服务器</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;url</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;fileMap</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;StringMap</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;String&nbsp;postFile(String&nbsp;url,&nbsp;Map&lt;String,&nbsp;String&gt;&nbsp;fileMap,&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Map&lt;String,&nbsp;String&gt;&nbsp;stringMap)&nbsp;{&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;httpFileRequest(&nbsp;url,fileMap,stringMap,</span><span class="number">0</span><span>,&nbsp;</span><span class="keyword">null</span><span>);&nbsp;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;将相关文件和参数提交到相关服务器</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;url</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;fileMap</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;StringMap</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;String&nbsp;postUrlFile(String&nbsp;url,&nbsp;Map&lt;String,&nbsp;String&gt;&nbsp;urlMap,&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Map&lt;String,&nbsp;String&gt;&nbsp;stringMap)&nbsp;{&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;httpFileRequest(&nbsp;url,urlMap,stringMap,</span><span class="number">1</span><span>,&nbsp;</span><span class="keyword">null</span><span>);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;获取网络文件的字节数组</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;url</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@throws&nbsp;IOException</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@throws&nbsp;ClientProtocolException</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@throws&nbsp;ClientProtocolException</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@throws&nbsp;IOException</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">byte</span><span>[]&nbsp;getUrlFileBytes(String&nbsp;url)&nbsp;</span><span class="keyword">throws</span><span>&nbsp;ClientProtocolException,&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IOException&nbsp;{&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">byte</span><span>[]&nbsp;bytes&nbsp;=&nbsp;</span><span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;创建HttpClient实例</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DefaultHttpClient&nbsp;httpclient&nbsp;=&nbsp;getDefaultHttpClient(CHARSET_ENCODING);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;获取url里面的信息</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpGet&nbsp;hg&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;HttpGet(url);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpResponse&nbsp;hr&nbsp;=&nbsp;httpclient.execute(hg);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bytes&nbsp;=&nbsp;EntityUtils.toByteArray(hr.getEntity());&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;转换内容为字节</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;bytes;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;获取图片的字节数组</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@createTime&nbsp;2011-11-24</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;url</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@return</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@throws&nbsp;IOException</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@throws&nbsp;ClientProtocolException</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@throws&nbsp;ClientProtocolException</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@throws&nbsp;IOException</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">byte</span><span>[]&nbsp;getImg(String&nbsp;url)&nbsp;</span><span class="keyword">throws</span><span>&nbsp;ClientProtocolException,&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IOException&nbsp;{&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">byte</span><span>[]&nbsp;bytes&nbsp;=&nbsp;</span><span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;创建HttpClient实例</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DefaultHttpClient&nbsp;httpclient&nbsp;=&nbsp;getDefaultHttpClient(CHARSET_ENCODING);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;获取url里面的信息</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpGet&nbsp;hg&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;HttpGet(url);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HttpResponse&nbsp;hr&nbsp;=&nbsp;httpclient.execute(hg);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bytes&nbsp;=&nbsp;EntityUtils.toByteArray(hr.getEntity());&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;转换内容为字节</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;bytes;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;main(String[]&nbsp;args)&nbsp;</span><span class="keyword">throws</span><span>&nbsp;URISyntaxException,&nbsp;ClientProtocolException,&nbsp;IOException&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;url=<span class="string">"http://www.baidu.com/"</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;str=HttpClientUtil.get(url,&nbsp;<span class="keyword">null</span><span>);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(str);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>}&nbsp;&nbsp;</span></li></ol></div><pre class="java" name="code" style="display: none;" codeable_id="1419536" codeable_type="Blog" source_url="http://xiayingjie.iteye.com/blog/1419536" pre_index="0" title="Http协议客户端工具之Httpclient">package com.xyj.com.tool.util;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.security.cert.CertificateException;
+import java.util.List;
+import java.util.Map;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.NoHttpResponseException;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpRequestRetryHandler;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.params.ClientPNames;
+import org.apache.http.client.params.CookiePolicy;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.protocol.ExecutionContext;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
+
+/**
+ * @className:HttpClientUtil.java
+ * @classDescription:HttpClient工具类//待完善模拟登录，cookie,证书登录
+ * @author:xiayingjie
+ * @createTime:2011-8-31
+ */
+
+public class HttpClientUtil {
+
+	public static String CHARSET_ENCODING = "UTF-8";
+	// private static String
+	// USER_AGENT="Mozilla/4.0 (compatible; MSIE 6.0; Win32)";//ie6
+	public static String USER_AGENT = "Mozilla/4.0 (compatible; MSIE 7.0; Win32)";// ie7
+
+	// private static String
+	// USER_AGENT="Mozilla/4.0 (compatible; MSIE 8.0; Win32)";//ie8
+
+	/**
+	 * 获取DefaultHttpClient对象
+	 * 
+	 * @param charset
+	 *            字符编码
+	 * @return DefaultHttpClient对象
+	 */
+	private static DefaultHttpClient getDefaultHttpClient(final String charset) {
+		DefaultHttpClient httpclient = new DefaultHttpClient();
+		// 模拟浏览器，解决一些服务器程序只允许浏览器访问的问题
+		httpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT,
+				USER_AGENT);
+		httpclient.getParams().setParameter(
+				CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
+		httpclient.getParams().setParameter(
+				CoreProtocolPNames.HTTP_CONTENT_CHARSET,
+				charset == null ? CHARSET_ENCODING : charset);
+		
+		// 浏览器兼容性
+		httpclient.getParams().setParameter(ClientPNames.COOKIE_POLICY,
+				CookiePolicy.BROWSER_COMPATIBILITY);
+		// 定义重试策略
+		httpclient.setHttpRequestRetryHandler(requestRetryHandler);
+		
+		return httpclient;
+	}
+	/**
+	 * 访问https的网站
+	 * @param httpclient
+	 */
+	private static void enableSSL(DefaultHttpClient httpclient){
+		//调用ssl
+		 try {
+	            SSLContext sslcontext = SSLContext.getInstance("TLS");
+	            sslcontext.init(null, new TrustManager[] { truseAllManager }, null);
+	            SSLSocketFactory sf = new SSLSocketFactory(sslcontext);
+	            sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+	            Scheme https = new Scheme("https", sf, 443);
+	            httpclient.getConnectionManager().getSchemeRegistry()
+	                    .register(https);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	}
+	/**
+	 * 重写验证方法，取消检测ssl
+	 */
+    private static TrustManager truseAllManager = new X509TrustManager(){
+
+		public void checkClientTrusted(
+				java.security.cert.X509Certificate[] arg0, String arg1)
+				throws CertificateException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void checkServerTrusted(
+				java.security.cert.X509Certificate[] arg0, String arg1)
+				throws CertificateException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+    	
+    } ;
+
+	/**
+	 * 异常自动恢复处理, 使用HttpRequestRetryHandler接口实现请求的异常恢复
+	 */
+	private static HttpRequestRetryHandler requestRetryHandler = new HttpRequestRetryHandler() {
+		// 自定义的恢复策略
+		public boolean retryRequest(IOException exception, int executionCount,
+				HttpContext context) {
+			// 设置恢复策略，在发生异常时候将自动重试3次
+			if (executionCount &gt;= 3) {
+				// 如果连接次数超过了最大值则停止重试
+				return false;
+			}
+			if (exception instanceof NoHttpResponseException) {
+				// 如果服务器连接失败重试
+				return true;
+			}
+			if (exception instanceof SSLHandshakeException) {
+				// 不要重试ssl连接异常
+				return false;
+			}
+			HttpRequest request = (HttpRequest) context
+					.getAttribute(ExecutionContext.HTTP_REQUEST);
+			boolean idempotent = (request instanceof HttpEntityEnclosingRequest);
+			if (!idempotent) {
+				// 重试，如果请求是考虑幂等
+				return true;
+			}
+			return false;
+		}
+	};
+
+	/**
+	 * 使用ResponseHandler接口处理响应，HttpClient使用ResponseHandler会自动管理连接的释放，解决了对连接的释放管理
+	 */
+	private static ResponseHandler&lt;String&gt; responseHandler = new ResponseHandler&lt;String&gt;() {
+		// 自定义响应处理
+		public String handleResponse(HttpResponse response)
+				throws ClientProtocolException, IOException {
+			HttpEntity entity = response.getEntity();
+			if (entity != null) {
+				String charset = EntityUtils.getContentCharSet(entity) == null ? CHARSET_ENCODING
+						: EntityUtils.getContentCharSet(entity);
+				return new String(EntityUtils.toByteArray(entity), charset);
+			} else {
+				return null;
+			}
+		}
+	};
+
+	/**
+	 * 使用post方法获取相关的数据
+	 * 
+	 * @param url
+	 * @param paramsList
+	 * @return
+	 */
+	public static String post(String url, List&lt;NameValuePair&gt; paramsList) {
+		return httpRequest(url, paramsList, "POST", null);
+	}
+
+	/**
+	 * 使用post方法并且通过代理获取相关的数据
+	 * 
+	 * @param url
+	 * @param paramsList
+	 * @param proxy
+	 * @return
+	 */
+	public static String post(String url, List&lt;NameValuePair&gt; paramsList,
+			HttpHost proxy) {
+		return httpRequest(url, paramsList, "POST", proxy);
+	}
+
+	/**
+	 * 使用get方法获取相关的数据
+	 * 
+	 * @param url
+	 * @param paramsList
+	 * @return
+	 */
+	public static String get(String url, List&lt;NameValuePair&gt; paramsList) {
+		return httpRequest(url, paramsList, "GET", null);
+	}
+
+	/**
+	 * 使用get方法并且通过代理获取相关的数据
+	 * 
+	 * @param url
+	 * @param paramsList
+	 * @param proxy
+	 * @return
+	 */
+	public static String get(String url, List&lt;NameValuePair&gt; paramsList,
+			HttpHost proxy) {
+		return httpRequest(url, paramsList, "GET", proxy);
+	}
+
+	/**
+	 * 提交数据到服务器
+	 * 
+	 * @param url
+	 * @param params
+	 * @param authenticated
+	 * @throws IOException
+	 * @throws ClientProtocolException
+	 */
+	public static String httpRequest(String url,
+			List&lt;NameValuePair&gt; paramsList, String method, HttpHost proxy) {
+		String responseStr = null;
+		// 判断输入的值是是否为空
+		if (null == url || "".equals(url)) {
+			return null;
+		}
+		
+		// 创建HttpClient实例
+		DefaultHttpClient httpclient = getDefaultHttpClient(CHARSET_ENCODING);
+		
+		//判断是否是https请求
+		if(url.startsWith("https")){
+			enableSSL(httpclient);
+		}
+		String formatParams = null;
+		// 将参数进行utf-8编码
+		if (null != paramsList &amp;&amp; paramsList.size() &gt; 0) {
+			formatParams = URLEncodedUtils.format(paramsList, CHARSET_ENCODING);
+		}
+		// 如果代理对象不为空则设置代理
+		if (null != proxy) {
+			httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,
+					proxy);
+		}
+		try {
+			// 如果方法为Get
+			if ("GET".equalsIgnoreCase(method)) {
+				if (formatParams != null) {
+					url = (url.indexOf("?")) &lt; 0 ? (url + "?" + formatParams)
+							: (url.substring(0, url.indexOf("?") + 1) + formatParams);
+				}
+				HttpGet hg = new HttpGet(url);
+				responseStr = httpclient.execute(hg, responseHandler);
+
+				// 如果方法为Post
+			} else if ("POST".equalsIgnoreCase(method)) {
+				HttpPost hp = new HttpPost(url);
+				if (formatParams != null) {
+					StringEntity entity = new StringEntity(formatParams);
+					entity.setContentType("application/x-www-form-urlencoded");
+					hp.setEntity(entity);
+				}
+				responseStr = httpclient.execute(hp, responseHandler);
+				
+			}
+
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return responseStr;
+	}
+
+
+	/**
+	 * 提交数据到服务器
+	 * 
+	 * @param url
+	 * @param params
+	 * @param authenticated
+	 * @throws IOException
+	 * @throws ClientProtocolException
+	 */
+	public static String httpFileRequest(String url,
+			 Map&lt;String, String&gt; fileMap,Map&lt;String, String&gt; stringMap,int type, HttpHost proxy) {
+		String responseStr = null;
+		// 判断输入的值是是否为空
+		if (null == url || "".equals(url)) {
+			return null;
+		}
+		// 创建HttpClient实例
+		DefaultHttpClient httpclient = getDefaultHttpClient(CHARSET_ENCODING);
+		
+		//判断是否是https请求
+		if(url.startsWith("https")){
+			enableSSL(httpclient);
+		}
+		
+		// 如果代理对象不为空则设置代理
+		if (null != proxy) {
+			httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,
+					proxy);
+		}
+		//发送文件
+		HttpPost hp = new HttpPost(url);
+		MultipartEntity multiEntity = new MultipartEntity();
+		try {
+			//type=0是本地路径，否则是网络路径
+			if(type==0){
+				for (String key : fileMap.keySet()) {
+					multiEntity.addPart(key, new FileBody(new File(fileMap.get(key))));
+				}
+			}else{
+				for (String key : fileMap.keySet()) {				
+					multiEntity.addPart(key,new ByteArrayBody(getUrlFileBytes(fileMap.get(key)),key));
+				}
+			}
+			// 加入相关参数 默认编码为utf-8
+			for (String key : stringMap.keySet()) {
+				multiEntity.addPart(key, new StringBody(stringMap.get(key),Charset.forName(CHARSET_ENCODING)));
+			}
+			hp.setEntity(multiEntity);
+			responseStr = httpclient.execute(hp, responseHandler);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return responseStr;
+	}
+	
+	/**
+	 * 将相关文件和参数提交到相关服务器
+	 * @param url
+	 * @param fileMap
+	 * @param StringMap
+	 * @return
+	 */
+	public static String postFile(String url, Map&lt;String, String&gt; fileMap,
+			Map&lt;String, String&gt; stringMap) {
+		return httpFileRequest( url,fileMap,stringMap,0, null); 
+	}
+	/**
+	 * 将相关文件和参数提交到相关服务器
+	 * @param url
+	 * @param fileMap
+	 * @param StringMap
+	 * @return
+	 */
+	public static String postUrlFile(String url, Map&lt;String, String&gt; urlMap,
+			Map&lt;String, String&gt; stringMap) {
+		return httpFileRequest( url,urlMap,stringMap,1, null);
+	}
+
+	/**
+	 * 获取网络文件的字节数组
+	 * 
+	 * @param url
+	 * @return
+	 * @throws IOException
+	 * @throws ClientProtocolException
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
+	public static byte[] getUrlFileBytes(String url) throws ClientProtocolException,
+			IOException {
+		
+		byte[] bytes = null;
+		// 创建HttpClient实例
+		DefaultHttpClient httpclient = getDefaultHttpClient(CHARSET_ENCODING);
+		// 获取url里面的信息
+		HttpGet hg = new HttpGet(url);
+		HttpResponse hr = httpclient.execute(hg);
+		bytes = EntityUtils.toByteArray(hr.getEntity());
+		// 转换内容为字节
+		return bytes;
+	}
+
+	/**
+	 * 获取图片的字节数组
+	 * 
+	 * @createTime 2011-11-24
+	 * @param url
+	 * @return
+	 * @throws IOException
+	 * @throws ClientProtocolException
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
+	public static byte[] getImg(String url) throws ClientProtocolException,
+			IOException {
+		byte[] bytes = null;
+		// 创建HttpClient实例
+		DefaultHttpClient httpclient = getDefaultHttpClient(CHARSET_ENCODING);
+		// 获取url里面的信息
+		HttpGet hg = new HttpGet(url);
+		HttpResponse hr = httpclient.execute(hg);
+		bytes = EntityUtils.toByteArray(hr.getEntity());
+		// 转换内容为字节
+		return bytes;
+	}
+
+	public static void main(String[] args) throws URISyntaxException, ClientProtocolException, IOException {
+
+	    String url="http://www.baidu.com/";
+		String str=HttpClientUtil.get(url, null);
+		System.out.println(str);
+
+	}
+
+}
+
+</pre>
+  </div>
+
+  
+
+
+  <iframe src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/794.htm" scrolling="no" width="468" height="60" frameborder="0"></iframe>
+  
+  <div id="bottoms" class="clearfix">
+    
+    <div id="share_weibo">分享到：
+      <a data-type="sina" href="javascript:;" title="分享到新浪微博"><img src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/sina.jpg"></a>
+      <a data-type="qq" href="javascript:;" title="分享到腾讯微博"><img src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/tec.jpg"></a>
+    </div>
+  </div>
+
+  <div class="blog_nav">
+    <div class="pre_next">
+      <a href="http://xiayingjie.iteye.com/blog/1419567" class="next" title="模板之freemarker">模板之freemarker</a>
+      |
+      <a href="http://xiayingjie.iteye.com/blog/1203858" class="pre" title="(转)JAVA String.format 方法使用介绍  ">(转)JAVA String.format 方法使用介绍  </a>
+    </div>
+  </div>
+  <div class="blog_bottom">
+    <ul>
+      <li>2012-02-23 09:57</li>
+      <li>浏览 1903</li>
+      <li><a href="http://xiayingjie.iteye.com/blog/1419536#comments">评论(1)</a></li>
+      
+      
+      <li>分类:<a href="http://www.iteye.com/blogs/category/opensource">开源软件</a></li>      
+      <li class="last"><a href="http://www.iteye.com/wiki/blog/1419536" target="_blank" class="more">相关推荐</a></li>
+    </ul>
+  </div>
+
+  <div class="blog_comment">
+    <h5>评论</h5>
+    <a id="comments" name="comments"></a>
+    <div id="bc2251651">
+  <div class="comment_title">
+    1 楼
+    <a href="http://xuehanxin.iteye.com/" target="_blank" title="xuehanxin">xuehanxin</a>
+    2012-04-07&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content">呵呵，最近也用了android常用</div>
+</div>
+
+
+    
+    
+  </div>
+
+  <div class="blog_comment">
+    <h5>发表评论</h5>
+            <p style="text-align:center; margin-top:30px;margin-bottom:0px;"><a href="http://xiayingjie.iteye.com/login" style="background-color:white;"> <img src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/login_icon.png" style="vertical-align:middle; margin-right: 10px;"></a><a href="http://xiayingjie.iteye.com/login">  您还没有登录,请您登录后再发表评论 </a></p>
+      </div>
+</div>
+
+
+<script type="text/javascript">
+  dp.SyntaxHighlighter.HighlightAll('code', true, true);
+
+  $$('#main .blog_content pre[name=code]').each(function(pre, index){ // blog content
+    var post_id = 1419536;
+    var location = window.location;
+    source_url = location.protocol + "//" + location.host + location.pathname + location.search;
+    pre.writeAttribute('codeable_id', post_id);
+    pre.writeAttribute('codeable_type', "Blog");
+    pre.writeAttribute('source_url', source_url);
+    pre.writeAttribute('pre_index', index);
+    pre.writeAttribute('title', 'Http协议客户端工具之Httpclient');
+  });
+
+  fix_image_size($$('div.blog_content img'), 700);
+
+  function processComment() {
+    $$('#main .blog_comment > div').each(function(comment){// comment
+      var post_id = comment.id.substr(2);
+      $$("#"+comment.id+" pre[name=code]").each(function(pre, index){
+        var location = window.location;
+        source_url = location.protocol + "//" + location.host + location.pathname + location.search;
+        source_url += "#" + comment.id;
+        pre.writeAttribute('codeable_id', post_id);
+        pre.writeAttribute('codeable_type', "BlogComment");
+        pre.writeAttribute('source_url', source_url);
+        pre.writeAttribute('pre_index', index);
+        pre.writeAttribute('title', 'Http协议客户端工具之Httpclient');
+      });
+    });
+  }
+
+  function quote_comment(id) {
+    new Ajax.Request('/editor/quote', {
+      parameters: {'id':id, 'type':'BlogComment'},
+      onSuccess:function(response){editor.bbcode_editor.textarea.insertAfterSelection(response.responseText);
+        Element.scrollTo(editor.bbcode_editor.textarea.element);}
+    });
+  }
+
+  code_favorites_init();
+  processComment();
+  new WeiboShare({share_buttons: $('share_weibo'), img_scope: $('blog_content')});
+</script>
+
+
+
+
+        </div>
+
+        <div id="local">
+          <div class="local_top"></div>
+          <div id="blog_owner">
+  <div id="blog_owner_logo"><a href="http://xiayingjie.iteye.com/"><img alt="xiaoxin5230的博客" class="logo" src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/02a5799d-5d1e-339d-8733-3208dac6145a.jpg" title="xiaoxin5230的博客: xiaoxin5230"></a></div>
+  <div id="blog_owner_name">xiaoxin5230</div>
+</div>
+
+          <div id="blog_actions">
+            <ul>
+              <li>浏览: 36213 次</li>
+              <li>性别: <img alt="Icon_minigender_1" src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/icon_minigender_1.gif" title="男"></li>
+              <li>来自: 广州</li>
+              <li><img src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/offline.gif"></li>
+              
+            </ul>
+          </div>
+          <div id="user_visits" class="clearfix">
+            <h5>最近访客 <span style="font-weight:normal;font-size:12px;padding-left:30px;"><a href="http://xiayingjie.iteye.com/blog/user_visits">更多访客&gt;&gt;</a></span></h5>
+            
+              <div class="user_visit">
+                <div class="logo"><a href="http://hurrysea.iteye.com/" target="_blank"><img alt="hurrysea的博客" class="logo" src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/user-logo-thumb.gif" title="hurrysea的博客: hurrysea"></a></div>
+                <div class="left"><a href="http://hurrysea.iteye.com/" target="_blank" title="hurrysea">hurrysea</a></div>
+              </div>
+            
+              <div class="user_visit">
+                <div class="logo"><a href="http://aspirinzh.iteye.com/" target="_blank"><img alt="aspirinzh的博客" class="logo" src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/user-logo-thumb.gif" title="aspirinzh的博客: "></a></div>
+                <div class="left"><a href="http://aspirinzh.iteye.com/" target="_blank" title="aspirinzh">aspirinzh</a></div>
+              </div>
+            
+              <div class="user_visit">
+                <div class="logo"><a href="http://ireports.iteye.com/" target="_blank"><img alt="ireports的博客" class="logo" src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/user-logo-thumb.gif" title="ireports的博客: iReport开源报表"></a></div>
+                <div class="left"><a href="http://ireports.iteye.com/" target="_blank" title="ireports">ireports</a></div>
+              </div>
+            
+              <div class="user_visit">
+                <div class="logo"><a href="http://cxman.iteye.com/" target="_blank"><img alt="cxman的博客" class="logo" src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/user-logo-thumb.gif" title="cxman的博客: "></a></div>
+                <div class="left"><a href="http://cxman.iteye.com/" target="_blank" title="cxman">cxman</a></div>
+              </div>
+            
+          </div>
+
+          
+
+                      <div id="blog_menu">
+              <h5>文章分类</h5>
+              <ul>
+                <li><a href="http://xiayingjie.iteye.com/">全部博客 (28)</a></li>
+                
+                  <li><a href="http://xiayingjie.iteye.com/category/29079">j2ee (12)</a></li>
+                
+                  <li><a href="http://xiayingjie.iteye.com/category/29080">apache (2)</a></li>
+                
+                  <li><a href="http://xiayingjie.iteye.com/category/29081">opensymphony (0)</a></li>
+                
+                  <li><a href="http://xiayingjie.iteye.com/category/29082">spring (0)</a></li>
+                
+                  <li><a href="http://xiayingjie.iteye.com/category/29083">hibernate (1)</a></li>
+                
+                  <li><a href="http://xiayingjie.iteye.com/category/29084">struts (0)</a></li>
+                
+                  <li><a href="http://xiayingjie.iteye.com/category/75552">web服务器 (2)</a></li>
+                
+                  <li><a href="http://xiayingjie.iteye.com/category/126109">java基础 (7)</a></li>
+                
+              </ul>
+            </div>
+            <div id="month_blogs">
+              <h5>社区版块</h5>
+              <ul>
+                <li><a href="http://xiayingjie.iteye.com/blog/news">我的资讯</a> (0)</li>
+                <li>
+                  <a href="http://xiayingjie.iteye.com/blog/post">我的论坛</a> (107)
+                </li>
+                <li><a href="http://xiayingjie.iteye.com/blog/answered_problems">我的问答</a> (4)</li>
+              </ul>
+            </div>
+            <div id="month_blogs">
+              <h5>存档分类</h5>
+              <ul>
+                
+                  <li><a href="http://xiayingjie.iteye.com/blog/monthblog/2012-02">2012-02</a> (2)</li>
+                
+                  <li><a href="http://xiayingjie.iteye.com/blog/monthblog/2011-10">2011-10</a> (1)</li>
+                
+                  <li><a href="http://xiayingjie.iteye.com/blog/monthblog/2011-01">2011-01</a> (1)</li>
+                
+                <li><a href="http://xiayingjie.iteye.com/blog/monthblog_more">更多存档...</a></li>
+              </ul>
+            </div>
+            
+            
+
+            <div id="guest_books">
+              <h5>最新评论</h5>
+              <ul>
+                
+                <li>
+                  <a href="http://xiayingjie.iteye.com/" target="_blank" title="xiaoxin5230">xiaoxin5230</a>： 
+                  leyou 写道请问你知道CAS3.5是怎么实现自定义登录页面 ...<br>
+                  <a href="http://xiayingjie.iteye.com/blog/709747#bc2328139">CAS学习</a>
+                </li>
+                
+                <li>
+                  <a href="http://leyou.iteye.com/" target="_blank" title="leyou">leyou</a>： 
+                  请问你知道CAS3.5是怎么实现自定义登录页面的吗？CAS3. ...<br>
+                  <a href="http://xiayingjie.iteye.com/blog/709747#bc2327362">CAS学习</a>
+                </li>
+                
+                <li>
+                  <a href="http://dy-f.iteye.com/" target="_blank" title="dy.f">dy.f</a>： 
+                  请问：rootAttributeMap.put("c ...<br>
+                  <a href="http://xiayingjie.iteye.com/blog/870758#bc2298567">报表之fusionchart</a>
+                </li>
+                
+                <li>
+                  <a href="http://peter2009.iteye.com/" target="_blank" title="peter2009">peter2009</a>： 
+                  CaptchaServletUtil.writeImage(r ...<br>
+                  <a href="http://xiayingjie.iteye.com/blog/790038#bc2279917">验证码之SimpleCaptcha （二）</a>
+                </li>
+                
+                <li>
+                  <a href="http://zhzhwe.iteye.com/" target="_blank" title="zhzhwe">zhzhwe</a>： 
+                  非常不错。<br>
+                  <a href="http://xiayingjie.iteye.com/blog/856922#bc2267352">小型用户权限例子struts2.18+spring3.0+hibernate3.5+annotation(源码)</a>
+                </li>
+                
+              </ul>
+            </div>
+
+            <div class="local_bottom"></div>
+          
+        </div>
+      </div>
+
+      <div id="footer" class="clearfix">
+        <div id="copyright">
+          <hr>
+          声明：ITeye文章版权属于作者，受法律保护。没有作者书面许可不得转载。若作者同意转载，必须以超链接形式标明文章原始出处和作者。<br>
+          © 2003-2012 ITeye.com.   All rights reserved.  [ 京ICP证110151号  京公网安备110105010620 ]
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+  document.write("<img src='http://stat.iteye.com/?url="+ encodeURIComponent(document.location.href) + "&referrer=" + encodeURIComponent(document.referrer) + "&user_id=' width='0' height='0' />");
+</script><img src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/saved_resource" width="0" height="0">
+
+<script src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/tracking.js" type="text/javascript"></script>
+
+    
+    
+  
+
+<embed style="visibility: hidden;" type="application/xl_chrome_plugin" width="0" height="0"><div class="sogoutip" style="z-index: 2147483645; visibility: hidden; display: none;"></div><div class="sogoubottom" id="sougou_bottom" style="display: none;"></div><div id="ext_stophi" style="z-index: 2147483647;"><div class="extnoticebg"></div><div class="extnotice"><h2>关闭提示 <a href="http://xiayingjie.iteye.com/blog/1419536#" title="关闭提示" id="closenotice" class="closenotice">关闭</a></h2><p id="sogouconfirmtxt"></p>  <a id="sogouconfirm" href="http://xiayingjie.iteye.com/blog/1419536#" class="extconfirm">确 认</a> <a id="sogoucancel" href="http://xiayingjie.iteye.com/blog/1419536#" class="extconfirm">取 消</a></div></div><div id="ext_overlay" style="display: none; z-index: 2147483646;" class="ext_overlayBG"></div><iframe class="sogou_sugg_feedbackquan" style="background-color: transparent; border: none; display: none; z-index: 2147483645; background-position: initial initial; background-repeat: initial initial;" frameborder="0" scrolling="no" src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/yun1.htm"></iframe><script src="./Http协议客户端工具之Httpclient - xiaoxin5230 - ITeye技术网站_files/pv.gif"></script></body></html>

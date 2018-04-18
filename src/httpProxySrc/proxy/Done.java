@@ -1,0 +1,72 @@
+package httpProxySrc.proxy;
+
+/**
+ * ÃèÊö£º
+ * 
+ * @author $ÕÅÖÒÇ¿$
+ * @version $Revision$
+ */
+public class Done {
+
+	private int activeThreads = 0;
+	private boolean started = false;
+
+	/**
+	 * ÃèÊö£º
+	 */
+	public synchronized void waitDone() {
+
+		try {
+
+			while (activeThreads > 0) {
+
+				wait();
+			}
+		} catch (InterruptedException e) {
+
+		}
+	}
+
+	/**
+	 * ÃèÊö£º
+	 */
+	public synchronized void waitBegin() {
+
+		try {
+
+			while (!started) {
+
+				wait();
+			}
+		} catch (InterruptedException e) {
+
+		}
+	}
+
+	/**
+	 * ÃèÊö£º
+	 */
+	public synchronized void workerBegin() {
+
+		activeThreads++;
+		started = true;
+		notify();
+	}
+
+	/**
+	 * ÃèÊö£º
+	 */
+	public synchronized void workerEnd() {
+
+		activeThreads--;
+		notify();
+	}
+
+	/**
+	 * ÃèÊö£º
+	 */
+	public synchronized void reset() {
+
+		activeThreads = 0;
+	}
+}

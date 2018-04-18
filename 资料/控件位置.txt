@@ -1,0 +1,37 @@
+		proxyServerSingleCheckButton = new JButton("\u68C0\u6D4B",Constants.checkBtnIcon);
+
+
+	public static ImageIcon nextIcon=new ImageIcon("img/next.gif");
+	public static ImageIcon upIcon=new ImageIcon("img/up.gif");
+	public static ImageIcon fistIcon=new ImageIcon("img/fist.gif");
+	public static ImageIcon lastIcon=new ImageIcon("img/last.gif");
+
+setBounds(8, 6, 120, 25)
+134, 7, 120, 24
+setBounds(134, 7, 120, 24)
+setBounds(260, 7, 133, 24)
+setBounds(496, 7, 154, 24)
+setBounds(656, 7, 120, 24)
+setBounds(782, 6, 90, 25)
+setBounds(10, 11, 75, 25)
+setBounds(89, 11, 85, 25)
+setBounds(179, 11, 85, 25)
+setBounds(269, 11, 75, 25)
+setBounds(348, 11, 70, 25)
+setBounds(422, 12, 34, 25)
+setBounds(461, 18, 28, 15)
+setBounds(481, 5, 34, 15)
+setBounds(482, 24, 28, 15)
+setBounds(517, 6, 53, 15)
+setBounds(517, 24, 35, 15)
+setBounds(576, 5, 54, 15)
+setBounds(576, 21, 54, 15)
+setBounds(639, 5, 48, 15)
+setBounds(638, 23, 40, 15)
+setBounds(687, 5, 28, 15)
+setBounds(685, 23, 37, 18)
+setBounds(732, 5, 54, 15)
+setBounds(731, 24, 54, 15)
+setBounds(786, 11, 88, 25)
+
+

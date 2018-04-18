@@ -1,0 +1,1097 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0052)http://www.ibm.com/developerworks/cn/java/l-console/ -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" xml:lang="zh-CN" class="dj_webkit dj_chrome dj_contentbox"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>在Java程序中截获控制台输出</title>
+<link rel="schema.DC" href="http://purl.org/DC/elements/1.0/">
+<link rel="SHORTCUT ICON" href="http://www.ibm.com/favicon.ico">
+<meta name="DC.Rights" content="© Copyright IBM Corporation 2001">
+<meta name="Keywords" content="Java, 截获,管道流, 控制台输入, Swing, , tttjca">
+<meta name="DC.Date" scheme="iso8601" content="2001-10-16">
+<meta name="Source" content="v17 delivery:developerWorks">
+<meta name="Security" content="Public">
+<meta name="Abstract" content="在Java开发中，控制台输出仍是一个重要的工具，但默认的控制台输出有着各种各样的局限。本文介绍如何用Java管道流截取控制台输出，分析管道流应用中应该注意的问题，提供了截取Java程序和非Java程序控制台输出的实例。">
+<meta name="Description" content="在Java开发中，控制台输出仍是一个重要的工具，但默认的控制台输出有着各种各样的局限。本文介绍如何用Java管道流截取控制台输出，分析管道流应用中应该注意的问题，提供了截取Java程序和非Java程序控制台输出的实例。">
+<meta name="IBM.Effective" scheme="W3CDTF" content="2001-10-16">
+<meta name="Owner" content="developerWorks/China/IBM">
+<meta name="DC.Language" scheme="rfc1766" content="zh-CN">
+<meta name="IBM.SpecialPurpose" content="SP001">
+<meta name="IBM.Country" content="CN">
+<meta name="Robots" content="index,follow">
+<meta name="DC.Type" scheme="IBM_ContentClassTaxonomy" content="CT316">
+<meta name="DC.Subject" scheme="IBM_SubjectTaxonomy" content="TT300">
+<meta name="dW.ContentArea" content="1">
+<meta name="dW.Topic" content="263,40">
+<!-- META_INCLUDE -->
+<meta scheme="IBM_WTMCategory" name="IBM.WTMCategory" content="SOFDCJVACN">
+
+<!-- HEADER_SCRIPTS_AND_CSS_INCLUDE -->
+<link href="./在Java程序中截获控制台输出_files/www.css" rel="stylesheet" title="www" type="text/css">
+<link href="./在Java程序中截获控制台输出_files/cnzh.css" rel="stylesheet" title="www" type="text/css">    
+
+<!-- Masthead/footer -->
+<link href="./在Java程序中截获控制台输出_files/dw-mfN.css" media="screen,projection" rel="stylesheet" title="www" type="text/css">
+<link href="./在Java程序中截获控制台输出_files/dw-article-6.css" rel="stylesheet" title="www" type="text/css">
+
+<link href="./在Java程序中截获控制台输出_files/dw-common-features.css" rel="stylesheet" title="www" type="text/css">
+<link href="./在Java程序中截获控制台输出_files/dw-local-site-v17-N.css" media="screen,projection" rel="stylesheet" title="www" type="text/css">
+<script type="text/javascript" src="./在Java程序中截获控制台输出_files/www.js">//</script><script type="text/javascript" src="./在Java程序中截获控制台输出_files/eluminate.js"></script><link rel="search" type="application/opensearchdescription+xml" href="http://www.ibm.com/search/opensearch/description.xml" title="IBM Search"><script type="text/javascript">ibmweb.config.eluminate.enabled=true;if(typeof ibmweb.config.eluminate.siteID==="undefined"){ibmweb.config.eluminate.siteID=String(dojo.query("meta[name='IBM.WTMSite']").attr("content"));}if(ibmweb.config.eluminate.siteID.length==0){ibmweb.config.eluminate.siteID=String(dojo.query("meta[name='WTMSite']").attr("content"));}if(ibmweb.config.eluminate.siteID.length==0&&typeof digitalData.page!=="undefined"){if(typeof digitalData.page.site!=="undefined"&&typeof digitalData.page.site.siteID!=="undefined"){ibmweb.config.eluminate.siteID=digitalData.page.site.siteID;}if(typeof digitalData.page.category!=="undefined"&&typeof digitalData.page.category.categoryID!=="undefined"){ibmweb.config.eluminate.siteID=digitalData.page.category.categoryID;}}if(ibmweb.config.eluminate.siteID.length==0){ibmweb.config.eluminate.siteID="IBMTEST";}ibmweb.config.eluminate.cmSetClientID.id=ibmweb.config.eluminate.CID+"|"+ibmweb.config.eluminate.siteID;cmSetClientID(ibmweb.config.eluminate.cmSetClientID.id,ibmweb.config.eluminate.cmSetClientID.managedFirstParty,ibmweb.config.eluminate.cmSetClientID.dataCollectionDomain,ibmweb.config.eluminate.cmSetClientID.cookieDomain);dojo.connect(null,"onclick",ibmweb.eluminate,ibmweb.eluminate.download_and_offset_tracking);</script><script src="./在Java程序中截获控制台输出_files/head.js"></script><script language="javascript" type="text/javascript" src="./在Java程序中截获控制台输出_files/50200000.js"></script><script language="javascript" type="text/javascript" src="./在Java程序中截获控制台输出_files/cookie-id.js"></script><script language="javascript" type="text/javascript" src="./在Java程序中截获控制台输出_files/rules_50200000.js"></script><script language="javascript" type="text/javascript" src="./在Java程序中截获控制台输出_files/dispatcher-v3.js"></script><script src="./在Java程序中截获控制台输出_files/cp-v3.js" type="text/javascript"></script>
+<script type="text/javascript" src="./在Java程序中截获控制台输出_files/dw-www.js">//</script><script type="text/javascript" charset="utf-8" src="./在Java程序中截获控制台输出_files/Dialog.xd.js"></script>
+
+<script type="text/javascript">
+//  ibmweb.config.set({ sbs: { enabled: false }});
+</script>
+<!-- LEADSPACE_STYLES -->
+
+
+<script type="text/javascript" src="./在Java程序中截获控制台输出_files/cnzh-utf8.js" id="dojoIoScript1" charset="utf-8"></script><script type="text/javascript" src="./在Java程序中截获控制台输出_files/saved_resource" id="dojoIoScript2" charset="utf-8"></script><script type="text/javascript" charset="utf-8" src="./在Java程序中截获控制台输出_files/move.xd.js"></script><script type="text/javascript" charset="utf-8" src="./在Java程序中截获控制台输出_files/TimedMoveable.xd.js"></script><script type="text/javascript" charset="utf-8" src="./在Java程序中截获控制台输出_files/_CssStateMixin.xd.js"></script><script type="text/javascript" charset="utf-8" src="./在Java程序中截获控制台输出_files/_FormMixin.xd.js"></script><script type="text/javascript" charset="utf-8" src="./在Java程序中截获控制台输出_files/_DialogMixin.xd.js"></script><script type="text/javascript" charset="utf-8" src="./在Java程序中截获控制台输出_files/DialogUnderlay.xd.js"></script><script type="text/javascript" charset="utf-8" src="./在Java程序中截获控制台输出_files/ContentPane.xd.js"></script><script type="text/javascript" charset="utf-8" src="./在Java程序中截获控制台输出_files/common.xd.js"></script><script type="text/javascript" charset="utf-8" src="./在Java程序中截获控制台输出_files/TooltipDialog.xd.js"></script><script type="text/javascript" charset="utf-8" src="./在Java程序中截获控制台输出_files/Moveable.xd.js"></script><script type="text/javascript" charset="utf-8" src="./在Java程序中截获控制台输出_files/Mover.xd.js"></script><script type="text/javascript" charset="utf-8" src="./在Java程序中截获控制台输出_files/_ContentPaneResizeMixin.xd.js"></script><script type="text/javascript" charset="utf-8" src="./在Java程序中截获控制台输出_files/html.xd.js"></script><script type="text/javascript" charset="utf-8" src="./在Java程序中截获控制台输出_files/loading.xd.js"></script><script type="text/javascript" charset="utf-8" src="./在Java程序中截获控制台输出_files/common.xd(1).js"></script><script type="text/javascript" charset="utf-8" src="./在Java程序中截获控制台输出_files/autoscroll.xd.js"></script><script type="text/javascript" charset="utf-8" src="./在Java程序中截获控制台输出_files/_LayoutWidget.xd.js"></script></head>
+
+<body id="ibm-com" class="v17" aria-busy="false">
+
+	<div id="ibm-top" class="ibm-landing-page ibm-no-scroll"><img src="./在Java程序中截获控制台输出_files/ibm_logo_print.png" width="43" height="15" id="ibm-print-masthead" alt="IBM Print">
+
+<!-- MASTHEAD_BEGIN -->
+<!-- MASTHEAD_BEGIN -->
+<div id="ibm-masthead" role="banner">
+
+    <!-- TOP ROW -->    
+	<div id="dw-masthead-top-row">
+		<ul id="ibm-mast-options-dw" role="toolbar" class="cn">
+		<li role="presentation" id="dw-mast-top-4">
+				<a href="http://www.ibm.com/developerworks/cn/" tabindex="0"><img src="./在Java程序中截获控制台输出_files/dwn-dw-badge.png" width="43" height="22" alt="dW" aria-label="dW"></a></li>
+			<li role="presentation" id="dw-mast-top-0">
+				<div><a class="" href="http://www.ibm.com/developerworks/dwwi/DWAuthRouter?m=loginpage&lang=zh&d=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fl-console%2F" title="" role="button" tabindex="0">登录 (或注册)</a></div>
+			</li>
+			<li role="presentation" id="dw-mast-top-1">
+				<div><a href="http://www.ibm.com/developerworks/cn/java/l-console/#SELECTLANG" role="button">中文</a></div>
+			</li>
+			<li role="presentation" id="dw-mast-top-3">
+				<a role="button" href="http://www.ibm.com/">IBM</a>
+			</li>
+			<li role="presentation" id="dw-mast-top-2" class="dw-mf-hide">
+				<a href="http://www.ibm.com/developerworks/cn/java/l-console/#">[userid]</a>
+			</li>
+		</ul>
+	</div>
+
+    <!-- TOP ROW SLIDER -->
+	<div id="ibm-my-menu-dw" style="display: none;">
+        <!-- Sign-in -->
+		
+        <!-- Language selector --> 
+		
+		<div id="empty_div" class="dw-mast-columns" role="group"><!-- Authenticated --></div>		
+		<!-- IBM -->
+				
+	<div class="ibm-container-body" dojoattachpoint="ribbonContainer" id="ibmweb_ribbon_0" widgetid="ibmweb_ribbon_0"><a class="ibm-ribbon-prev ibm-disabled" dojoattachpoint="scrollLeftButton" role="button" href="http://www.ibm.com/developerworks/cn/java/l-console/#" style="margin-top: -12px;" title="上一个">上一个</a><div class="ibm-ribbon-pane" dojoattachpoint="scrollContainer" style="height: 0px;"><div class="ibm-ribbon-section" dojoattachpoint="scrollableNode" role="listbox" id="ibmweb_ribbon_0_scrollable"><div class="ibm-columns" dojoattachpoint="containerNode" role="dialog" id="ibmweb_ribbonSlide_0" widgetid="ibmweb_ribbonSlide_0" aria-labelledby="ibm-rib-menu-0"><h2 class="ibm-access" id="ibm-rib-menu-0">登录 (或注册)</h2><div id="ibmweb_ribbonItemAbstract_0" class="dw-mast-columns" role="group" tabindex="0" widgetid="ibmweb_ribbonItemAbstract_0">
+			<div class="dw-mast-col-1-1">
+				<div id="dw-mast-sso">
+					<div id="signin_error_mf" class="no-display"></div>
+					<div id="dw-mast-sso-form">
+						<form id="sForm_mf" action="" method="post" name="sForm_name_mf" onsubmit="return false;">
+							<div id="dw-mast-sso-id" class="dw-mast-sso-id-cn">
+								<label for="ibmid_mf">IBM ID:</label>
+								<input id="ibmid_mf" value="" name="ibmid_name_mf" maxlength="100" onkeypress="dwsi.siInst.handleEP(event,this.form,&#39;mf&#39;);" type="text">
+							</div>
+							<div id="dw-mast-sso-pw" class="dw-mast-sso-pw-cn">
+								<label for="pw_mf">密码：</label>
+								<input id="pw_mf" value="" name="pw_name_mf" maxlength="100" onkeypress="dwsi.siInst.handleEP(event,this.form,&#39;mf&#39;);" type="password">
+							</div>
+							<div id="dw-mast-sso-target" class="dw-mast-sso-target-cn">
+								<p class="dw-mf-perm-box">
+									<input id="perm_mf" name="perm_name_mf" type="checkbox"><label for="perm_mf"> 保持登录。</label>
+								</p>
+							</div>					
+							<div id="dw-mast-sso-terms">
+								<p class="dw-mast-sso-terms-cn">单击提交则表示您同意developerWorks 的条款和条件。 <a href="http://www.ibm.com/developerworks/community/terms?lang=zh">查看条款和条件</a>.</p>
+									</div>
+							<div>
+								<input class="dw-mf-submit-btn-cn" name="ibm_submit_name_mf" value="提交" onclick="dwsi.siInst.signin(&#39;mf&#39;);return false;" type="submit">
+							</div>
+						</form>
+					</div>
+					<div id="dw-mast-sso-update">
+						<div id="dw-mast-sso-update-id">
+							<ul>
+								<li><a href="http://www.ibm.com/developerworks/cn/java/l-console/#" onclick="(function ()
+								    {window.location=&#39;//www.ibm.com/developerworks/dwwi/DWAuthRouter?m=reg&amp;lang=zh_CN&amp;d=&#39;+encodeURIComponent(location.href);})();">需要一个 IBM ID？</a></li>
+								<li><a href="http://www.ibm.com/developerworks/dwwi/jsp/WSHelp.jsp?lang=zh_CN">忘记 IBM ID？</a></li>
+							</ul>
+						</div>
+						<div id="dw-mast-sso-update-pw">
+							<ul class="dw-mf-pwupdate">
+								<li><a href="http://www.ibm.com/developerworks/cn/java/l-console/#" onclick="(function ()
+								    {window.location=&#39;https://www.ibm.com/account/profile?page=forgot&amp;lang=zh_CN&amp;appname=ibm&amp;required=null&amp;d=&#39;+encodeURIComponent(dwsi.siInst.getAuthUrl())+&#39;%3Fm%3Dloginpage%26lang%3Den_US%26d%3D&#39;+encodeURIComponent(location.href);})();">忘记密码？</a></li>
+								<li><a href="http://www.ibm.com/developerworks/cn/java/l-console/#" onclick="(function ()
+								    {window.location=&#39;https://www.ibm.com/account/profile?page=chpw&amp;lang=zh_CN&amp;appname=ibm&amp;required=null&amp;d=&#39;+encodeURIComponent(location.href);})();">更改您的密码</a></li>
+							</ul>
+						</div>
+					</div>
+					<div id="dw-mast-sso-text">
+						<p>这是您第一次登陆到
+						    developerWorks，已经自动为您创建了您的概要文件。 <strong>选择您概要文件中可以公开的信息的信息（如姓名、国家/地区，以及公司），这些信息同时也会与您所发布的内容相关联。 </strong>您可以随时更新您的 IBM 账号。</p>
+						<p class="dw-mf-secure-cn">所有提交的信息确保安全。</p>
+					</div>
+				</div>
+				<div id="dw-mast-dname" class="dw-mf-hide">
+					<p>当您初次登录到 developerWorks 时，将会为您创建一份概要信息，您需要指定一个昵称。您的昵称将和您在 developerWorks 发布的内容显示在一起。</p><p><strong>昵称长度在 3 至 31 个字符之间</strong>。 您的昵称在 developerWorks 社区中必须是唯一的，并且出于隐私保护的原因，不能是您的电子邮件地址。</p>
+					<div id="signin_dname_error_mf" class="no-display"></div>
+					<div id="dw-mast-dname-form" class="dw-mast-dname-form-cn">
+						<form id="dForm_mf" action="" method="post" name="dForm_name_mf" onsubmit="return false;">
+							<div id="dw-mast-dname-mf">
+								<label for="dname_mf">昵称：</label>
+								<input id="dname_mf" name="dname_name_mf" maxlength="31" size="25" value="" onkeypress="dwsi.siInst.handleEP(event,this.form,&#39;mf&#39;);" type="text">
+							</div>
+							<div id="dw-mast-dname-terms">
+								<p class="dw-mast-dname-terms-cn">单击<strong>提交</strong>则表示您同意developerWorks
+								    的条款和条件。 <a href="http://www.ibm.com/developerworks/community/terms?lang=zh">查看条款和条件</a>.</p>
+									</div>
+							<div>
+								<input class="dw-mf-submit-btn-cn" name="dname_submit_name_mf" value="提交" onclick="dwsi.siInst.signin(&#39;mf&#39;);return false;" type="submit">
+							</div>
+						</form>								
+					</div>
+					<div id="dw-mast-dname-secure">
+						<p class="dw-mf-secure-cn">所有提交的信息确保安全。</p>
+					</div>
+				</div>
+				<div id="dw-mast-auth" class="dw-mf-hide">
+					<div>
+						<h2>developerWorks 社区:</h2>
+                		<ul>
+							<li><a id="dw-mast-top-0-0" href="http://www.ibm.com/developerworks/community/homepage?lang=zh">我的首页</a></li>						    
+							<li><a href="http://www.ibm.com/developerworks/community/profiles/html/myProfileView.do?lang=zh">我的概要信息</a></li>
+							<li><a href="http://www.ibm.com/developerworks/community/groups/service/html/mycommunities?lang=zh">我的社区</a></li>
+			                 <li><a href="http://www.ibm.com/developerworks/community/news/?lang=zh">设置</a></li>
+										    
+						</ul>     
+					</div>
+					
+					<div class="dw-mast-more">
+						<ul class="ibm-link-list">
+							<li><a class="dw-more-link" href="http://www.ibm.com/developerworks/cn/java/l-console/#" onclick="dwsi.siInst.signOut(); return false;"><strong>退出</strong></a></li>
+						</ul>
+					</div>
+				</div>								
+			</div>		
+		</div></div><div class="ibm-columns" dojoattachpoint="containerNode" role="dialog" id="ibmweb_ribbonSlide_1" widgetid="ibmweb_ribbonSlide_1" aria-labelledby="ibm-rib-menu-1"><h2 class="ibm-access" id="ibm-rib-menu-1">中文</h2><div id="ibmweb_ribbonItemAbstract_1" class="dw-mast-columns" role="group" tabindex="0" widgetid="ibmweb_ribbonItemAbstract_1">
+			<div class="dw-mast-col-2-1">
+				<h2>选择语言：</h2>
+				<ul>
+					<li><a id="dw-mast-top-1-0" href="http://www.ibm.com/developerworks/" lang="en">English</a></li>
+					<li><a href="http://www.ibm.com/developerworks/cn/">中文</a></li>
+					<li><a href="http://www.ibm.com/developerworks/jp/" lang="ja">日本語</a></li>
+					<li><a href="http://www.ibm.com/developerworks/ru/" lang="ru">Русский</a></li>
+				</ul>
+			</div>
+			<div class="dw-mast-col-2-2">
+				<ul>
+					<li><a href="http://www.ibm.com/developerworks/br/" lang="pt">Português (Brasil)</a></li>
+					<li><a href="http://www.ibm.com/developerworks/ssa/" lang="es">Español</a></li>
+					<li><a href="http://www.ibm.com/developerworks/vn/" lang="vi">Việt</a></li>
+				</ul>
+			</div>
+		</div></div><div class="ibm-columns" dojoattachpoint="containerNode" role="dialog" id="ibmweb_ribbonSlide_2" widgetid="ibmweb_ribbonSlide_2" aria-labelledby="ibm-rib-menu-2"><h2 class="ibm-access" id="ibm-rib-menu-2">IBM</h2><div id="ibmweb_ribbonItemAbstract_2" class="dw-mast-columns" role="group" tabindex="0" widgetid="ibmweb_ribbonItemAbstract_2">
+			<div class="dw-mast-col-2-1">
+				<ul>
+					<li><a id="dw-mast-top-3-0" href="http://www.ibm.com/cn/zh/">IBM 主页</a></li>
+					<li><a href="http://www.ibm.com/solutions/cn/zh/">解决方案</a></li>
+					<li><a href="http://www.ibm.com/software/cn/">软件</a></li>
+				</ul>
+			</div>
+			<div class="dw-mast-col-2-2 dw-mast-ibm">
+				<ul>
+							<li><a href="http://www.ibm.com/support/cn/zh/">支持门户</a></li>
+							<li><a href="http://www.ibm.com/support/documentation/cn/zh/">产品文档</a></li>
+							<li><a href="http://www.ibm.com/redbooks/">Redbooks（英文）</a></li>
+				</ul>
+			</div>	
+		</div></div></div></div><a class="ibm-ribbon-next" dojoattachpoint="scrollRightButton" role="button" href="http://www.ibm.com/developerworks/cn/java/l-console/#" style="margin-top: -12px;" title="下一个">下一个</a><div class="ibm-mm-close"><span tabindex="0" aria-label="关闭" role="button" title="关闭"></span></div></div></div>
+		
+    <!-- BOTTOM ROW -->
+	<div id="ibm-universal-nav-dw" aria-label="Site map">
+		<ul id="ibm-unav-links-dw">
+			<li id="ibm-unav-home-dwlogo">
+				<a href="http://www.ibm.com/developerworks/cn/"><img src="./在Java程序中截获控制台输出_files/dwn-dw-wordmark.png" width="225" height="28" alt="developerWorks®"></a>
+			</li>
+		</ul>
+		<ul id="ibm-menu-links-dw" class="ibm-menu-links-dw-cn" role="toolbar" aria-label="Site map">
+			<li id="dw-mast-nav-0" role="presentation"><a href="http://www.ibm.com/developerworks/cn/topics/" role="button" tabindex="0">技术主题</a></li>
+			<li id="dw-mast-nav-1" role="presentation"><a href="http://www.ibm.com/developerworks/cn/downloads/" role="button">软件下载</a></li>
+			<li id="dw-mast-nav-2" role="presentation"><a href="http://www.ibm.com/developerworks/community/?lang=zh" role="button">社区</a></li>
+			<li id="dw-mast-nav-3" role="presentation"><a href="https://www.ibm.com/developerworks/community/groups/service/html/communityview?communityUuid=6d7f9e5d-5f89-4767-a006-a81b8d186370&lang=zh" role="button">技术讲座</a></li>
+		</ul>
+		<form id="ibm-search-form" action="http://www.ibm.com/search/csass/search/" method="get" name="form1">
+			<input type="hidden" name="sn" value="dw">
+			<input type="hidden" name="lang" value="zh">
+			<input type="hidden" name="cc" value="CN">
+			<input type="hidden" name="en" value="utf">
+			<input type="hidden" name="hpp" value="20">
+			<input type="hidden" name="dws" value="cndw">
+		    <input type="hidden" name="lo" value="zh">
+			<p>
+				<label for="q"><img alt="搜索 developerWorks" height="1" width="1" src="./在Java程序中截获控制台输出_files/c.gif"></label>
+				<input type="text" value="搜索 developerWorks" name="q" maxlength="100" id="q">
+				<input type="submit" id="ibm-search" class="ibm-btn-search ibm-btn-search-cn" name="Search" value="搜索">
+			</p>
+		</form>
+	</div>
+    
+	<!-- BOTTOM ROW SLIDER -->
+	<div id="ibm-common-menu-dw" style="display: none;">
+		<!-- Technical topics category -->
+		
+		<!-- Evaluation software category -->
+		
+		<!-- Community category -->
+	    
+		
+		<!-- Events category -->
+		
+	<div class="ibm-container-body" dojoattachpoint="ribbonContainer" id="ibmweb_ribbon_1" widgetid="ibmweb_ribbon_1"><a class="ibm-ribbon-prev ibm-disabled" dojoattachpoint="scrollLeftButton" role="button" href="http://www.ibm.com/developerworks/cn/java/l-console/#" style="margin-top: -12px;" title="上一个">上一个</a><div class="ibm-ribbon-pane" dojoattachpoint="scrollContainer" style="height: 0px;"><div class="ibm-ribbon-section" dojoattachpoint="scrollableNode" role="listbox" id="ibmweb_ribbon_1_scrollable"><div class="ibm-columns" dojoattachpoint="containerNode" role="dialog" id="ibmweb_ribbonSlide_3" widgetid="ibmweb_ribbonSlide_3" aria-labelledby="ibm-rib-head-0"><h2 class="ibm-access" id="ibm-rib-head-0">技术主题</h2><div id="ibmweb_ribbonItemAbstract_3" class="dw-mast-columns" role="group" tabindex="0" widgetid="ibmweb_ribbonItemAbstract_3">
+			<div class="dw-mast-col-5-1">
+				<h2><a href="http://www.ibm.com/developerworks/cn/topics/">技术主题</a></h2>
+				<ul role="menu">
+					
+					<li role="menuitem"><a id="dw-mast-nav-0-0" href="http://www.ibm.com/developerworks/cn/aix/">AIX and UNIX</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/bigdata/">Big data</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/cloud/">Cloud computing</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/agile/">DevOps</a></li>
+					
+				</ul>     
+			</div>
+			<div class="dw-mast-col-5-2">
+				<ul role="menu">
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/ibmi/">IBM i</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/data/">Information
+					    management</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/java/">Java technology</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/linux/">Linux</a></li>
+					
+				</ul>
+			</div>
+			<div class="dw-mast-col-5-3">
+				<ul role="menu">
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/lotus/">Lotus</a></li> 
+				    <li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/mobile/">Mobile development</a></li> 
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/opensource/">Open source</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/rational/">Rational</a></li>
+					<!--<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/webservices/">SOA and web services</a></li>-->
+					
+					
+
+				</ul>
+			</div>
+			<div class="dw-mast-col-5-4">
+				<ul role="menu">
+				<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/social/">Social Business</a></li>
+				<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/web/">Web development</a></li>
+				<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/websphere/">WebSphere</a></li>
+				<!--<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/xml/">XML</a></li>-->
+				</ul>
+			</div>
+			<div class="dw-mast-col-5-5">
+				<ul role="menu">
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/library/"><strong>文档库</strong></a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/products/"><strong>产品 A - Z</strong></a></li>
+				</ul>
+			</div>  
+		</div></div><div class="ibm-columns" dojoattachpoint="containerNode" role="dialog" id="ibmweb_ribbonSlide_4" widgetid="ibmweb_ribbonSlide_4" aria-labelledby="ibm-rib-head-1"><h2 class="ibm-access" id="ibm-rib-head-1">软件下载</h2><div id="ibmweb_ribbonItemAbstract_4" class="dw-mast-columns" role="document" tabindex="-1" widgetid="ibmweb_ribbonItemAbstract_4">
+			<div class="dw-mast-col-2-1">
+				<h2><a id="dw-mast-nav-1-0" href="http://www.ibm.com/developerworks/cn/downloads/" tabindex="-1">软件下载</a></h2>
+				<ul role="menu">
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/downloads/#ba" tabindex="-1">Big data</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/downloads/#data" tabindex="-1">Information management</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/downloads/#lotus" tabindex="-1">Lotus</a></li>
+					</ul>            
+			</div>
+			<div class="dw-mast-col-2-2">
+				<ul role="menu">
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/downloads/#rational" tabindex="-1">Rational</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/downloads/#tivoli" tabindex="-1">Tivoli</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/downloads/#websphere" tabindex="-1">WebSphere</a></li>
+				</ul>            
+            </div>
+		</div></div><div class="ibm-columns" dojoattachpoint="containerNode" role="dialog" id="ibmweb_ribbonSlide_5" widgetid="ibmweb_ribbonSlide_5" aria-labelledby="ibm-rib-head-2"><h2 class="ibm-access" id="ibm-rib-head-2">社区</h2><div id="ibmweb_ribbonItemAbstract_5" class="dw-mast-columns" role="document" tabindex="-1" widgetid="ibmweb_ribbonItemAbstract_5">
+			<div class="dw-mast-col-2-1">
+				<h2><a id="dw-mast-nav-2-0" href="http://www.ibm.com/developerworks/community/?lang=zh" tabindex="-1">社区</a></h2>
+				<ul role="menu">
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/community/homepage/?lang=zh" tabindex="-1">我的首页</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/community/profiles/?lang=zh" tabindex="-1">概要信息</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/community/groups/?lang=zh" tabindex="-1">群组</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/community/blogs/?lang=zh" tabindex="-1">博客</a></li>
+
+				</ul>     
+			</div>
+			<div class="dw-mast-col-2-2">
+				<ul role="menu">
+				<li role="menuitem"><a href="http://www.ibm.com/developerworks/community/forums/?lang=zh" tabindex="-1">论坛</a></li>
+				<li role="menuitem"><a href="http://www.ibm.com/developerworks/community/wikis?lang=zh" tabindex="-1">Wiki</a></li>
+				<li role="menuitem"><a href="http://www.ibm.com/developerworks/community/activities/?lang=zh" tabindex="-1">活动</a></li>
+				</ul>
+			</div>
+
+		</div></div><div class="ibm-columns" dojoattachpoint="containerNode" role="dialog" id="ibmweb_ribbonSlide_6" widgetid="ibmweb_ribbonSlide_6" aria-labelledby="ibm-rib-head-3"><h2 class="ibm-access" id="ibm-rib-head-3">技术讲座</h2><div id="ibmweb_ribbonItemAbstract_6" class="dw-mast-columns" role="document" tabindex="-1" widgetid="ibmweb_ribbonItemAbstract_6">
+			<div class="dw-mast-col-1-1">
+				<h2><a id="dw-mast-nav-3-0" href="https://www.ibm.com/developerworks/community/groups/service/html/communityview?communityUuid=6d7f9e5d-5f89-4767-a006-a81b8d186370&lang=zh" tabindex="-1">技术讲座</a></h2>
+					<ul role="menu">
+						<li role="menuitem"><a href="https://www.ibm.com/developerworks/community/groups/service/html/communityview?communityUuid=6d7f9e5d-5f89-4767-a006-a81b8d186370&lang=zh" tabindex="-1">技术讲座</a></li>
+						<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/swi/" tabindex="-1">多媒体课堂</a></li>
+						<li role="menuitem"><a href="http://www.ibm.com/developerworks/find/webcasts/" tabindex="-1">网络广播（英文）</a></li>
+					    <li role="menuitem"><a href="http://www.ibm.com/developerworks/find/events/" tabindex="-1">查找活动（技术讲座，网络广播，会议等）（英文）</a></li> 
+				</ul>            
+			</div>
+		</div></div></div></div><a class="ibm-ribbon-next" dojoattachpoint="scrollRightButton" role="button" href="http://www.ibm.com/developerworks/cn/java/l-console/#" style="margin-top: -12px;" title="下一个">下一个</a><div class="ibm-mm-close"><span tabindex="0" aria-label="关闭" role="button" title="关闭"></span></div></div></div>
+	
+<div id="dw-masthead-top"><div id="ibm-social-tools" style="display: block;" role="navigation" aria-label="社交工具"><ul role="toolbar"><li><a class="ibm-share-print" title="打印本页面" href="http://www.ibm.com/developerworks/cn/java/l-console/#" rel="print" dojoattrid="0" role="button" tabindex="0">打印本页面</a></li><li><a class="ibm-share-email" title="用电子邮件发送本页面" href="http://www.ibm.com/developerworks/cn/java/l-console/#" rel="email" dojoattrid="1" role="button" tabindex="-1">用电子邮件发送本页面</a></li><li></li><li><a class="ibm-share-weibo" tabindex="-1" role="button" dojoattrid="2" rel="新浪微博" title="新浪微博" href="http://service.weibo.com/share/share.php?title=%E5%9C%A8Java%E7%A8%8B%E5%BA%8F%E4%B8%AD%E6%88%AA%E8%8E%B7%E6%8E%A7%E5%88%B6%E5%8F%B0%E8%BE%93%E5%87%BA&url=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fl-console%2F&language=zh_cn" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://service.weibo.com/share/share.php?title=%{TITLE}&amp;url=%{URL}&amp;language=zh_cn&#39;});">新浪微博</a></li><li><a class="ibm-share-renren" tabindex="-1" role="button" dojoattrid="3" rel="人人网" title="人人网" href="http://share.renren.com/share/buttonshare?title=%E5%9C%A8Java%E7%A8%8B%E5%BA%8F%E4%B8%AD%E6%88%AA%E8%8E%B7%E6%8E%A7%E5%88%B6%E5%8F%B0%E8%BE%93%E5%87%BA&link=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fl-console%2F" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://share.renren.com/share/buttonshare?title=%{TITLE}&amp;link=%{URL}&#39;});">人人网</a></li><li><a class="dwcn-tencent-link" tabindex="-1" role="button" dojoattrid="4" rel="腾讯微博" title="腾讯微博" href="http://v.t.qq.com/share/share.php?title=%E5%9C%A8Java%E7%A8%8B%E5%BA%8F%E4%B8%AD%E6%88%AA%E8%8E%B7%E6%8E%A7%E5%88%B6%E5%8F%B0%E8%BE%93%E5%87%BA&url=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fl-console%2F" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://v.t.qq.com/share/share.php?title=%{TITLE}&amp;url=%{URL}&#39;});">腾讯微博</a></li><li><a class="dwcn-sohu-link" tabindex="-1" role="button" dojoattrid="5" rel="搜狐微博" title="搜狐微博" href="http://t.sohu.com/third/post.jsp?title=%E5%9C%A8Java%E7%A8%8B%E5%BA%8F%E4%B8%AD%E6%88%AA%E8%8E%B7%E6%8E%A7%E5%88%B6%E5%8F%B0%E8%BE%93%E5%87%BA%20&link=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fl-console%2F" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://t.sohu.com/third/post.jsp?title=%{TITLE}%20&amp;link=%{URL}&#39;});">搜狐微博</a></li><li><a class="dwcn-netease-link" tabindex="-1" role="button" dojoattrid="6" rel="网易微博" title="网易微博" href="http://t.163.com/article/user/checkLogin.do?info=%E5%9C%A8Java%E7%A8%8B%E5%BA%8F%E4%B8%AD%E6%88%AA%E8%8E%B7%E6%8E%A7%E5%88%B6%E5%8F%B0%E8%BE%93%E5%87%BA%20http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fl-console%2F" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://t.163.com/article/user/checkLogin.do?info=%{TITLE}%20%{URL}&#39;});">网易微博</a></li><li><a class="ibm-share-digg" title="Digg" href="http://digg.com/submit?phase=2&url=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fl-console%2F&title=%E5%9C%A8Java%E7%A8%8B%E5%BA%8F%E4%B8%AD%E6%88%AA%E8%8E%B7%E6%8E%A7%E5%88%B6%E5%8F%B0%E8%BE%93%E5%87%BA" rel="digg" dojoattrid="7" role="button" tabindex="-1" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://digg.com/submit?phase=2&amp;url=%{URL}&amp;title=%{TITLE}&#39;});">Digg</a></li><li><a class="ibm-share-facebook" title="Facebook" href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fl-console%2F&t=%E5%9C%A8Java%E7%A8%8B%E5%BA%8F%E4%B8%AD%E6%88%AA%E8%8E%B7%E6%8E%A7%E5%88%B6%E5%8F%B0%E8%BE%93%E5%87%BA" rel="facebook" dojoattrid="8" role="button" tabindex="-1" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://www.facebook.com/sharer.php?u=%{URL}&amp;t=%{TITLE}&#39;});">Facebook</a></li><li><a class="ibm-share-twitter" title="Twitter" href="http://twitter.com/?status=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fl-console%2F%20-%20%E5%9C%A8Java%E7%A8%8B%E5%BA%8F%E4%B8%AD%E6%88%AA%E8%8E%B7%E6%8E%A7%E5%88%B6%E5%8F%B0%E8%BE%93%E5%87%BA" rel="twitter" dojoattrid="9" role="button" tabindex="-1" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://twitter.com/?status=%{URL}%20-%20%{TITLE}&#39;});">Twitter</a></li><li><a class="ibm-share-delicious" title="Delicious" href="http://delicious.com/post?url=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fl-console%2F&title=%E5%9C%A8Java%E7%A8%8B%E5%BA%8F%E4%B8%AD%E6%88%AA%E8%8E%B7%E6%8E%A7%E5%88%B6%E5%8F%B0%E8%BE%93%E5%87%BA" rel="delicious" dojoattrid="10" role="button" tabindex="-1" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://delicious.com/post?url=%{URL}&amp;title=%{TITLE}&#39;});">Delicious</a></li><li><a class="ibm-share-linkedin" title="Linked In" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fl-console%2F&title=%E5%9C%A8Java%E7%A8%8B%E5%BA%8F%E4%B8%AD%E6%88%AA%E8%8E%B7%E6%8E%A7%E5%88%B6%E5%8F%B0%E8%BE%93%E5%87%BA" rel="linkedin" dojoattrid="11" role="button" tabindex="-1" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://www.linkedin.com/shareArticle?mini=true&amp;url=%{URL}&amp;title=%{TITLE}&#39;});">Linked In</a></li></ul></div></div></div>
+<div id="fdiv" class="ibm-access"></div>
+    <!-- MASTHEAD_END -->
+<!-- MASTHEAD_END -->
+
+<!-- LAYOUT -->
+<!-- LEADSPACE_BEGIN --> 
+<div id="ibm-access-cntr" role="main"><div id="ibm-leadspace-head">
+	<!-- LEADSPACE_BODY_BEGIN --> 
+	<div id="ibm-leadspace-body">
+		<!-- Navigation_Trail_BEGIN -->
+      <ul id="ibm-navigation-trail" role="navigation" aria-label="Bread Crumbs"><li><a href="http://www.ibm.com/developerworks/cn/">developerWorks 中国</a></li><li><a href="http://www.ibm.com/developerworks/cn/topics/">技术主题</a></li><li><a href="http://www.ibm.com/developerworks/cn/java/">Java technology</a></li><li><a href="http://www.ibm.com/developerworks/cn/views/java/libraryview.jsp">文档库</a></li></ul>
+		<!-- END_Navigation_Trail -->
+			<!-- Title_Subtitle -->
+			<h1>在Java程序中截获控制台输出</h1>
+	</div>
+	<!-- LEADSPACE_BODY_END --> 
+	<!-- SUMMARY_BEGIN -->
+	<div id="dw-summary-area" class="dw-summary-columns">
+		<div class="ibm-col-6-4">
+		<p>在Java开发中，控制台输出仍是一个重要的工具，但默认的控制台输出有着各种各样的局限。本文介绍如何用Java管道流截取控制台输出，分析管道流应用中应该注意的问题，提供了截取Java程序和非Java程序控制台输出的实例。</p>
+		<p class="ibm-no-print ibm-ind-link">
+
+			
+			<span id="nCmts"><span>0</span><img class="dw-cmts-arrow" alt="" src="./在Java程序中截获控制台输出_files/dw-cmts-arrow.png" height="7" width="7"> <a href="http://www.ibm.com/developerworks/cn/java/l-console/#icomments" class="dw-cmt-link">评论：</a></span>
+		<span id="relatedDownloads"></span></p>
+		</div>
+		<div class="ibm-col-6-2 dw-toc-margin">
+			<p class="dw-summary-author"><a href="http://www.ibm.com/developerworks/cn/java/l-console/#authorN10017" class="ibm-popup-link" onclick="ibmweb.overlay.show(&#39;authorN10017&#39;,this);return false;">俞良松</a> (<a href="mailto:javaman@163.net?subject=%E5%9C%A8Java%E7%A8%8B%E5%BA%8F%E4%B8%AD%E6%88%AA%E8%8E%B7%E6%8E%A7%E5%88%B6%E5%8F%B0%E8%BE%93%E5%87%BA&cc=javaman@163.net">javaman@163.net</a>), 软件工程师, 独立顾问和自由撰稿人</p>
+<div id="authorN10017" class="ibm-common-overlay"><div class="ibm-head"><p><a href="http://www.ibm.com/developerworks/cn/java/l-console/#close" class="ibm-common-overlay-close">关闭 [x]</a></p></div><div class="ibm-body"><div class="ibm-main"><div class="ibm-title"><!--this is where the h2 usually goes--></div><div class="ibm-container ibm-alternate"><div class="ibm-container-body">
+<p><!--.-->
+俞良松，软件工程师，独立顾问和自由撰稿人。最初从事PB和Oracle开发，现主要兴趣在于Internet开发。您可以通过
+        <a href="mailto:javaman@163.net?cc=javaman@163.net">javaman@163.net</a>
+和我联系。
+      </p><br><br></div></div></div></div><div class="ibm-footer"><!----></div></div>
+			<p class="dw-summary-date">2001 年 10 月 16 日</p>
+			
+
+
+			<div aria-hidden="true" class="ibm-container" id="dw-toc"><div class="ibm-container-body"><ul class="ibm-twisty"><li><a href="http://www.ibm.com/developerworks/cn/java/l-console/#toggle" class="ibm-twisty-trigger ibm-twisty-trigger-closed"><img src="./在Java程序中截获控制台输出_files/c(1).gif" alt="+"></a><span class="ibm-twisty-head">内容</span><div class="ibm-twisty-body" style="display: none;"><ul style="font-size:0.8em" class="ibm-link-list">
+<li><a class="ibm-anchor-down-em-link" href="http://www.ibm.com/developerworks/cn/java/l-console/#1">一、Java管道流</a></li>
+<li><a class="ibm-anchor-down-em-link" href="http://www.ibm.com/developerworks/cn/java/l-console/#2">二、捕获Java控制台输出</a></li>
+<li><a class="ibm-anchor-down-em-link" href="http://www.ibm.com/developerworks/cn/java/l-console/#3">三、捕获其他程序的控制台输出</a></li>
+<li><a class="ibm-anchor-down-em-link" href="http://www.ibm.com/developerworks/cn/java/l-console/#resources">参考资料 </a></li>
+<li><a class="ibm-anchor-down-em-link" href="http://www.ibm.com/developerworks/cn/java/l-console/#icomments">评论</a></li></ul></div></li></ul></div></div>
+		</div>
+	</div>
+	<!-- SUMMARY_END -->
+</div><div id="ibm-pcon">
+
+<!-- BEGIN_IBM-CONTENT -->
+<div id="ibm-content">
+
+<!-- BEGIN_IBM-CONTENT-BODY -->
+<div id="ibm-content-body">
+
+<!-- BEGIN_IBM-CONTENT-MAIN -->
+<div id="ibm-content-main">
+
+<!-- 1_1_COLUMN_BEGIN -->
+<div class="ibm-columns">
+<div class="ibm-col-1-1">
+
+<p>
+即使在图形用户界面占统治地位的今天，控制台输出仍旧在Java程序中占有重要地位。控制台不仅是Java程序默认的堆栈跟踪和错误信息输出窗口，而且还是一种实用的调试工具（特别是对习惯于使用println()的人来说）。然而，控制台窗口有着许多局限。例如在Windows
+9x平台上，DOS控制台只能容纳50行输出。如果Java程序一次性向控制台输出大量内容，要查看这些内容就很困难了。</p><p>
+对于使用javaw这个启动程序的开发者来说，控制台窗口尤其宝贵。因为用javaw启动java程序时，根本不会有控制台窗口出现。如果程序遇到了问题并抛出异常，根本无法查看Java运行时环境写入到System.out或System.err的调用堆栈跟踪信息。为了捕获堆栈信息，一些人采取了用try/catch()块封装main()的方式，但这种方式不一定总是有效，在Java运行时的某些时刻，一些描述性错误信息会在抛出异常之前被写入System.out和System.err；除非能够监测这两个控制台流，否则这些信息就无法看到。</p><p>
+因此，有些时候检查Java运行时环境（或第三方程序）写入到控制台流的数据并采取合适的操作是十分必要的。本文讨论的主题之一就是创建这样一个输入流，从这个输入流中可以读入以前写入Java控制台流（或任何其他程序的输出流）的数据。我们可以想象写入到输出流的数据立即以输入的形式“回流”到了Java程序。</p><p>
+本文的目标是设计一个基于Swing的文本窗口显示控制台输出。在此期间，我们还将讨论一些和Java管道流（PipedInputStream和PipedOutputStream）有关的重要注意事项。图一显示了用来截取和显示控制台文本输出的Java程序，用户界面的核心是一个JTextArea。最后，我们还要创建一个能够捕获和显示其他程序（可以是非Java的程序）控制台输出的简单程序。</p><h5 id="N10036">图一：多线程的控制台输出截取程序</h5><img alt="图一：多线程的控制台输出截取程序" src="./在Java程序中截获控制台输出_files/JavaConsoleOutput_1.gif" width="300"><h2 id="1">一、Java管道流</h2><p>
+要在文本框中显示控制台输出，我们必须用某种方法“截取”控制台流。换句话说，我们要有一种高效地读取写入到System.out和System.err所有内容的方法。如果你熟悉Java的管道流PipedInputStream和PipedOutputStream，就会相信我们已经拥有最有效的工具。</p><p>
+写入到PipedOutputStream输出流的数据可以从对应的PipedInputStream输入流读取。Java的管道流极大地方便了我们截取控制台输出。Listing
+1显示了一种非常简单的截取控制台输出方案。</p><div class="codesection"><pre class="displaycode">【Listing 1：用管道流截取控制台输出】
+PipedInputStream pipedIS = new PipedInputStream();
+PipedOutputStream pipedOS = new PipedOutputStream();
+try {
+   pipedOS.connect(pipedIS);
+}
+catch(IOException e) {
+   System.err.println("连接失败");
+   System.exit(1);
+}
+PrintStream ps = new PrintStream(pipedOS);
+System.setOut(ps);
+System.setErr(ps);</pre></div><p>
+可以看到，这里的代码极其简单。我们只是建立了一个PipedInputStream，把它设置为所有写入控制台流的数据的最终目的地。所有写入到控制台流的数据都被转到PipedOutputStream，这样，从相应的PipedInputStream读取就可以迅速地截获所有写入控制台流的数据。接下来的事情似乎只剩下在Swing
+JTextArea中显示从pipedIS流读取的数据，得到一个能够在文本框中显示控制台输出的程序。遗憾的是，在使用Java管道流时有一些重要的注意事项。只有认真对待所有这些注意事项才能保证Listing
+1的代码稳定地运行。下面我们来看第一个注意事项。</p><a id="1-1"></a><p><strong>1.1 注意事项一</strong><br>
+PipedInputStream运用的是一个1024字节固定大小的循环缓冲区。写入PipedOutputStream的数据实际上保存到对应的PipedInputStream的内部缓冲区。从PipedInputStream执行读操作时，读取的数据实际上来自这个内部缓冲区。如果对应的PipedInputStream输入缓冲区已满，任何企图写入PipedOutputStream的线程都将被阻塞。而且这个写操作线程将一直阻塞，直至出现读取PipedInputStream的操作从缓冲区删除数据。
+      </p><p>
+这意味着，向PipedOutputStream写数据的线程不应该是负责从对应PipedInputStream读取数据的唯一线程。从图二可以清楚地看出这里的问题所在：假设线程t是负责从PipedInputStream读取数据的唯一线程；另外，假定t企图在一次对PipedOutputStream的write()方法的调用中向对应的PipedOutputStream写入2000字节的数据。在t线程阻塞之前，它最多能够写入1024字节的数据（PipedInputStream内部缓冲区的大小）。然而，一旦t被阻塞，读取PipedInputStream的操作就再也不会出现，因为t是唯一读取PipedInputStream的线程。这样，t线程已经完全被阻塞，同时，所有其他试图向PipedOutputStream写入数据的线程也将遇到同样的情形。</p><h5 id="N1005A">图二：管道流工作过程</h5><img alt="图二：管道流工作过程" src="./在Java程序中截获控制台输出_files/JavaConsoleOutput_2.gif" width="294"><p>
+这并不意味着在一次write()调用中不能写入多于1024字节的数据。但应当保证，在写入数据的同时，有另一个线程从PipedInputStream读取数据。</p><p>Listing
+2示范了这个问题。这个程序用一个线程交替地读取PipedInputStream和写入PipedOutputStream。每次调用write()向PipedInputStream的缓冲区写入20字节，每次调用read()只从缓冲区读取并删除10个字节。内部缓冲区最终会被写满，导致写操作阻塞。由于我们用同一个线程执行读、写操作，一旦写操作被阻塞，就不能再从PipedInputStream读取数据。</p><div class="codesection"><pre class="displaycode">【Listing 2：用同一个线程执行读/写操作导致线程阻塞】
+import java.io.*;
+public class Listing2 {
+    static PipedInputStream pipedIS = new PipedInputStream();
+    static PipedOutputStream pipedOS = 
+        new PipedOutputStream();
+    public static void main(String[] a){
+        try {
+            pipedIS.connect(pipedOS);
+        }
+        catch(IOException e) {
+            System.err.println("连接失败");
+                System.exit(1);
+            }
+        byte[] inArray    = new byte[10];
+        byte[] outArray = new byte[20];
+        int bytesRead = 0;
+        try {
+            // 向pipedOS发送20字节数据
+            pipedOS.write(outArray, 0, 20);
+            System.out.println("     已发送20字节...");
+           // 在每一次循环迭代中，读入10字节
+           // 发送20字节
+            bytesRead = pipedIS.read(inArray, 0, 10);
+            int i=0;
+            while(bytesRead != -1) {
+                pipedOS.write(outArray, 0, 20);
+                System.out.println("     已发送20字节..."+i);
+                i++;
+                bytesRead = pipedIS.read(inArray, 0, 10);
+            }
+        }
+        catch(IOException e) {
+                System.err.println("读取pipedIS时出现错误: " + e);
+                System.exit(1);
+        }
+    } // main()
+}</pre></div><p>只要把读/写操作分开到不同的线程，Listing
+2的问题就可以轻松地解决。Listing 3是Listing
+2经过修改后的版本，它在一个单独的线程中执行写入PipedOutputStream的操作（和读取线程不同的线程）。为证明一次写入的数据可以超过1024字节，我们让写操作线程每次调用PipedOutputStream的write()方法时写入2000字节。那么，在startWriterThread()方法中创建的线程是否会阻塞呢？按照Java运行时线程调度机制，它当然会阻塞。写操作在阻塞之前实际上最多只能写入1024字节的有效载荷（即PipedInputStream缓冲区的大小）。但这并不会成为问题，因为主线程（main）很快就会从PipedInputStream的循环缓冲区读取数据，空出缓冲区空间。最终，写操作线程会从上一次中止的地方重新开始，写入2000字节有效载荷中的剩余部分。</p><div class="codesection"><pre class="displaycode">【Listing 3：把读/写操作分开到不同的线程】
+import java.io.*;
+public class Listing3 {
+    static PipedInputStream pipedIS =
+        new PipedInputStream();
+    static PipedOutputStream pipedOS =
+        new PipedOutputStream();
+    public static void main(String[] args) {
+        try {
+            pipedIS.connect(pipedOS);
+        }
+        catch(IOException e) {
+            System.err.println("连接失败");
+            System.exit(1);
+        }
+        byte[] inArray = new byte[10];
+        int bytesRead = 0;
+        // 启动写操作线程
+        startWriterThread();
+        try {
+            bytesRead = pipedIS.read(inArray, 0, 10);
+            while(bytesRead != -1) {
+                System.out.println("已经读取" +
+                    bytesRead + "字节...");
+                bytesRead = pipedIS.read(inArray, 0, 10);
+            }
+        }
+        catch(IOException e) {
+            System.err.println("读取输入错误.");
+            System.exit(1);
+        }
+    } // main()
+    // 创建一个独立的线程
+    // 执行写入PipedOutputStream的操作
+    private static void startWriterThread() {
+        new Thread(new Runnable() {
+            public void run() {
+                byte[] outArray = new byte[2000];
+                while(true) { // 无终止条件的循环
+                    try {
+                        // 在该线程阻塞之前，有最多1024字节的数据被写入
+                        pipedOS.write(outArray, 0, 2000);
+                    }
+                    catch(IOException e) {
+                        System.err.println("写操作错误");
+                        System.exit(1);
+                    }
+                    System.out.println("     已经发送2000字节...");
+                }
+            }
+        }).start();
+    } // startWriterThread()
+} // Listing3</pre></div><p>
+也许我们不能说这个问题是Java管道流设计上的缺陷，但在应用管道流时，它是一个必须密切注意的问题。下面我们来看看第二个更重要（更危险的）问题。</p><a id="1-2"></a><p><strong>1.2 注意事项二</strong><br>
+从PipedInputStream读取数据时，如果符合下面三个条件，就会出现IOException异常：
+      </p><ol><li>试图从PipedInputStream读取数据，</li><li>PipedInputStream的缓冲区为“空”（即不存在可读取的数据），</li><li>
+最后一个向PipedOutputStream写数据的线程不再活动（通过Thread.isAlive()检测）。</li></ol><p>
+这是一个很微妙的时刻，同时也是一个极其重要的时刻。假定有一个线程w向PipedOutputStream写入数据；另一个线程r从对应的PipedInputStream读取数据。下面一系列的事件将导致r线程在试图读取PipedInputStream时遇到IOException异常：</p><ol><li>w向PipedOutputStream写入数据。</li><li>w结束（w.isAlive()返回false）。</li><li>
+r从PipedInputStream读取w写入的数据，清空PipedInputStream的缓冲区。</li><li>
+r试图再次从PipedInputStream读取数据。这时PipedInputStream的缓冲区已经为空，而且w已经结束，从而导致在读操作执行时出现IOException异常。</li></ol><p>构造一个程序示范这个问题并不困难，只需从Listing
+3的startWriterThread()方法中，删除while(true)条件。这个改动阻止了执行写操作的方法循环执行，使得执行写操作的方法在一次写入操作之后就结束运行。如前所述，此时主线程试图读取PipedInputStraem时，就会遇到一个IOException异常。</p><p>
+这是一种比较少见的情况，而且不存在直接修正它的方法。请不要通过从管道流派生子类的方法修正该问题――在这里使用继承是完全不合适的。而且，如果Sun以后改变了管道流的实现方法，现在所作的修改将不再有效。</p><p>
+最后一个问题和第二个问题很相似，不同之处在于，它在读线程（而不是写线程）结束时产生IOException异常。</p><a id="1-3"></a><p><strong>1.3 注意事项三</strong><br>
+如果一个写操作在PipedOutputStream上执行，同时最近从对应PipedInputStream读取的线程已经不再活动（通过Thread.isAlive()检测），则写操作将抛出一个IOException异常。假定有两个线程w和r，w向PipedOutputStream写入数据，而r则从对应的PipedInputStream读取。下面一系列的事件将导致w线程在试图写入PipedOutputStream时遇到IOException异常：
+      </p><ol><li>写操作线程w已经创建，但r线程还不存在。</li><li>w向PipedOutputStream写入数据。</li><li>读线程r被创建，并从PipedInputStream读取数据。</li><li>r线程结束。</li><li>
+w企图向PipedOutputStream写入数据，发现r已经结束，抛出IOException异常。</li></ol><p>
+实际上，这个问题不象第二个问题那样棘手。和多个读线程/单个写线程的情况相比，也许在应用中有一个读线程（作为响应请求的服务器）和多个写线程（发出请求）的情况更为常见。</p><a id="1-4"></a><p><strong>1.4 解决问题</strong><br>
+要防止管道流前两个局限所带来的问题，方法之一是用一个ByteArrayOutputStream作为代理或替代PipedOutputStream。Listing
+4显示了一个LoopedStreams类，它用一个ByteArrayOutputStream提供和Java管道流类似的功能，但不会出现死锁和IOException异常。这个类的内部仍旧使用管道流，但隔离了本文介绍的前两个问题。我们先来看看这个类的公用方法（参见图3）。构造函数很简单，它连接管道流，然后调用startByteArrayReaderThread()方法（稍后再讨论该方法）。getOutputStream()方法返回一个OutputStream（具体地说，是一个ByteArrayOutputStream）用以替代PipedOutputStream。写入该OutputStream的数据最终将在getInputStream()方法返回的流中作为输入出现。和使用PipedOutputStream的情形不同，向ByteArrayOutputStream写入数据的线程的激活、写数据、结束不会带来负面效果。
+      </p><h5 id="N100B4">图三：ByteArrayOutputStream原理</h5><img alt="图三：ByteArrayOutputStream原理" src="./在Java程序中截获控制台输出_files/JavaConsoleOutput_3.gif" width="681"><div class="codesection"><pre class="displaycode">【Listing 4：防止管道流应用中出现的常见问题】
+import java.io.*;
+public class LoopedStreams {
+    private PipedOutputStream pipedOS = 
+        new PipedOutputStream();
+    private boolean keepRunning = true;
+    private ByteArrayOutputStream byteArrayOS =
+        new ByteArrayOutputStream() {
+        public void close() {
+            keepRunning = false;
+            try {
+                super.close();
+                pipedOS.close();
+            }
+            catch(IOException e) {
+                // 记录错误或其他处理
+                // 为简单计，此处我们直接结束
+                System.exit(1);
+            }
+        }
+    };
+    private PipedInputStream pipedIS = new PipedInputStream() {
+        public void close() {
+            keepRunning = false;
+            try    {
+                super.close();
+            }
+            catch(IOException e) {
+                // 记录错误或其他处理
+                // 为简单计，此处我们直接结束
+                System.exit(1);
+            }
+        }
+    };
+    public LoopedStreams() throws IOException {
+        pipedOS.connect(pipedIS);
+        startByteArrayReaderThread();
+    } // LoopedStreams()
+    public InputStream getInputStream() {
+        return pipedIS;
+    } // getInputStream()
+    public OutputStream getOutputStream() {
+        return byteArrayOS;
+    } // getOutputStream()
+    private void startByteArrayReaderThread() {
+        new Thread(new Runnable() {
+            public void run() {
+                while(keepRunning) {
+                    // 检查流里面的字节数
+                    if(byteArrayOS.size() &gt; 0) {
+                        byte[] buffer = null;
+                        synchronized(byteArrayOS) {
+                            buffer = byteArrayOS.toByteArray();
+                            byteArrayOS.reset(); // 清除缓冲区
+                        }
+                        try {
+                            // 把提取到的数据发送给PipedOutputStream
+                            pipedOS.write(buffer, 0, buffer.length);
+                        }
+                        catch(IOException e) {
+                            // 记录错误或其他处理
+                            // 为简单计，此处我们直接结束
+                            System.exit(1);
+                        }
+                    }
+                    else // 没有数据可用，线程进入睡眠状态
+                        try {
+                            // 每隔1秒查看ByteArrayOutputStream检查新数据
+                            Thread.sleep(1000);
+                        }
+                        catch(InterruptedException e) {}
+                    }
+             }
+        }).start();
+    } // startByteArrayReaderThread()
+} // LoopedStreams</pre></div><p>
+startByteArrayReaderThread()方法是整个类真正的关键所在。这个方法的目标很简单，就是创建一个定期地检查ByteArrayOutputStream缓冲区的线程。缓冲区中找到的所有数据都被提取到一个byte数组，然后写入到PipedOutputStream。由于PipedOutputStream对应的PipedInputStream由getInputStream()返回，从该输入流读取数据的线程都将读取到原先发送给ByteArrayOutputStream的数据。前面提到，LoopedStreams类解决了管道流存在的前二个问题，我们来看看这是如何实现的。</p><p>
+ByteArrayOutputStream具有根据需要扩展其内部缓冲区的能力。由于存在“完全缓冲”，线程向getOutputStream()返回的流写入数据时不会被阻塞。因而，第一个问题不会再给我们带来麻烦。另外还要顺便说一句，ByteArrayOutputStream的缓冲区永远不会缩减。例如，假设在能够提取数据之前，有一块500
+K的数据被写入到流，缓冲区将永远保持至少500
+K的容量。如果这个类有一个方法能够在数据被提取之后修正缓冲区的大小，它就会更完善。</p><p>
+第二个问题得以解决的原因在于，实际上任何时候只有一个线程向PipedOutputStream写入数据，这个线程就是由startByteArrayReaderThread()创建的线程。由于这个线程完全由LoopedStreams类控制，我们不必担心它会产生IOException异常。</p><p>
+LoopedStreams类还有一些细节值得提及。首先，我们可以看到byteArrayOS和pipedIS实际上分别是ByteArrayOutputStream和PipedInputStream的派生类的实例，也即在它们的close()方法中加入了特殊的行为。如果一个LoopedStreams对象的用户关闭了输入或输出流，在startByteArrayReaderThread()中创建的线程必须关闭。覆盖后的close()方法把keepRunning标记设置成false以关闭线程。另外，请注意startByteArrayReaderThread()中的同步块。要确保在toByteArray()调用和reset()调用之间ByteArrayOutputStream缓冲区不被写入流的线程修改，这是必不可少的。由于ByteArrayOutputStream的write()方法的所有版本都在该流上同步，我们保证了ByteArrayOutputStream的内部缓冲区不被意外地修改。</p><p>
+注意LoopedStreams类并不涉及管道流的第三个问题。该类的getInputStream()方法返回PipedInputStream。如果一个线程从该流读取，一段时间后终止，下次数据从ByteArrayOutputStream缓冲区传输到PipedOutputStream时就会出现IOException异常。</p><div class="ibm-alternate-rule"><hr></div><p class="ibm-ind-link ibm-back-to-top"><a href="http://www.ibm.com/developerworks/cn/java/l-console/#ibm-pcon" class="ibm-anchor-up-link">回页首</a></p><h2 id="2">二、捕获Java控制台输出</h2><p>
+Listing 5的ConsoleTextArea类扩展Swing
+JTextArea捕获控制台输出。不要对这个类有这么多代码感到惊讶，必须指出的是，ConsoleTextArea类有超过50%的代码用来进行测试。</p><div class="codesection"><pre class="displaycode">【Listing 5：截获Java控制台输出】
+import java.io.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.text.*;
+public class ConsoleTextArea extends JTextArea {
+    public ConsoleTextArea(InputStream[] inStreams) {
+        for(int i = 0; i &lt; inStreams.length; ++i)
+            startConsoleReaderThread(inStreams[i]);
+    } // ConsoleTextArea()
+    public ConsoleTextArea() throws IOException {
+        final LoopedStreams ls = new LoopedStreams();
+        // 重定向System.out和System.err
+        PrintStream ps = new PrintStream(ls.getOutputStream());
+        System.setOut(ps);
+        System.setErr(ps);
+        startConsoleReaderThread(ls.getInputStream());
+    } // ConsoleTextArea()
+    private void startConsoleReaderThread(
+        InputStream inStream) {
+        final BufferedReader br =
+            new BufferedReader(new InputStreamReader(inStream));
+        new Thread(new Runnable() {
+            public void run() {
+                StringBuffer sb = new StringBuffer();
+                try {
+                    String s;
+                    Document doc = getDocument();
+                    while((s = br.readLine()) != null) {
+                        boolean caretAtEnd = false;
+                        caretAtEnd = getCaretPosition() == doc.getLength() ?
+                            true : false;
+                        sb.setLength(0);
+                        append(sb.append(s).append('\n').toString());
+                        if(caretAtEnd)
+                            setCaretPosition(doc.getLength());
+                    }
+                }
+                catch(IOException e) {
+                    JOptionPane.showMessageDialog(null,
+                        "从BufferedReader读取错误：" + e);
+                    System.exit(1);
+                }
+            }
+        }).start();
+    } // startConsoleReaderThread()
+    // 该类剩余部分的功能是进行测试
+    public static void main(String[] args) {
+        JFrame f = new JFrame("ConsoleTextArea测试");
+        ConsoleTextArea consoleTextArea = null;
+        try {
+            consoleTextArea = new ConsoleTextArea();
+        }
+        catch(IOException e) {
+            System.err.println(
+                "不能创建LoopedStreams：" + e);
+            System.exit(1);
+        }
+        consoleTextArea.setFont(java.awt.Font.decode("monospaced"));
+        f.getContentPane().add(new JScrollPane(consoleTextArea),
+            java.awt.BorderLayout.CENTER);
+        f.setBounds(50, 50, 300, 300);
+        f.setVisible(true);
+        f.addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(
+                java.awt.event.WindowEvent evt) {
+                System.exit(0);
+            }
+        });
+        // 启动几个写操作线程向
+        // System.out和System.err输出
+        startWriterTestThread(
+            "写操作线程 #1", System.err, 920, 50);
+        startWriterTestThread(
+            "写操作线程 #2", System.out, 500, 50);
+        startWriterTestThread(
+            "写操作线程 #3", System.out, 200, 50);
+        startWriterTestThread(
+            "写操作线程 #4", System.out, 1000, 50);
+        startWriterTestThread(
+            "写操作线程 #5", System.err, 850,    50);
+    } // main()
+    private static void startWriterTestThread(
+        final String name, final PrintStream ps, 
+        final int delay, final int count) {
+        new Thread(new Runnable() {
+            public void run() {
+                for(int i = 1; i &lt;= count; ++i) {
+                    ps.println("***" + name + ", hello !, i=" + i);
+                    try {
+                        Thread.sleep(delay);
+                    }
+                    catch(InterruptedException e) {}
+                }
+            }
+        }).start();
+    } // startWriterTestThread()
+} // ConsoleTextArea</pre></div><p>
+main()方法创建了一个JFrame，JFrame包含一个ConsoleTextArea的实例。这些代码并没有什么特别之处。Frame显示出来之后，main()方法启动一系列的写操作线程，写操作线程向控制台流输出大量信息。ConsoleTextArea捕获并显示这些信息，如图一所示。</p><p>
+ConsoleTextArea提供了两个构造函数。没有参数的构造函数用来捕获和显示所有写入到控制台流的数据，有一个InputStream[]参数的构造函数转发所有从各个数组元素读取的数据到JTextArea。稍后将有一个例子显示这个构造函数的用处。首先我们来看看没有参数的ConsoleTextArea构造函数。这个函数首先创建一个LoopedStreams对象；然后请求Java运行时环境把控制台输出转发到LoopedStreams提供的OutputStream；最后，构造函数调用startConsoleReaderThread()，创建一个不断地把文本行追加到JTextArea的线程。注意，把文本追加到JTextArea之后，程序小心地保证了插入点的正确位置。</p><p>一般来说，Swing部件的更新不应该在AWT事件分派线程（AWT Event
+Dispatch
+Thread，AEDT）之外进行。对于本例来说，这意味着所有把文本追加到JTextArea的操作应该在AEDT中进行，而不是在startConsoleReaderThread()方法创建的线程中进行。然而，事实上在Swing中向JTextArea追加文本是一个线程安全的操作。读取一行文本之后，我们只需调用JText.append()就可以把文本追加到JTextArea的末尾。</p><div class="ibm-alternate-rule"><hr></div><p class="ibm-ind-link ibm-back-to-top"><a href="http://www.ibm.com/developerworks/cn/java/l-console/#ibm-pcon" class="ibm-anchor-up-link">回页首</a></p><h2 id="3">三、捕获其他程序的控制台输出</h2><p>
+在JTextArea中捕获Java程序自己的控制台输出是一回事，去捕获其他程序（甚至包括一些非Java程序）的控制台数据又是另一回事。ConsoleTextArea提供了捕获其他应用的输出时需要的基础功能，Listing
+6的AppOutputCapture利用ConsoleTextArea，截取其他应用的输出信息然后显示在ConsoleTextArea中。</p><div class="codesection"><pre class="displaycode">【Listing 6：截获其他程序的控制台输出】
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import javax.swing.*;
+public class AppOutputCapture {
+        private static Process process;
+        public static void main(String[] args) {
+                if(args.length == 0) {
+             System.err.println("用法：java AppOutputCapture " +
+                 "&lt;程序名字&gt; {参数1 参数2 ...}");
+             System.exit(0);
+                }
+                try {
+                        // 启动命令行指定程序的新进程
+                        process = Runtime.getRuntime().exec(args);
+                }
+                catch(IOException e) {
+                        System.err.println("创建进程时出错...\n" + e);
+                        System.exit(1);
+                }
+                // 获得新进程所写入的流
+                InputStream[] inStreams =
+                        new InputStream[] {
+                    process.getInputStream(),process.getErrorStream()};
+                ConsoleTextArea cta = new
+    ConsoleTextArea(inStreams);
+                cta.setFont(java.awt.Font.decode("monospaced"));
+                JFrame frame = new JFrame(args[0] +
+                        "控制台输出");
+                frame.getContentPane().add(new JScrollPane(cta),
+                    BorderLayout.CENTER);
+                frame.setBounds(50, 50, 400, 400);
+                frame.setVisible(true);
+                frame.addWindowListener(new WindowAdapter() {
+                        public void windowClosing(WindowEvent evt) {
+                                process.destroy();
+                                try {
+                                        process.waitFor(); // 在Win98下可能被挂起
+                                }
+                                catch(InterruptedException e) {}
+                                        System.exit(0);
+                                }
+                        });
+        } // main()
+} // AppOutputCapture</pre></div><p>
+AppOutputCapture的工作过程如下：首先利用Runtime.exec()方法启动指定程序的一个新进程。启动新进程之后，从结果Process对象得到它的控制台流。之后，把这些控制台流传入ConsoleTextArea(InputStream[])构造函数（这就是带参数ConsoleTextArea构造函数的用处）。使用AppOutputCapture时，在命令行上指定待截取其输出的程序名字。例如，如果在Windows
+2000下执行javaw.exe AppOutputCapture ping.exe
+www.yahoo.com，则结果如图四所示。</p><h5 id="N100EB">图四：截取其他程序的控制台输出</h5><img alt="图四：截取其他程序的控制台输出" src="./在Java程序中截获控制台输出_files/JavaConsoleOutput_4.gif" width="400"><p>
+使用AppOutputCapture时应该注意，被截取输出的应用程序最初输出的一些文本可能无法截取。因为在调用Runtime.exec()和ConsoleTextArea初始化完成之间存在一小段时间差。在这个时间差内，应用程序输出的文本会丢失。当AppOutputCapture窗口被关闭，process.destory()调用试图关闭Java程序开始时创建的进程。测试结果显示出，destroy()方法不一定总是有效（至少在Windows
+98上是这样的）。似乎当待关闭的进程启动了额外的进程时，则那些进程不会被关闭。此外，在这种情况下AppOutputCapture程序看起来未能正常结束。但在Windows
+NT下，一切正常。如果用JDK
+v1.1.x运行AppOutputCapture，关闭窗口时会出现一个NullPointerException。这是一个JDK的Bug，JDK
+1.2.x和JDK 1.3.x下就不会出现问题。</p><p>请从这里下载本文完整代码：
+        <a href="http://www.ibm.com/developerworks/cn/java/l-console/JavaConsoleOutput_code.zip">JavaConsoleOutput_code.zip</a></p><!--CMA ID: 52923--><!--Site ID: 10--><!--XSLT stylesheet used to transform this file: dw-document-html-7.0.xsl-->
+
+
+</div>
+</div>
+<!-- 1_1_COLUMN_END -->
+
+<!-- SPLIT_COLUMNS_BEGIN -->
+<div class="ibm-columns">
+
+<!-- 6_4_COLUMN_BEGIN -->
+<div class="ibm-col-6-4">
+
+<h2 id="resources" class="ibm-rule">参考资料 </h2><ul class="ibm-bullet-list"><li><a href="http://www.ibm.com/developerworks/cn/java/j-thread/index.html">编写多线程的Java 应用程序</a>
+如何避免当前编程中最常见的问题
+        </li><li><a href="http://www.ibm.com/developerworks/cn/java/multithreading/index.html">Java 程序中的多线程</a></li></ul>
+
+<!-- INLINE_COMMENTS_BEGIN -->
+<h2 id="icomments" class="ibm-alternate-rule ibm-no-print">条评论</h2>
+    
+<div class="ibm-no-print" id="dw-icomments-container">	
+	<div id="threadShow"><img id="imgPlHdr" src="./在Java程序中截获控制台输出_files/animated-progress-38x38c.gif" alt="" style="display: none;"><div id="cmtTog" style=""><div class="ibm-container ibm-alternate-two dw-commentbox dw-noborder"><div class="ibm-container-body dw-commentbox dw-noborder"><p id="signInSect">请 <a onclick="var e=arguments[0] || window.event; dwsi.siInst &amp;&amp; dwsi.siInst.showSignIn(); if (e.stopPropagation){ e.stopPropagation();} else { e.cancelBubble = true; } e.preventDefault &amp;&amp; e.preventDefault(); return false;" href="http://www.ibm.com/developerworks/cn/java/l-console/#">登录</a> 或 <a href="http://www.ibm.com/developerworks/dwwi/DWAuthRouter?m=register&lang=zh_CN&d=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fl-console%2F%23icomments">注册</a>  后发表评论。</p><p id="cmtHead"><label for="newCmt"><strong>添加评论:</strong></label></p><p>注意：评论中不支持 HTML 语法</p><div id="infoCmt"></div><form focus="name" enctype="multipart/form-data" method="post" action="" name="form" class="ibm-column-form ibm-styled-form"><p class="6-4-textarea"><textarea rows="5" name="newCmt" id="newCmt" class="dw-inoperable" disabled=""></textarea><br></p><span class="ibm-input-group"><input type="checkbox" value="1" name="comment_notification" id="comment_notification" disabled="disabled"><label id="notifyText" class="ibm-form-note dw-btn-cancel-sec" for="comment_notification">有新评论时提醒我</label></span><span class="ibm-form-note dw-btn-cancel-sec notifySection" id="maxCharsCount">剩余 <span id="charCount">1000</span> 字符</span><p class="ibm-buttons-row"><input type="button" value="发布" name="postCmt" id="postCmt" class="ibm-btn-sec ibm-btn-small ibm-disabled" disabled="disabled"></p></form></div></div><div class="ibm-alternate-rule"><hr></div><div id="topControl" class="ibm-container ibm-alternate-two dw-comment-totals" style="display: none;"><div class="ibm-container-body"><form id="selectComments" method="get" action=""><p>&nbsp;<span class="dw-comment-totals-label"><strong>共有评论 (<span id="numCmts">0</span>)</strong></span><span class="dw-how-many-comments-label" style="display:none" id="dropdownCmts"><label for="howManyComments"><strong>显示：</strong></label>&nbsp;<select name="comments" id="howManyComments" class="dw-how-many-comments"><option selected="selected" value="recent">最新评论   </option></select><input type="image" class="ibm-btn-go" name="ibm-go" value="Go" src="./在Java程序中截获控制台输出_files/short-btn.gif" alt="Go"><br></span></p></form></div></div><div id="cmtSect"><div class="comment"><div class="dw-icomment-container"><table class="dw-icomment-body" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td><p>快来添加第一条评论</p></td></tr></tbody></table></div></div></div></div><div id="bottomControl" class="ibm-container ibm-alternate-two dw-comment-totals" style="display: none;"><div class="ibm-container-body"><form id="selectComments2" method="get" action=""><p>&nbsp;<span class="dw-comment-totals-label"><strong>共有评论 (<span id="numCmts2">0</span>)</strong></span><span class="dw-how-many-comments-label" style="display:none" id="dropdownCmts2"><label for="howManyComments2"><strong>显示：</strong></label>&nbsp;<select name="comments" id="howManyComments2" class="dw-how-many-comments"><option selected="selected" value="recent">最新评论   </option></select><input type="image" class="ibm-btn-go" name="ibm-go" value="Go" src="./在Java程序中截获控制台输出_files/short-btn.gif" alt="Go"><br></span></p></form></div></div></div>
+</div>
+<!-- Sign in OVERLAY STARTS HERE -->
+    
+<!-- Sign in OVERLAY STARTS HERE -->
+<div class="ibm-common-overlay" id="signin_overlay">
+<div class="ibm-head">
+<p><a class="ibm-common-overlay-close" href="http://www.ibm.com/developerworks/cn/java/l-console/#" onclick="dwsi.siInst.clearForm();">关闭 [x]</a></p>
+</div>
+<div class="ibm-body">
+<div class="ibm-main">
+
+ <div class="ibm-title">
+<h2>developerWorks: 登录</h2>
+<div id="ibm-overlay-error-signin" class="no-display"></div>
+</div>
+<div class="ibm-container ibm-alternate ibm-buttons-last">
+<div class="ibm-container-body">
+<p class="ibm-overlay-intro">标有星（<span class="ibm-required">*<span class="ibm-access">required</span></span>）号的字段是必填字段。</p> 
+<form class="ibm-column-form" id="sFormId" action="" method="post" name="sForm" onsubmit="return false;">
+<p><label for="ibmid">IBM ID:<span class="ibm-required">*<span class="ibm-access">required</span></span></label><span>
+    <input name="ibm-id" id="ibmid" size="25" value="" class="required" type="text" onkeypress="dwsi.siInst.handleEP(event,this.form);">
+    <br><a onclick="window.location=&#39;/developerworks/dwwi/DWAuthRouter?m=reg&amp;lang=zh_CN&amp;d=&#39;+encodeURIComponent(location.protocol + &#39;//&#39; + location.hostname + location.pathname + &#39;#icomments&#39;); return false;" href="http://www.ibm.com/developerworks/cn/java/l-console/#" class="ibm-forward-link">需要一个 IBM ID？</a> <br>
+    <a class="ibm-forward-link" href="http://www.ibm.com/developerworks/dwwi/jsp/WSHelp.jsp?lang=zh_CN">忘记 IBM ID？</a> 
+</span>
+</p> 
+<p><label for="password">密码：<span class="ibm-required">*<span class="ibm-access">required</span></span></label><span>
+    <input name="password" id="password" size="25" value="" class="required" type="password" onkeypress="dwsi.siInst.handleEP(event,this.form);">
+    <br><a class="ibm-forward-link" href="http://www.ibm.com/developerworks/cn/java/l-console/#" onclick="(function ()
+        {window.location=&#39;https://www.ibm.com/account/profile?page=forgot&amp;lang=zh_CN&amp;appname=ibm&amp;required=null&amp;d=&#39;+encodeURIComponent(dwsi.siInst.getAuthUrl())+&#39;%3Fm%3Dloginpage%26lang%3Dzh_CN%26d%3D&#39;+encodeURIComponent(location.href);})();">忘记密码？</a>
+    <br><a class="ibm-forward-link" href="http://www.ibm.com/developerworks/cn/java/l-console/#" onclick="(function () {window.location=&#39;https://www.ibm.com/account/profile?page=chpw&amp;lang=zh_CN&amp;appname=ibm&amp;required=null&amp;d=&#39;+encodeURIComponent(location.href);})();">更改您的密码</a></span></p> 
+<p class="dw-perm-box">
+	<span><input id="perm" type="checkbox" name="perm_name"><label for="perm"> 保持登录。</label></span>
+</p>
+<p>单击提交则表示您同意developerWorks 的条款和条件。 <a href="http://www.ibm.com/developerworks/community/terms?lang=zh">查看条款和条件</a>。</p>
+<div class="ibm-buttons-row">
+   <p><input class="ibm-btn-arrow-pri" name="ibm-submit" value="提交" onclick="dwsi.siInst.signin();return false;" type="submit"><span class="ibm-sep">&nbsp;</span>
+<input value="取消" type="button" name="ibm-cancel" class="ibm-btn-cancel-sec" onclick="dwsi.siInst.clearForm();ibmweb.overlay.hide(&#39;signin_overlay&#39;);return false;"></p>
+</div>
+</form>
+ <div class="ibm-overlay-rule"><hr></div> 
+
+<p>这是您第一次登陆到 developerWorks，已经自动为您创建了您的概要文件。 <strong>选择您概要文件中可以公开的信息的信息（如姓名、国家/地区，以及公司），这些信息同时也会与您所发布的内容相关联。 </strong>您可以随时更新您的 IBM 账号。</p>
+<div><p class="dw-c-overlay-secure">所有提交的信息确保安全。</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Display name OVERLAY STARTS HERE -->
+<div class="ibm-common-overlay" id="displayname_overlay">
+<div class="ibm-head">
+<p><a class="ibm-common-overlay-close" href="http://www.ibm.com/developerworks/cn/java/l-console/#" onclick="dwsi.siInst.clearForm();">关闭 [x]</a></p>
+</div>
+<div class="ibm-body">
+<div class="ibm-main">
+<div class="ibm-title">
+<h2>选择您的昵称</h2><br><br>
+<div id="ibm-overlay-error-dname" class="no-display"></div>
+</div>
+<div class="ibm-container ibm-alternate ibm-buttons-last">
+<div class="ibm-container-body">
+<p class="ibm-overlay-intro">当您初次登录到 developerWorks 时，将会为您创建一份概要信息，您需要指定一个昵称。您的昵称将和您在 developerWorks 发布的内容显示在一起。</p><p><strong>昵称长度在 3 至 31 个字符之间</strong>。 
+    您的昵称在 developerWorks 社区中必须是唯一的，并且出于隐私保护的原因，不能是您的电子邮件地址。</p>
+<p class="ibm-overlay-intro">标有星（<span class="ibm-required">*<span class="ibm-access">required</span></span>）号的字段是必填字段。</p> 
+<form id="dFormId" method="post" action="" name="dForm" onsubmit="return false;" class="ibm-column-form">
+<p><label for="displayname">昵称：<span class="ibm-required">*<span class="ibm-access">required</span></span></label><span>
+    <input name="displayname" id="displayname" size="25" value="" type="text" onkeypress="dwsi.siInst.handleEP(event,this.form);"></span>
+    <span class="ibm-form-note">(昵称长度在 3 至 31 个字符之间)</span>
+</p>
+<p>单击<strong>提交</strong>则表示您同意developerWorks 的条款和条件。 <a href="http://www.ibm.com/developerworks/community/terms?lang=zh">查看条款和条件</a>.</p>
+<div class="ibm-buttons-row">
+   <p><input class="ibm-btn-arrow-pri" name="ibm-submit" value="提交" onclick="dwsi.siInst.signin();return false;" type="submit"><span class="ibm-sep">&nbsp;</span>
+<input value="取消" type="button" name="ibm-cancel" class="ibm-btn-cancel-sec" onclick="dwsi.siInst.clearForm();ibmweb.overlay.hide(&#39;displayname_overlay&#39;);return false;"></p>
+</div>
+</form>
+<div class="ibm-overlay-rule"><hr></div>
+<div><p class="dw-c-overlay-secure">所有提交的信息确保安全。</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+
+
+<!-- INLINE_COMMENTS_END -->
+
+</div>
+<!-- 6_4_COLUMN_END -->
+
+<!-- 6_2_COLUMN_BEGIN -->
+<div class="ibm-col-6-2">
+
+<!-- Next_Steps -->
+<!-- Dig_Deeper -->
+
+
+<!-- Promotion_Module -->
+    
+<!-- PROMOTION_MODULE_START -->
+<div class="ibm-alternate-rule"><hr></div>
+<ul class="ibm-portrait-module-list">
+<li><a class="" href="http://www.ibm.com/developerworks/cn/puresystems/" tabindex="-1" role="presentation"><img height="60" width="60" src="./在Java程序中截获控制台输出_files/sm-f-cl-puresystems70.jpg" alt=""></a>
+<h3><a class="ibm-feature-link" href="http://www.ibm.com/developerworks/cn/puresystems/">IBM PureSystems</a></h3>
+<p>IBM PureSystems™ 系列解决方案是一个专家集成系统</p></li>
+<li><a class="" href="http://www.ibm.com/developerworks/cn/views/global/libraryview.jsp?type_by=Knowledge+paths" tabindex="-1" role="presentation"><img height="60" width="60" src="./在Java程序中截获控制台输出_files/sm-f-knowledgepath50.jpg" alt=""></a>
+<h3><a class="ibm-feature-link" href="http://www.ibm.com/developerworks/cn/views/global/libraryview.jsp?type_by=Knowledge+paths">developerWorks 学习路线图</a></h3>
+<p>通过学习路线图系统掌握软件开发技能</p></li>
+<li><a class="" href="http://www.ibm.com/developerworks/cn/downloads/" tabindex="-1" role="presentation"><img height="60" width="60" src="./在Java程序中截获控制台输出_files/sm-f-evaluationsoftware60.png" alt=""></a>
+<h3><a class="ibm-feature-link" href="http://www.ibm.com/developerworks/cn/downloads/">软件下载资源中心</a></h3>
+<p>软件下载、试用版及云计算</p></li>
+</ul>
+<!-- PROMOTION_MODULE_END -->
+
+</div>
+<!-- 6_2_COLUMN_END -->
+
+</div>
+<!-- SPLIT_COLUMNS_END -->
+
+<!-- BOTTOM_BACK_TO_TOP -->
+<div class="ibm-columns">
+<div class="ibm-col-1-1">
+	<div class="ibm-alternate-rule"><hr></div><p class="ibm-ind-link ibm-back-to-top"><a href="http://www.ibm.com/developerworks/cn/java/l-console/#ibm-pcon" class="ibm-anchor-up-link">回页首</a></p>
+</div>
+</div>
+
+<!-- Rating_Meta_BEGIN -->
+<!--Rating_Meta_BEGIN--><div class="metavalue">static.content.url=http://www.ibm.com/developerworks/js/artrating/</div><div class="metavalue">SITE_ID=10</div><div class="metavalue">Zone=Java technology</div><div class="metavalue">ArticleID=52923</div><div class="metavalue">ArticleTitle=在Java程序中截获控制台输出</div><div class="metavalue">publish-date=10162001</div><script language="javascript" type="text/javascript">document.write('<div class="metavalue">url='+location.href.replace(/</g,  '%3C')+'</div>');</script><div class="metavalue">url=http://www.ibm.com/developerworks/cn/java/l-console/</div><!--Rating_Meta_END-->
+<!-- Rating_Meta_END -->
+
+</div>
+<!-- END_IBM_CONTENT_MAIN -->
+
+</div>
+<!-- END_IBM_CONTENT_BODY -->
+
+</div>
+<!-- END_IBM_CONTENT -->
+
+</div></div>
+<!-- LEADSPACE_END -->
+
+
+<!-- END_IBM_PCON -->
+<!-- FOOTER_BEGIN -->
+<!-- FOOTER_BEGIN -->
+<div id="ibm-footer" aria-label="页脚"><!-- IBM footer container; disabled --></div>
+
+<div id="ibm-footer-module-dwwrapper" role="contentinfo" aria-label="developerWorks Footer">
+
+<div id="ibm-footer-module-dw">
+	<div class="dw-footer-columns">
+		<div class="dw-footer-col-5-1">
+			<ul>
+                <li><a href="https://www.ibm.com/developerworks/secure/feedback.jsp?domain=dwchina">帮助</a></li>
+				<li><a href="http://www.ibm.com/developerworks/cn/author/">联系编辑</a></li>
+				<li><a href="https://www.ibm.com/developerworks/secure/myideas2.jsp?domain=dwchina&start=true">提交内容</a></li>
+				<li><a href="http://www.ibm.com/developerworks/cn/sitemap/">网站导航</a></li>
+				<li><a href="http://www.ibm.com/developerworks/cn/rss/">订阅源</a></li>
+			</ul>
+        </div>
+		<div class="dw-footer-col-5-2">
+			<ul>
+			<li><a href="http://www.ibm.com/vrm/newsletter/10104?S_TACT=105AGX52&S_CMP=dwcntop">在线浏览每周时事通讯</a></li>
+				<li><a class="dwcn-sina-link" href="http://weibo.com/ibmdw/" target="_blank">新浪微博</a></li>
+				<li><a href="https://www.ibm.com/developerworks/community/report?lang=zh">报告滥用</a></li>
+				<li><a href="https://www.ibm.com/developerworks/community/terms?lang=zh">使用条款</a></li>
+				<li><a href="https://www.ibm.com/developerworks/cn/community/terms/thirdparty/">第三方提示</a></li>
+			</ul>
+		</div>
+		<div class="dw-footer-col-5-3">
+			<ul>
+				<li><a href="http://www.ibm.com/privacy/cn/zh/">隐私条约</a></li>
+				<li><a href="http://www.ibm.com/ibm/accessibility/cn/">浏览辅助</a></li>
+				<li><a href="http://www.ibm.com/developerworks/cn/academic/">IBM 教育学院教育培养计划</a></li><li><a href="http://www.ibm.com/developerworks/cn/gep/">IBM 创业企业全球扶持计划</a></li><li><a href="http://www.ibm.com/partnerworld/isv/">ISV 资源 (英语)</a></li>
+			</ul>
+		</div>
+		<div class="dw-footer-col-5-4">
+		
+ 
+			<ul>
+				<li><a href="http://www.ibm.com/developerworks/cn/newsletter/">dW 中国每周时事通讯</a><br> 
+				
+				</li>
+			</ul>
+			
+		</div>
+		<div class="dw-footer-col-5-5">
+			<img width="223" height="46" alt="IBM®" src="./在Java程序中截获控制台输出_files/dwn-ibm-logo-v17.png">
+			<img class="dw-preload" src="./在Java程序中截获控制台输出_files/ibm_sprite_social_blue_ON.png" alt="" width="1" height="1">
+		</div>
+	</div>
+	<!-- Language selector no-script -->
+	<noscript>
+	&lt;div id="dw-footer-selectlang"&gt;
+		&lt;h2&gt;&lt;a name="SELECTLANG"&gt;选择语言：&lt;/a&gt;&lt;/h2&gt;
+		&lt;ul&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/" lang="en"&gt;English&lt;/a&gt;&lt;/li&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/cn/"&gt;中文&lt;/a&gt;&lt;/li&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/jp/" lang="ja"&gt;日本語&lt;/a&gt;&lt;/li&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/ru/" lang="ru"&gt;Русский&lt;/a&gt;&lt;/li&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/br/" lang="pt"&gt;Português (Brasil)&lt;/a&gt;&lt;/li&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/ssa/" lang="es"&gt;Español&lt;/a&gt;&lt;/li&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/vn/" lang="vi"&gt;Việt&lt;/a&gt;&lt;/li&gt;
+		&lt;/ul&gt;
+	&lt;/div&gt;
+	</noscript>
+</div>
+
+</div><!-- FOOTER_END --><!-- FOOTER_END -->
+
+<!-- END_IBM-TOP -->
+</div>
+
+<!-- SCRIPTS_INCLUDE_BEGIN -->
+<script type="text/javascript" src="./在Java程序中截获控制台输出_files/dw-comments.js">//</script>
+<script type="text/javascript" language="JavaScript">
+		dojo.ready(function(){
+		rBHash = null;
+		rBHash = new Object();
+		rBHash['viperLang'] = 'zh';
+		rBHash['urlLang'] = 'cn';
+		
+		dwsi.siInst = new dwweb.dynnav.dwsi();
+		dwsi.siInst.initSI();		
+
+		// construct the comment widget
+dwc.cmts = '条评论';
+dwc.signInPreText = '请';
+dwc.signIn = '登录';
+dwc.or = '或';
+dwc.register = '注册';
+dwc.signInPostText = '';
+dwc.leaveCmt = '后发表评论。';
+dwc.view = '查看';
+dwc.totalCmts = '共有评论';
+dwc.postYourCmt = '添加您的评论';
+dwc.show = '显示：';
+dwc.recentCmts = '最新评论';
+dwc.allCmts = '所有评论';
+dwc.tooLongCmt = '您的评论超过了 1000 字符限制';
+dwc.numCharsLeft = '剩余 <span id="charCount">{1}</span> 字符';
+dwc.reportAbuse = '报告滥用';
+dwc.notifyMsg = '有新评论时提醒我';
+dwc.htmlWarning = '注意：评论中不支持 HTML 语法'; 
+dwc.cmt = '评论：';
+dwc.addCmts = '添加评论';
+dwc.addCmt = '添加评论';
+dwc.doNotErase = '--在下方添加评论--'; 
+dwc.viewOrAddCmts = '查看或添加评论';
+dwc.reportInapprCont = '举报不良信息';
+dwc.reportInapprContLink = 'http://www.ibm.com/developerworks/forums/forum.jspa?forumID=1834';
+dwc.postingCmt = '正在发布评论……';
+dwc.noCmt = '快来添加第一条评论';
+dwc.netwkErr = '在检索评论时出错，请稍后刷新。';
+dwc.addACmt = '添加评论';
+dwc.instructCmt = '标有星号（<span class="ibm-required">*</span>）的是必填项目。';
+dwc.btnPost = '发布';
+dwc.btnPostAnon = '匿名发布';
+dwc.btnClrCmt = '清除评论';
+dwc.btnCancel = '取消';
+dwc.showRecent = '显示最新的 {1} 条评论'; // {1} is the count to be substituted
+dwc.showNext = '显示后 {1} 条评论'; // {1} is the count to be substituted
+dwc.showAllCmts = '显示所有评论';
+dwc.enterCmt = '请输入评论内容。';
+dwc.loginErr = '暂时无法验证您的登录状态，请稍后再试。';
+dwc.postErr = '暂时无法发布您的评论，请稍后再试。';
+dwc.postBy = '由 <strong>{1}</strong>  于 {2} '; // {1} is the author to be substituted; {2} is the date
+dwc.siteId = 10;
+dwc.lang = 'zh_CN';
+dwc.viperLang = 'zh';
+//dwc.abuseHref =  null;
+dwc.maxChars = 1000;
+dwc.cmtTxt =  '评论：';
+dwc.cmtsTxt =  '评论：';  
+		dwc && new dwc.comments('threadShow','95%',5,'nCmts','icomments');
+		});
+</script>
+<!-- BEGIN: Use this section to set page specific variables for the Unica Page Tag -->
+<script language="JavaScript">var NTPT_PGEXTRA="ibmSkillLevel=1&ibmAdoptPhase=667&ibmRole=710&ibmCmaId=52923&ibmContentAreas=java";</script>
+<!--END --><!-- SCRIPTS_INCLUDE_END -->
+
+<div id="ibm-metrics">
+<script src="./在Java程序中截获控制台输出_files/stats.js" type="text/javascript">//</script>
+</div>
+
+
+<embed style="visibility: hidden;" type="application/xl_chrome_plugin" width="0" height="0"><div class="sogoutip" style="z-index: 2147483645; visibility: hidden; display: none;"></div><div class="sogoubottom" id="sougou_bottom" style="display: block;"></div><div id="ext_stophi" style="z-index: 2147483647;"><div class="extnoticebg"></div><div class="extnotice"><h2>关闭提示 <a href="http://www.ibm.com/developerworks/cn/java/l-console/#" title="关闭提示" id="closenotice" class="closenotice">关闭</a></h2><p id="sogouconfirmtxt"></p>  <a id="sogouconfirm" href="http://www.ibm.com/developerworks/cn/java/l-console/#" class="extconfirm">确 认</a> <a id="sogoucancel" href="http://www.ibm.com/developerworks/cn/java/l-console/#" class="extconfirm">取 消</a></div></div><div id="ext_overlay" style="display: none; z-index: 2147483646;" class="ext_overlayBG"></div><iframe class="sogou_sugg_feedbackquan" style="background-color: transparent; border: none; display: block; z-index: 2147483645; background-position: initial initial; background-repeat: initial initial;" frameborder="0" scrolling="no" src="./在Java程序中截获控制台输出_files/yun1.htm"></iframe><script src="./在Java程序中截获控制台输出_files/pv.gif"></script></body></html>

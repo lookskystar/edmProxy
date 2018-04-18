@@ -1,0 +1,11 @@
+javax.mail.MessagingException: Could not connect to SMTP host: smtp.sina.com, port: 25;
+  nested exception is:
+	java.net.SocketException: Can't connect to SOCKS proxy:Connection timed out: connect
+	at com.sun.mail.smtp.SMTPTransport.openServer(SMTPTransport.java:1008)
+	at com.sun.mail.smtp.SMTPTransport.protocolConnect(SMTPTransport.java:197)
+	at javax.mail.Service.connect(Service.java:233)
+	at javax.mail.Service.connect(Service.java:134)
+	at com.edmProxy.util.mail.send.SendMail.sendMailTrue(SendMail.java:210)
+	at com.edmProxy.util.mail.send.StartAccount.startAccount(SendThread.java:209)
+	at com.edmProxy.util.mail.send.AccountThread.run(SendThread.java:165)
+	at java.lang.Thread.run(Unknown Source)

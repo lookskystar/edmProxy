@@ -1,0 +1,14 @@
+public static void alloy(Object obj){
+		try {
+			AlloyLookAndFeel.setProperty("alloy.isLookAndFeelFrameDecoration",
+					"true");
+			AlloyTheme theme = new BedouinTheme();// 设置界面的外观，手册中共有5种样式
+			LookAndFeel alloyLnF = new AlloyLookAndFeel(theme);
+			UIManager.setLookAndFeel(alloyLnF);
+		} catch (UnsupportedLookAndFeelException ex) {
+			// You may handle the exception here
+		}
+		// this line needs to be implemented in order to make JWS work properly
+		UIManager.getLookAndFeelDefaults().put("ClassLoader",
+				obj.getClass().getClassLoader());
+	}

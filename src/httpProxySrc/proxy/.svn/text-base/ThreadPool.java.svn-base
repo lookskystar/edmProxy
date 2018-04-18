@@ -1,0 +1,154 @@
+package proxy;
+
+import java.util.*;
+
+/**
+ * 描述：
+ * 
+ * @author $张忠强$
+ * @version $Revision$
+ */
+public class ThreadPool {
+
+	protected Thread[] threads = null;
+	Collection assignments = new ArrayList(3); // 初始为3个元素，动态增减。
+	protected Done done = new Done();
+	private static ThreadPool pool = null;
+
+	// 连接池配置-应从配置文件中读取
+	static int threadSize = 10;
+
+	//
+	public static ThreadPool getInstance() {
+
+		if (pool == null) {
+
+			pool = new ThreadPool(threadSize);
+		}
+
+		return pool;
+	}
+
+	/**
+	 * 构造一个新的 ThreadPool 对象.
+	 * 
+	 * @param size
+	 *            描述：
+	 */
+	private ThreadPool(int size) {
+
+		threads = new WorkerThread[size];
+
+		for (int i = 0; i < threads.length; i++) {
+
+			threads[i] = new WorkerThread(this);
+			threads[i].start();
+		}
+	}
+
+	/**
+	 * 描述：注册要执行的任务
+	 * 
+	 * @param r
+	 *            描述：
+	 */
+	public synchronized void assign(Runnable r) {
+
+		done.workerBegin();
+		assignments.add(r);
+		notify();
+	}
+
+	/**
+	 * 描述：
+	 * 
+	 * @return 描述：
+	 */
+	public synchronized Runnable getAssignment() {
+
+		try {
+
+			while (!assignments.iterator().hasNext())
+				wait();
+
+			Runnable r = (Runnable) assignments.iterator().next();
+			assignments.remove(r);
+
+			return r;
+		} catch (InterruptedException e) {
+
+			done.workerEnd();
+
+			return null;
+		}
+	}
+
+	/**
+	 * 描述：
+	 */
+	public void complete() {
+
+		done.waitBegin();
+		done.waitDone();
+	}
+
+	/**
+	 * 描述：
+	 */
+	protected void finalize() {
+
+		done.reset();
+
+		for (int i = 0; i < threads.length; i++) {
+
+			threads[i].interrupt();
+			done.workerBegin();
+
+			// threads[i].destroy();
+		}
+
+		done.waitDone();
+	}
+}
+
+/**
+ * 描述：执行任务的线程对象
+ * 
+ * @author $author$
+ * @version $Revision$
+ */
+class WorkerThread extends Thread {
+
+	public boolean busy;
+	public ThreadPool owner;
+
+	/**
+	 * 构造一个新的 WorkerThread 对象，并关联到池.
+	 * 
+	 * @param o
+	 *            描述：
+	 */
+	WorkerThread(ThreadPool o) {
+
+		owner = o;
+	}
+
+	/**
+	 * 描述：实现接口
+	 */
+	public void run() {
+
+		Runnable target = null;
+
+		do {
+
+			target = owner.getAssignment();
+
+			if (target != null) {
+
+				target.run();
+				owner.done.workerEnd();
+			}
+		} while (target != null);
+	}
+}

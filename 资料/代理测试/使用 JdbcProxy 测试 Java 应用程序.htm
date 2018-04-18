@@ -1,0 +1,1089 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0057)http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/ -->
+<html xmlns="http://www.w3.org/1999/xhtml" lang="zh-CN" xml:lang="zh-CN" class="dj_webkit dj_chrome dj_contentbox"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>使用 JdbcProxy 测试 Java 应用程序</title>
+<link rel="schema.DC" href="http://purl.org/DC/elements/1.0/">
+<link rel="SHORTCUT ICON" href="http://www.ibm.com/favicon.ico">
+<meta name="DC.Rights" content="© Copyright IBM Corporation 2008">
+<meta name="Keywords" content="JDBC, JdbcProxy, tttjca, tttosca">
+<meta name="DC.Date" scheme="iso8601" content="2008-11-14">
+<meta name="Source" content="v17 delivery:developerWorks">
+<meta name="Security" content="Public">
+<meta name="Abstract" content="JdbcProxy 可以理解为 JDBC 代理，是一个开源的 JDBC 项目。它架构在 JDBC Driver 之上，能够记录一个 Java 应用的数据库访问过程，并将这个过程重现出来。本文将以一个具体的 Java 应用为例，演示如何使用 JdbcProxy 记录和重现 JDBC 访问，实现 Java 应用的测试工作。">
+<meta name="Description" content="JdbcProxy 可以理解为 JDBC 代理，是一个开源的 JDBC 项目。它架构在 JDBC Driver 之上，能够记录一个 Java 应用的数据库访问过程，并将这个过程重现出来。本文将以一个具体的 Java 应用为例，演示如何使用 JdbcProxy 记录和重现 JDBC 访问，实现 Java 应用的测试工作。">
+<meta name="IBM.Effective" scheme="W3CDTF" content="2008-11-14">
+<meta name="Owner" content="developerWorks/China/IBM">
+<meta name="DC.Language" scheme="rfc1766" content="zh-CN">
+<meta name="IBM.SpecialPurpose" content="SP001">
+<meta name="IBM.Country" content="CN">
+<meta name="Robots" content="index,follow">
+<meta name="DC.Type" scheme="IBM_ContentClassTaxonomy" content="CT316">
+<meta name="DC.Subject" scheme="IBM_SubjectTaxonomy" content="TT300">
+<meta name="dW.ContentArea" content="1,7">
+<meta name="dW.Topic" content="12,214,9">
+<!-- META_INCLUDE -->
+<meta scheme="IBM_WTMCategory" name="IBM.WTMCategory" content="SOFDCJVACN">
+
+<!-- HEADER_SCRIPTS_AND_CSS_INCLUDE -->
+<link href="./使用 JdbcProxy 测试 Java 应用程序_files/www.css" rel="stylesheet" title="www" type="text/css">
+<link href="./使用 JdbcProxy 测试 Java 应用程序_files/cnzh.css" rel="stylesheet" title="www" type="text/css">    
+
+<!-- Masthead/footer -->
+<link href="./使用 JdbcProxy 测试 Java 应用程序_files/dw-mfN.css" media="screen,projection" rel="stylesheet" title="www" type="text/css">
+<link href="./使用 JdbcProxy 测试 Java 应用程序_files/dw-article-6.css" rel="stylesheet" title="www" type="text/css">
+
+<link href="./使用 JdbcProxy 测试 Java 应用程序_files/dw-common-features.css" rel="stylesheet" title="www" type="text/css">
+<link href="./使用 JdbcProxy 测试 Java 应用程序_files/dw-local-site-v17-N.css" media="screen,projection" rel="stylesheet" title="www" type="text/css">
+<script type="text/javascript" src="./使用 JdbcProxy 测试 Java 应用程序_files/www.js">//</script><script type="text/javascript" src="./使用 JdbcProxy 测试 Java 应用程序_files/eluminate.js"></script><link rel="search" type="application/opensearchdescription+xml" href="http://www.ibm.com/search/opensearch/description.xml" title="IBM Search"><script type="text/javascript">ibmweb.config.eluminate.enabled=true;if(typeof ibmweb.config.eluminate.siteID==="undefined"){ibmweb.config.eluminate.siteID=String(dojo.query("meta[name='IBM.WTMSite']").attr("content"));}if(ibmweb.config.eluminate.siteID.length==0){ibmweb.config.eluminate.siteID=String(dojo.query("meta[name='WTMSite']").attr("content"));}if(ibmweb.config.eluminate.siteID.length==0&&typeof digitalData.page!=="undefined"){if(typeof digitalData.page.site!=="undefined"&&typeof digitalData.page.site.siteID!=="undefined"){ibmweb.config.eluminate.siteID=digitalData.page.site.siteID;}if(typeof digitalData.page.category!=="undefined"&&typeof digitalData.page.category.categoryID!=="undefined"){ibmweb.config.eluminate.siteID=digitalData.page.category.categoryID;}}if(ibmweb.config.eluminate.siteID.length==0){ibmweb.config.eluminate.siteID="IBMTEST";}ibmweb.config.eluminate.cmSetClientID.id=ibmweb.config.eluminate.CID+"|"+ibmweb.config.eluminate.siteID;cmSetClientID(ibmweb.config.eluminate.cmSetClientID.id,ibmweb.config.eluminate.cmSetClientID.managedFirstParty,ibmweb.config.eluminate.cmSetClientID.dataCollectionDomain,ibmweb.config.eluminate.cmSetClientID.cookieDomain);dojo.connect(null,"onclick",ibmweb.eluminate,ibmweb.eluminate.download_and_offset_tracking);</script><script src="./使用 JdbcProxy 测试 Java 应用程序_files/head.js"></script><script language="javascript" type="text/javascript" src="./使用 JdbcProxy 测试 Java 应用程序_files/50200000.js"></script><script language="javascript" type="text/javascript" src="./使用 JdbcProxy 测试 Java 应用程序_files/cookie-id.js"></script><script language="javascript" type="text/javascript" src="./使用 JdbcProxy 测试 Java 应用程序_files/rules_50200000.js"></script><script language="javascript" type="text/javascript" src="./使用 JdbcProxy 测试 Java 应用程序_files/dispatcher-v3.js"></script><script src="./使用 JdbcProxy 测试 Java 应用程序_files/cp-v3.js" type="text/javascript"></script>
+<script type="text/javascript" src="./使用 JdbcProxy 测试 Java 应用程序_files/dw-www.js">//</script><script type="text/javascript" charset="utf-8" src="./使用 JdbcProxy 测试 Java 应用程序_files/Dialog.xd.js"></script>
+
+<script type="text/javascript">
+//  ibmweb.config.set({ sbs: { enabled: false }});
+</script>
+<!-- LEADSPACE_STYLES -->
+
+
+<script type="text/javascript" src="./使用 JdbcProxy 测试 Java 应用程序_files/cnzh-utf8.js" id="dojoIoScript1" charset="utf-8"></script><script type="text/javascript" src="./使用 JdbcProxy 测试 Java 应用程序_files/saved_resource" id="dojoIoScript2" charset="utf-8"></script><script type="text/javascript" charset="utf-8" src="./使用 JdbcProxy 测试 Java 应用程序_files/move.xd.js"></script><script type="text/javascript" charset="utf-8" src="./使用 JdbcProxy 测试 Java 应用程序_files/TimedMoveable.xd.js"></script><script type="text/javascript" charset="utf-8" src="./使用 JdbcProxy 测试 Java 应用程序_files/_CssStateMixin.xd.js"></script><script type="text/javascript" charset="utf-8" src="./使用 JdbcProxy 测试 Java 应用程序_files/_FormMixin.xd.js"></script><script type="text/javascript" charset="utf-8" src="./使用 JdbcProxy 测试 Java 应用程序_files/_DialogMixin.xd.js"></script><script type="text/javascript" charset="utf-8" src="./使用 JdbcProxy 测试 Java 应用程序_files/DialogUnderlay.xd.js"></script><script type="text/javascript" charset="utf-8" src="./使用 JdbcProxy 测试 Java 应用程序_files/ContentPane.xd.js"></script><script type="text/javascript" charset="utf-8" src="./使用 JdbcProxy 测试 Java 应用程序_files/common.xd.js"></script><script type="text/javascript" charset="utf-8" src="./使用 JdbcProxy 测试 Java 应用程序_files/TooltipDialog.xd.js"></script><script type="text/javascript" charset="utf-8" src="./使用 JdbcProxy 测试 Java 应用程序_files/Mover.xd.js"></script><script type="text/javascript" charset="utf-8" src="./使用 JdbcProxy 测试 Java 应用程序_files/Moveable.xd.js"></script><script type="text/javascript" charset="utf-8" src="./使用 JdbcProxy 测试 Java 应用程序_files/_ContentPaneResizeMixin.xd.js"></script><script type="text/javascript" charset="utf-8" src="./使用 JdbcProxy 测试 Java 应用程序_files/html.xd.js"></script><script type="text/javascript" charset="utf-8" src="./使用 JdbcProxy 测试 Java 应用程序_files/loading.xd.js"></script><script type="text/javascript" charset="utf-8" src="./使用 JdbcProxy 测试 Java 应用程序_files/common.xd(1).js"></script><script type="text/javascript" charset="utf-8" src="./使用 JdbcProxy 测试 Java 应用程序_files/autoscroll.xd.js"></script><script type="text/javascript" charset="utf-8" src="./使用 JdbcProxy 测试 Java 应用程序_files/_LayoutWidget.xd.js"></script></head>
+
+<body id="ibm-com" class="v17" aria-busy="false">
+
+	<div id="ibm-top" class="ibm-landing-page ibm-no-scroll"><img src="./使用 JdbcProxy 测试 Java 应用程序_files/ibm_logo_print.png" width="43" height="15" id="ibm-print-masthead" alt="IBM Print">
+
+<!-- MASTHEAD_BEGIN -->
+<!-- MASTHEAD_BEGIN -->
+<div id="ibm-masthead" role="banner">
+
+    <!-- TOP ROW -->    
+	<div id="dw-masthead-top-row">
+		<ul id="ibm-mast-options-dw" role="toolbar" class="cn">
+		<li role="presentation" id="dw-mast-top-4">
+				<a href="http://www.ibm.com/developerworks/cn/" tabindex="0"><img src="./使用 JdbcProxy 测试 Java 应用程序_files/dwn-dw-badge.png" width="43" height="22" alt="dW" aria-label="dW"></a></li>
+			<li role="presentation" id="dw-mast-top-0">
+				<div><a class="" href="http://www.ibm.com/developerworks/dwwi/DWAuthRouter?m=loginpage&lang=zh&d=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fj-lo-jdbcproxy%2F" title="" role="button" tabindex="0">登录 (或注册)</a></div>
+			</li>
+			<li role="presentation" id="dw-mast-top-1">
+				<div><a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#SELECTLANG" role="button">中文</a></div>
+			</li>
+			<li role="presentation" id="dw-mast-top-3">
+				<a role="button" href="http://www.ibm.com/">IBM</a>
+			</li>
+			<li role="presentation" id="dw-mast-top-2" class="dw-mf-hide">
+				<a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#">[userid]</a>
+			</li>
+		</ul>
+	</div>
+
+    <!-- TOP ROW SLIDER -->
+	<div id="ibm-my-menu-dw" style="display: none;">
+        <!-- Sign-in -->
+		
+        <!-- Language selector --> 
+		
+		<div id="empty_div" class="dw-mast-columns" role="group"><!-- Authenticated --></div>		
+		<!-- IBM -->
+				
+	<div class="ibm-container-body" dojoattachpoint="ribbonContainer" id="ibmweb_ribbon_0" widgetid="ibmweb_ribbon_0"><a class="ibm-ribbon-prev ibm-disabled" dojoattachpoint="scrollLeftButton" role="button" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#" style="margin-top: -12px;" title="上一个">上一个</a><div class="ibm-ribbon-pane" dojoattachpoint="scrollContainer" style="height: 0px;"><div class="ibm-ribbon-section" dojoattachpoint="scrollableNode" role="listbox" id="ibmweb_ribbon_0_scrollable"><div class="ibm-columns" dojoattachpoint="containerNode" role="dialog" id="ibmweb_ribbonSlide_0" widgetid="ibmweb_ribbonSlide_0" aria-labelledby="ibm-rib-menu-0"><h2 class="ibm-access" id="ibm-rib-menu-0">登录 (或注册)</h2><div id="ibmweb_ribbonItemAbstract_0" class="dw-mast-columns" role="group" tabindex="0" widgetid="ibmweb_ribbonItemAbstract_0">
+			<div class="dw-mast-col-1-1">
+				<div id="dw-mast-sso">
+					<div id="signin_error_mf" class="no-display"></div>
+					<div id="dw-mast-sso-form">
+						<form id="sForm_mf" action="" method="post" name="sForm_name_mf" onsubmit="return false;">
+							<div id="dw-mast-sso-id" class="dw-mast-sso-id-cn">
+								<label for="ibmid_mf">IBM ID:</label>
+								<input id="ibmid_mf" value="" name="ibmid_name_mf" maxlength="100" onkeypress="dwsi.siInst.handleEP(event,this.form,&#39;mf&#39;);" type="text">
+							</div>
+							<div id="dw-mast-sso-pw" class="dw-mast-sso-pw-cn">
+								<label for="pw_mf">密码：</label>
+								<input id="pw_mf" value="" name="pw_name_mf" maxlength="100" onkeypress="dwsi.siInst.handleEP(event,this.form,&#39;mf&#39;);" type="password">
+							</div>
+							<div id="dw-mast-sso-target" class="dw-mast-sso-target-cn">
+								<p class="dw-mf-perm-box">
+									<input id="perm_mf" name="perm_name_mf" type="checkbox"><label for="perm_mf"> 保持登录。</label>
+								</p>
+							</div>					
+							<div id="dw-mast-sso-terms">
+								<p class="dw-mast-sso-terms-cn">单击提交则表示您同意developerWorks 的条款和条件。 <a href="http://www.ibm.com/developerworks/community/terms?lang=zh">查看条款和条件</a>.</p>
+									</div>
+							<div>
+								<input class="dw-mf-submit-btn-cn" name="ibm_submit_name_mf" value="提交" onclick="dwsi.siInst.signin(&#39;mf&#39;);return false;" type="submit">
+							</div>
+						</form>
+					</div>
+					<div id="dw-mast-sso-update">
+						<div id="dw-mast-sso-update-id">
+							<ul>
+								<li><a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#" onclick="(function ()
+								    {window.location=&#39;//www.ibm.com/developerworks/dwwi/DWAuthRouter?m=reg&amp;lang=zh_CN&amp;d=&#39;+encodeURIComponent(location.href);})();">需要一个 IBM ID？</a></li>
+								<li><a href="http://www.ibm.com/developerworks/dwwi/jsp/WSHelp.jsp?lang=zh_CN">忘记 IBM ID？</a></li>
+							</ul>
+						</div>
+						<div id="dw-mast-sso-update-pw">
+							<ul class="dw-mf-pwupdate">
+								<li><a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#" onclick="(function ()
+								    {window.location=&#39;https://www.ibm.com/account/profile?page=forgot&amp;lang=zh_CN&amp;appname=ibm&amp;required=null&amp;d=&#39;+encodeURIComponent(dwsi.siInst.getAuthUrl())+&#39;%3Fm%3Dloginpage%26lang%3Den_US%26d%3D&#39;+encodeURIComponent(location.href);})();">忘记密码？</a></li>
+								<li><a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#" onclick="(function ()
+								    {window.location=&#39;https://www.ibm.com/account/profile?page=chpw&amp;lang=zh_CN&amp;appname=ibm&amp;required=null&amp;d=&#39;+encodeURIComponent(location.href);})();">更改您的密码</a></li>
+							</ul>
+						</div>
+					</div>
+					<div id="dw-mast-sso-text">
+						<p>这是您第一次登陆到
+						    developerWorks，已经自动为您创建了您的概要文件。 <strong>选择您概要文件中可以公开的信息的信息（如姓名、国家/地区，以及公司），这些信息同时也会与您所发布的内容相关联。 </strong>您可以随时更新您的 IBM 账号。</p>
+						<p class="dw-mf-secure-cn">所有提交的信息确保安全。</p>
+					</div>
+				</div>
+				<div id="dw-mast-dname" class="dw-mf-hide">
+					<p>当您初次登录到 developerWorks 时，将会为您创建一份概要信息，您需要指定一个昵称。您的昵称将和您在 developerWorks 发布的内容显示在一起。</p><p><strong>昵称长度在 3 至 31 个字符之间</strong>。 您的昵称在 developerWorks 社区中必须是唯一的，并且出于隐私保护的原因，不能是您的电子邮件地址。</p>
+					<div id="signin_dname_error_mf" class="no-display"></div>
+					<div id="dw-mast-dname-form" class="dw-mast-dname-form-cn">
+						<form id="dForm_mf" action="" method="post" name="dForm_name_mf" onsubmit="return false;">
+							<div id="dw-mast-dname-mf">
+								<label for="dname_mf">昵称：</label>
+								<input id="dname_mf" name="dname_name_mf" maxlength="31" size="25" value="" onkeypress="dwsi.siInst.handleEP(event,this.form,&#39;mf&#39;);" type="text">
+							</div>
+							<div id="dw-mast-dname-terms">
+								<p class="dw-mast-dname-terms-cn">单击<strong>提交</strong>则表示您同意developerWorks
+								    的条款和条件。 <a href="http://www.ibm.com/developerworks/community/terms?lang=zh">查看条款和条件</a>.</p>
+									</div>
+							<div>
+								<input class="dw-mf-submit-btn-cn" name="dname_submit_name_mf" value="提交" onclick="dwsi.siInst.signin(&#39;mf&#39;);return false;" type="submit">
+							</div>
+						</form>								
+					</div>
+					<div id="dw-mast-dname-secure">
+						<p class="dw-mf-secure-cn">所有提交的信息确保安全。</p>
+					</div>
+				</div>
+				<div id="dw-mast-auth" class="dw-mf-hide">
+					<div>
+						<h2>developerWorks 社区:</h2>
+                		<ul>
+							<li><a id="dw-mast-top-0-0" href="http://www.ibm.com/developerworks/community/homepage?lang=zh">我的首页</a></li>						    
+							<li><a href="http://www.ibm.com/developerworks/community/profiles/html/myProfileView.do?lang=zh">我的概要信息</a></li>
+							<li><a href="http://www.ibm.com/developerworks/community/groups/service/html/mycommunities?lang=zh">我的社区</a></li>
+			                 <li><a href="http://www.ibm.com/developerworks/community/news/?lang=zh">设置</a></li>
+										    
+						</ul>     
+					</div>
+					
+					<div class="dw-mast-more">
+						<ul class="ibm-link-list">
+							<li><a class="dw-more-link" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#" onclick="dwsi.siInst.signOut(); return false;"><strong>退出</strong></a></li>
+						</ul>
+					</div>
+				</div>								
+			</div>		
+		</div></div><div class="ibm-columns" dojoattachpoint="containerNode" role="dialog" id="ibmweb_ribbonSlide_1" widgetid="ibmweb_ribbonSlide_1" aria-labelledby="ibm-rib-menu-1"><h2 class="ibm-access" id="ibm-rib-menu-1">中文</h2><div id="ibmweb_ribbonItemAbstract_1" class="dw-mast-columns" role="group" tabindex="0" widgetid="ibmweb_ribbonItemAbstract_1">
+			<div class="dw-mast-col-2-1">
+				<h2>选择语言：</h2>
+				<ul>
+					<li><a id="dw-mast-top-1-0" href="http://www.ibm.com/developerworks/" lang="en">English</a></li>
+					<li><a href="http://www.ibm.com/developerworks/cn/">中文</a></li>
+					<li><a href="http://www.ibm.com/developerworks/jp/" lang="ja">日本語</a></li>
+					<li><a href="http://www.ibm.com/developerworks/ru/" lang="ru">Русский</a></li>
+				</ul>
+			</div>
+			<div class="dw-mast-col-2-2">
+				<ul>
+					<li><a href="http://www.ibm.com/developerworks/br/" lang="pt">Português (Brasil)</a></li>
+					<li><a href="http://www.ibm.com/developerworks/ssa/" lang="es">Español</a></li>
+					<li><a href="http://www.ibm.com/developerworks/vn/" lang="vi">Việt</a></li>
+				</ul>
+			</div>
+		</div></div><div class="ibm-columns" dojoattachpoint="containerNode" role="dialog" id="ibmweb_ribbonSlide_2" widgetid="ibmweb_ribbonSlide_2" aria-labelledby="ibm-rib-menu-2"><h2 class="ibm-access" id="ibm-rib-menu-2">IBM</h2><div id="ibmweb_ribbonItemAbstract_2" class="dw-mast-columns" role="group" tabindex="0" widgetid="ibmweb_ribbonItemAbstract_2">
+			<div class="dw-mast-col-2-1">
+				<ul>
+					<li><a id="dw-mast-top-3-0" href="http://www.ibm.com/cn/zh/">IBM 主页</a></li>
+					<li><a href="http://www.ibm.com/solutions/cn/zh/">解决方案</a></li>
+					<li><a href="http://www.ibm.com/software/cn/">软件</a></li>
+				</ul>
+			</div>
+			<div class="dw-mast-col-2-2 dw-mast-ibm">
+				<ul>
+							<li><a href="http://www.ibm.com/support/cn/zh/">支持门户</a></li>
+							<li><a href="http://www.ibm.com/support/documentation/cn/zh/">产品文档</a></li>
+							<li><a href="http://www.ibm.com/redbooks/">Redbooks（英文）</a></li>
+				</ul>
+			</div>	
+		</div></div></div></div><a class="ibm-ribbon-next" dojoattachpoint="scrollRightButton" role="button" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#" style="margin-top: -12px;" title="下一个">下一个</a><div class="ibm-mm-close"><span tabindex="0" aria-label="关闭" role="button" title="关闭"></span></div></div></div>
+		
+    <!-- BOTTOM ROW -->
+	<div id="ibm-universal-nav-dw" aria-label="Site map">
+		<ul id="ibm-unav-links-dw">
+			<li id="ibm-unav-home-dwlogo">
+				<a href="http://www.ibm.com/developerworks/cn/"><img src="./使用 JdbcProxy 测试 Java 应用程序_files/dwn-dw-wordmark.png" width="225" height="28" alt="developerWorks®"></a>
+			</li>
+		</ul>
+		<ul id="ibm-menu-links-dw" class="ibm-menu-links-dw-cn" role="toolbar" aria-label="Site map">
+			<li id="dw-mast-nav-0" role="presentation"><a href="http://www.ibm.com/developerworks/cn/topics/" role="button" tabindex="0">技术主题</a></li>
+			<li id="dw-mast-nav-1" role="presentation"><a href="http://www.ibm.com/developerworks/cn/downloads/" role="button">软件下载</a></li>
+			<li id="dw-mast-nav-2" role="presentation"><a href="http://www.ibm.com/developerworks/community/?lang=zh" role="button">社区</a></li>
+			<li id="dw-mast-nav-3" role="presentation"><a href="https://www.ibm.com/developerworks/community/groups/service/html/communityview?communityUuid=6d7f9e5d-5f89-4767-a006-a81b8d186370&lang=zh" role="button">技术讲座</a></li>
+		</ul>
+		<form id="ibm-search-form" action="http://www.ibm.com/search/csass/search/" method="get" name="form1">
+			<input type="hidden" name="sn" value="dw">
+			<input type="hidden" name="lang" value="zh">
+			<input type="hidden" name="cc" value="CN">
+			<input type="hidden" name="en" value="utf">
+			<input type="hidden" name="hpp" value="20">
+			<input type="hidden" name="dws" value="cndw">
+		    <input type="hidden" name="lo" value="zh">
+			<p>
+				<label for="q"><img alt="搜索 developerWorks" height="1" width="1" src="./使用 JdbcProxy 测试 Java 应用程序_files/c.gif"></label>
+				<input type="text" value="搜索 developerWorks" name="q" maxlength="100" id="q">
+				<input type="submit" id="ibm-search" class="ibm-btn-search ibm-btn-search-cn" name="Search" value="搜索">
+			</p>
+		</form>
+	</div>
+    
+	<!-- BOTTOM ROW SLIDER -->
+	<div id="ibm-common-menu-dw" style="display: none;">
+		<!-- Technical topics category -->
+		
+		<!-- Evaluation software category -->
+		
+		<!-- Community category -->
+	    
+		
+		<!-- Events category -->
+		
+	<div class="ibm-container-body" dojoattachpoint="ribbonContainer" id="ibmweb_ribbon_1" widgetid="ibmweb_ribbon_1"><a class="ibm-ribbon-prev ibm-disabled" dojoattachpoint="scrollLeftButton" role="button" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#" style="margin-top: -12px;" title="上一个">上一个</a><div class="ibm-ribbon-pane" dojoattachpoint="scrollContainer" style="height: 0px;"><div class="ibm-ribbon-section" dojoattachpoint="scrollableNode" role="listbox" id="ibmweb_ribbon_1_scrollable"><div class="ibm-columns" dojoattachpoint="containerNode" role="dialog" id="ibmweb_ribbonSlide_3" widgetid="ibmweb_ribbonSlide_3" aria-labelledby="ibm-rib-head-0"><h2 class="ibm-access" id="ibm-rib-head-0">技术主题</h2><div id="ibmweb_ribbonItemAbstract_3" class="dw-mast-columns" role="group" tabindex="0" widgetid="ibmweb_ribbonItemAbstract_3">
+			<div class="dw-mast-col-5-1">
+				<h2><a href="http://www.ibm.com/developerworks/cn/topics/">技术主题</a></h2>
+				<ul role="menu">
+					
+					<li role="menuitem"><a id="dw-mast-nav-0-0" href="http://www.ibm.com/developerworks/cn/aix/">AIX and UNIX</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/bigdata/">Big data</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/cloud/">Cloud computing</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/agile/">DevOps</a></li>
+					
+				</ul>     
+			</div>
+			<div class="dw-mast-col-5-2">
+				<ul role="menu">
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/ibmi/">IBM i</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/data/">Information
+					    management</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/java/">Java technology</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/linux/">Linux</a></li>
+					
+				</ul>
+			</div>
+			<div class="dw-mast-col-5-3">
+				<ul role="menu">
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/lotus/">Lotus</a></li> 
+				    <li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/mobile/">Mobile development</a></li> 
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/opensource/">Open source</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/rational/">Rational</a></li>
+					<!--<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/webservices/">SOA and web services</a></li>-->
+					
+					
+
+				</ul>
+			</div>
+			<div class="dw-mast-col-5-4">
+				<ul role="menu">
+				<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/social/">Social Business</a></li>
+				<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/web/">Web development</a></li>
+				<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/websphere/">WebSphere</a></li>
+				<!--<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/xml/">XML</a></li>-->
+				</ul>
+			</div>
+			<div class="dw-mast-col-5-5">
+				<ul role="menu">
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/library/"><strong>文档库</strong></a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/products/"><strong>产品 A - Z</strong></a></li>
+				</ul>
+			</div>  
+		</div></div><div class="ibm-columns" dojoattachpoint="containerNode" role="dialog" id="ibmweb_ribbonSlide_4" widgetid="ibmweb_ribbonSlide_4" aria-labelledby="ibm-rib-head-1"><h2 class="ibm-access" id="ibm-rib-head-1">软件下载</h2><div id="ibmweb_ribbonItemAbstract_4" class="dw-mast-columns" role="document" tabindex="-1" widgetid="ibmweb_ribbonItemAbstract_4">
+			<div class="dw-mast-col-2-1">
+				<h2><a id="dw-mast-nav-1-0" href="http://www.ibm.com/developerworks/cn/downloads/" tabindex="-1">软件下载</a></h2>
+				<ul role="menu">
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/downloads/#ba" tabindex="-1">Big data</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/downloads/#data" tabindex="-1">Information management</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/downloads/#lotus" tabindex="-1">Lotus</a></li>
+					</ul>            
+			</div>
+			<div class="dw-mast-col-2-2">
+				<ul role="menu">
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/downloads/#rational" tabindex="-1">Rational</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/downloads/#tivoli" tabindex="-1">Tivoli</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/downloads/#websphere" tabindex="-1">WebSphere</a></li>
+				</ul>            
+            </div>
+		</div></div><div class="ibm-columns" dojoattachpoint="containerNode" role="dialog" id="ibmweb_ribbonSlide_5" widgetid="ibmweb_ribbonSlide_5" aria-labelledby="ibm-rib-head-2"><h2 class="ibm-access" id="ibm-rib-head-2">社区</h2><div id="ibmweb_ribbonItemAbstract_5" class="dw-mast-columns" role="document" tabindex="-1" widgetid="ibmweb_ribbonItemAbstract_5">
+			<div class="dw-mast-col-2-1">
+				<h2><a id="dw-mast-nav-2-0" href="http://www.ibm.com/developerworks/community/?lang=zh" tabindex="-1">社区</a></h2>
+				<ul role="menu">
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/community/homepage/?lang=zh" tabindex="-1">我的首页</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/community/profiles/?lang=zh" tabindex="-1">概要信息</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/community/groups/?lang=zh" tabindex="-1">群组</a></li>
+					<li role="menuitem"><a href="http://www.ibm.com/developerworks/community/blogs/?lang=zh" tabindex="-1">博客</a></li>
+
+				</ul>     
+			</div>
+			<div class="dw-mast-col-2-2">
+				<ul role="menu">
+				<li role="menuitem"><a href="http://www.ibm.com/developerworks/community/forums/?lang=zh" tabindex="-1">论坛</a></li>
+				<li role="menuitem"><a href="http://www.ibm.com/developerworks/community/wikis?lang=zh" tabindex="-1">Wiki</a></li>
+				<li role="menuitem"><a href="http://www.ibm.com/developerworks/community/activities/?lang=zh" tabindex="-1">活动</a></li>
+				</ul>
+			</div>
+
+		</div></div><div class="ibm-columns" dojoattachpoint="containerNode" role="dialog" id="ibmweb_ribbonSlide_6" widgetid="ibmweb_ribbonSlide_6" aria-labelledby="ibm-rib-head-3"><h2 class="ibm-access" id="ibm-rib-head-3">技术讲座</h2><div id="ibmweb_ribbonItemAbstract_6" class="dw-mast-columns" role="document" tabindex="-1" widgetid="ibmweb_ribbonItemAbstract_6">
+			<div class="dw-mast-col-1-1">
+				<h2><a id="dw-mast-nav-3-0" href="https://www.ibm.com/developerworks/community/groups/service/html/communityview?communityUuid=6d7f9e5d-5f89-4767-a006-a81b8d186370&lang=zh" tabindex="-1">技术讲座</a></h2>
+					<ul role="menu">
+						<li role="menuitem"><a href="https://www.ibm.com/developerworks/community/groups/service/html/communityview?communityUuid=6d7f9e5d-5f89-4767-a006-a81b8d186370&lang=zh" tabindex="-1">技术讲座</a></li>
+						<li role="menuitem"><a href="http://www.ibm.com/developerworks/cn/swi/" tabindex="-1">多媒体课堂</a></li>
+						<li role="menuitem"><a href="http://www.ibm.com/developerworks/find/webcasts/" tabindex="-1">网络广播（英文）</a></li>
+					    <li role="menuitem"><a href="http://www.ibm.com/developerworks/find/events/" tabindex="-1">查找活动（技术讲座，网络广播，会议等）（英文）</a></li> 
+				</ul>            
+			</div>
+		</div></div></div></div><a class="ibm-ribbon-next" dojoattachpoint="scrollRightButton" role="button" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#" style="margin-top: -12px;" title="下一个">下一个</a><div class="ibm-mm-close"><span tabindex="0" aria-label="关闭" role="button" title="关闭"></span></div></div></div>
+	
+<div id="dw-masthead-top"><div id="ibm-social-tools" style="display: block;" role="navigation" aria-label="社交工具"><ul role="toolbar"><li><a class="ibm-share-print" title="打印本页面" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#" rel="print" dojoattrid="0" role="button" tabindex="0">打印本页面</a></li><li><a class="ibm-share-email" title="用电子邮件发送本页面" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#" rel="email" dojoattrid="1" role="button" tabindex="-1">用电子邮件发送本页面</a></li><li></li><li><a class="ibm-share-weibo" tabindex="-1" role="button" dojoattrid="2" rel="新浪微博" title="新浪微博" href="http://service.weibo.com/share/share.php?title=%E4%BD%BF%E7%94%A8%20JdbcProxy%20%E6%B5%8B%E8%AF%95%20Java%20%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F&url=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fj-lo-jdbcproxy%2F&language=zh_cn" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://service.weibo.com/share/share.php?title=%{TITLE}&amp;url=%{URL}&amp;language=zh_cn&#39;});">新浪微博</a></li><li><a class="ibm-share-renren" tabindex="-1" role="button" dojoattrid="3" rel="人人网" title="人人网" href="http://share.renren.com/share/buttonshare?title=%E4%BD%BF%E7%94%A8%20JdbcProxy%20%E6%B5%8B%E8%AF%95%20Java%20%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F&link=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fj-lo-jdbcproxy%2F" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://share.renren.com/share/buttonshare?title=%{TITLE}&amp;link=%{URL}&#39;});">人人网</a></li><li><a class="dwcn-tencent-link" tabindex="-1" role="button" dojoattrid="4" rel="腾讯微博" title="腾讯微博" href="http://v.t.qq.com/share/share.php?title=%E4%BD%BF%E7%94%A8%20JdbcProxy%20%E6%B5%8B%E8%AF%95%20Java%20%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F&url=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fj-lo-jdbcproxy%2F" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://v.t.qq.com/share/share.php?title=%{TITLE}&amp;url=%{URL}&#39;});">腾讯微博</a></li><li><a class="dwcn-sohu-link" tabindex="-1" role="button" dojoattrid="5" rel="搜狐微博" title="搜狐微博" href="http://t.sohu.com/third/post.jsp?title=%E4%BD%BF%E7%94%A8%20JdbcProxy%20%E6%B5%8B%E8%AF%95%20Java%20%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%20&link=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fj-lo-jdbcproxy%2F" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://t.sohu.com/third/post.jsp?title=%{TITLE}%20&amp;link=%{URL}&#39;});">搜狐微博</a></li><li><a class="dwcn-netease-link" tabindex="-1" role="button" dojoattrid="6" rel="网易微博" title="网易微博" href="http://t.163.com/article/user/checkLogin.do?info=%E4%BD%BF%E7%94%A8%20JdbcProxy%20%E6%B5%8B%E8%AF%95%20Java%20%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%20http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fj-lo-jdbcproxy%2F" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://t.163.com/article/user/checkLogin.do?info=%{TITLE}%20%{URL}&#39;});">网易微博</a></li><li><a class="ibm-share-digg" title="Digg" href="http://digg.com/submit?phase=2&url=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fj-lo-jdbcproxy%2F&title=%E4%BD%BF%E7%94%A8%20JdbcProxy%20%E6%B5%8B%E8%AF%95%20Java%20%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F" rel="digg" dojoattrid="7" role="button" tabindex="-1" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://digg.com/submit?phase=2&amp;url=%{URL}&amp;title=%{TITLE}&#39;});">Digg</a></li><li><a class="ibm-share-facebook" title="Facebook" href="http://www.facebook.com/sharer.php?u=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fj-lo-jdbcproxy%2F&t=%E4%BD%BF%E7%94%A8%20JdbcProxy%20%E6%B5%8B%E8%AF%95%20Java%20%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F" rel="facebook" dojoattrid="8" role="button" tabindex="-1" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://www.facebook.com/sharer.php?u=%{URL}&amp;t=%{TITLE}&#39;});">Facebook</a></li><li><a class="ibm-share-twitter" title="Twitter" href="http://twitter.com/?status=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fj-lo-jdbcproxy%2F%20-%20%E4%BD%BF%E7%94%A8%20JdbcProxy%20%E6%B5%8B%E8%AF%95%20Java%20%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F" rel="twitter" dojoattrid="9" role="button" tabindex="-1" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://twitter.com/?status=%{URL}%20-%20%{TITLE}&#39;});">Twitter</a></li><li><a class="ibm-share-delicious" title="Delicious" href="http://delicious.com/post?url=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fj-lo-jdbcproxy%2F&title=%E4%BD%BF%E7%94%A8%20JdbcProxy%20%E6%B5%8B%E8%AF%95%20Java%20%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F" rel="delicious" dojoattrid="10" role="button" tabindex="-1" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://delicious.com/post?url=%{URL}&amp;title=%{TITLE}&#39;});">Delicious</a></li><li><a class="ibm-share-linkedin" title="Linked In" href="http://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fj-lo-jdbcproxy%2F&title=%E4%BD%BF%E7%94%A8%20JdbcProxy%20%E6%B5%8B%E8%AF%95%20Java%20%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F" rel="linkedin" dojoattrid="11" role="button" tabindex="-1" onclick="ibmweb.sbs.clickHandler(event,{url:&#39;http://www.linkedin.com/shareArticle?mini=true&amp;url=%{URL}&amp;title=%{TITLE}&#39;});">Linked In</a></li></ul></div></div></div>
+<div id="fdiv" class="ibm-access"></div>
+    <!-- MASTHEAD_END -->
+<!-- MASTHEAD_END -->
+
+<!-- LAYOUT -->
+<!-- LEADSPACE_BEGIN --> 
+<div id="ibm-access-cntr" role="main"><div id="ibm-leadspace-head">
+	<!-- LEADSPACE_BODY_BEGIN --> 
+	<div id="ibm-leadspace-body">
+		<!-- Navigation_Trail_BEGIN -->
+      <ul id="ibm-navigation-trail" role="navigation" aria-label="Bread Crumbs"><li><a href="http://www.ibm.com/developerworks/cn/">developerWorks 中国</a></li><li><a href="http://www.ibm.com/developerworks/cn/topics/">技术主题</a></li><li><a href="http://www.ibm.com/developerworks/cn/java/">Java technology</a></li><li><a href="http://www.ibm.com/developerworks/cn/views/java/libraryview.jsp">文档库</a></li></ul>
+		<!-- END_Navigation_Trail -->
+			<!-- Title_Subtitle -->
+			<h1>使用 JdbcProxy 测试 Java 应用程序</h1>
+	</div>
+	<!-- LEADSPACE_BODY_END --> 
+	<!-- SUMMARY_BEGIN -->
+	<div id="dw-summary-area" class="dw-summary-columns">
+		<div class="ibm-col-6-4">
+		<p>JdbcProxy 可以理解为 JDBC 代理，是一个开源的 JDBC 项目。它架构在 JDBC Driver 之上，能够记录一个 Java 应用的数据库访问过程，并将这个过程重现出来。本文将以一个具体的 Java 应用为例，演示如何使用 JdbcProxy 记录和重现 JDBC 访问，实现 Java 应用的测试工作。</p>
+		<p class="ibm-no-print ibm-ind-link">
+
+			
+			<span id="nCmts"><span>0</span><img class="dw-cmts-arrow" alt="" src="./使用 JdbcProxy 测试 Java 应用程序_files/dw-cmts-arrow.png" height="7" width="7"> <a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#icomments" class="dw-cmt-link">评论：</a></span>
+		<span id="relatedDownloads"></span></p>
+		</div>
+		<div class="ibm-col-6-2 dw-toc-margin">
+			<p class="dw-summary-author"><a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#authorN10039" class="ibm-popup-link" onclick="ibmweb.overlay.show(&#39;authorN10039&#39;,this);return false;">郑 溪龙</a> (<a href="mailto:zhengxil@cn.ibm.com?subject=%E4%BD%BF%E7%94%A8%20JdbcProxy%20%E6%B5%8B%E8%AF%95%20Java%20%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F">zhengxil@cn.ibm.com</a>), 软件工程师, IBM中国软件开发中心</p>
+<div id="authorN10039" class="ibm-common-overlay"><div class="ibm-head"><p><a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#close" class="ibm-common-overlay-close">关闭 [x]</a></p></div><div class="ibm-body"><div class="ibm-main"><div class="ibm-title"><!--this is where the h2 usually goes--></div><div class="ibm-container ibm-alternate"><div class="ibm-container-body">
+<p><!--.-->
+<strong>郑溪龙</strong>是一位 IBM 中国软件开发中心（CSDL）的软件工程师，专注于 web 应用开发。目前从事电子商务类应用的开发，对于快速开发框架，测试驱动开发有浓厚的兴趣。您可以通过邮件 zhengxil@cn.ibm.com 和作者取得联系。</p><br><br></div></div></div></div><div class="ibm-footer"><!----></div></div>
+<p class="dw-summary-author"><a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#authorN1004B" class="ibm-popup-link" onclick="ibmweb.overlay.show(&#39;authorN1004B&#39;,this);return false;">辛 国年</a> (<a href="mailto:xingn@cn.ibm.com?subject=%E4%BD%BF%E7%94%A8%20JdbcProxy%20%E6%B5%8B%E8%AF%95%20Java%20%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F">xingn@cn.ibm.com</a>), 软件工程师, IBM 中国软件开发中心</p>
+<div id="authorN1004B" class="ibm-common-overlay"><div class="ibm-head"><p><a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#close" class="ibm-common-overlay-close">关闭 [x]</a></p></div><div class="ibm-body"><div class="ibm-main"><div class="ibm-title"><!--this is where the h2 usually goes--></div><div class="ibm-container ibm-alternate"><div class="ibm-container-body">
+<p><!--.-->
+辛国年，是一位 IBM CSDL 的软件工程师，从事多年 J2EE 开发和测试工作，有丰富的软件开发和测试经验。目前从事企业内容管理软件的测试工作。您可以通过 xingn@cn.ibm.com 和他联系。</p><br><br></div></div></div></div><div class="ibm-footer"><!----></div></div>
+<p class="dw-summary-author"><a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#authorN1005B" class="ibm-popup-link" onclick="ibmweb.overlay.show(&#39;authorN1005B&#39;,this);return false;">徐 方</a>, 软件工程师, IBM 中国软件开发中心</p>
+<div id="authorN1005B" class="ibm-common-overlay"><div class="ibm-head"><p><a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#close" class="ibm-common-overlay-close">关闭 [x]</a></p></div><div class="ibm-body"><div class="ibm-main"><div class="ibm-title"><!--this is where the h2 usually goes--></div><div class="ibm-container ibm-alternate"><div class="ibm-container-body">
+<p><!--.-->
+<strong>徐方</strong>是北京师范大学信息管理专业研究生，曾在 IBM CSDL 北京的 Enterprise Application Development 组实习。熟悉 DB2，J2EE 等技术，对 Web 应用、Java 技术很感兴趣。</p><br><br></div></div></div></div><div class="ibm-footer"><!----></div></div>
+			<p class="dw-summary-date">2008 年 11 月 14 日</p>
+			
+
+
+			<div aria-hidden="true" class="ibm-container" id="dw-toc"><div class="ibm-container-body"><ul class="ibm-twisty"><li><a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#toggle" class="ibm-twisty-trigger ibm-twisty-trigger-closed"><img src="./使用 JdbcProxy 测试 Java 应用程序_files/c(1).gif" alt="+"></a><span class="ibm-twisty-head">内容</span><div class="ibm-twisty-body" style="display: none;"><ul style="font-size:0.8em" class="ibm-link-list">
+<li><a class="ibm-anchor-down-em-link" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#N10074">简介</a></li>
+<li><a class="ibm-anchor-down-em-link" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#N10082">使用JdbcProxy</a></li>
+<li><a class="ibm-anchor-down-em-link" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#N101B0">改进JdbcProxy</a></li>
+<li><a class="ibm-anchor-down-em-link" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#N1020A">结语</a></li>
+<li><a class="ibm-anchor-down-em-link" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#download">下载</a></li>
+<li><a class="ibm-anchor-down-em-link" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#resources">参考资料 </a></li>
+<li><a class="ibm-anchor-down-em-link" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#icomments">评论</a></li></ul></div></li></ul></div></div>
+		</div>
+	</div>
+	<!-- SUMMARY_END -->
+</div><div id="ibm-pcon">
+
+<!-- BEGIN_IBM-CONTENT -->
+<div id="ibm-content">
+
+<!-- BEGIN_IBM-CONTENT-BODY -->
+<div id="ibm-content-body">
+
+<!-- BEGIN_IBM-CONTENT-MAIN -->
+<div id="ibm-content-main">
+
+<!-- 1_1_COLUMN_BEGIN -->
+<div class="ibm-columns">
+<div class="ibm-col-1-1">
+
+<p>在我们测试 Java 应用程序时，往往需要连接数据库，并从数据库中获得准确的测试数据用以测试应用程序是否正确。然而准备测试数据的工作较为复杂，一旦数据库中的数据发生变化，要想恢复到之前的版本也很费时。对于那些没有条件连接数据库的测试者而言，测试工作是不能进行下去的。因此，如果可以为某个待测应用准备一套完备的测试数据，让程序开发、测试人员在不依赖于具体数据库的情况下对应用进行测试，这无疑是十分方便的。</p><h2 id="N10074">简介</h2><p>JdbcProxy 是 SourceForge 上一个开源的 Java 项目，用 Java 语言编写，遵循 LGPL 和 MPL1.1 协议，由 Frans van Gool 开发，支持 JDBC2.0 规范。通过继承和重写 JDBC2.0 的接口，将一个 Java 应用访问数据库的过程记录在 XML 文件中，并通过这些文件在脱离数据库的情况下重现这个调用过程。 JdbcProxy 可以用在 Java 应用程序的测试中，进行数据准备并模拟数据库调用过程。读者可以从 <a href="http://jdbcproxy.sourceforge.net/">JdbcProxy 主页</a> 获得最新的程序源代码以及说明文档。目前最新的版本是 1.1 。</p><p>使用 JdbcProxy 代替普通的数据库调用可以满足程序开发、测试人员的很多需求，使准备测试数据的工作变得简单。以文章查询系统为例，有些测试用例需要测试当数据库中没有数据时页面的显示情况——显示没有相应数据的页面；有些测试用例需要测试当数据库中只有一条数据时页面的显示情况——显示文章的内容而不是文章的列表；还有些测试用例需要测试页面的分页效果，这时就需要为程序准备不同的测试数据。如果采用直接连接测试用数据库的方式进行测试，不同的测试用例需要重新准备测试数据库，操作起来比较复杂，也不能同时测试不同的测试场景。如果使用 JdbcProxy，就可以为同一个 Java 程序准备不同的测试用数据文件，测试者可以脱离后端数据库的限制，只需要访问到数据文件就能完成测试。不同测试人员能够彼此不受影响的同时测试这个应用，从而大大简化了准备测试环境的过程。</p><h2 id="N10082">使用 JdbcProxy</h2><p>JdbcProxy 提供了<strong>两种</strong>记录 JDBC 调用过程的方式，<strong>一种是方便开发人员和测试人员阅读的，另一种是用于回放 JDBC 调用过程的</strong>。</p><p>第一种方式主要是为了让开发人员和测试人员能够了解 Java 应用调用 JDBC 的详细信息，当应用程序较为复杂——例如进行了多表查询，采用这种记录方式可以让开发人员和测试人员一目了然的看到应用程序访问数据库的过程。</p><p>第二种方式是为测试程序准备数据的关键步骤之一。为了回放 JDBC 调用过程，JdbcProxy 分别处理应用程序对数据库的每个请求 (request) 与响应 (response)，并在指定目录下生成一系列 XML 文件，这些文件是回放 JDBC 调用过程的基础。这些 request/response 文件并不能直接被 JdbcProxy 调用，JdbcProxy 还提供了一个 StubTraceMerger 工具，用来将这些 request/response 文件整合在一个文件中，这个整合的文件就是我们测试 Java 应用所需要的数据文件。</p><p>JdbcProxy 提供了一种通过 HTTP 服务器发送请求并接收响应的机制，这些请求和响应都按照应用程序的 JDBC 调用顺序记录在整合文件中，当 Java 应用试图通过 JDBC 连接数据库时，JdbcProxy 会通过 HTTP 服务器从整合文件中读取相应的数据，模拟调用数据库的过程，使用户得以在脱离数据库的情况下进行 Java 应用的测试。</p><p>因此要想利用 JdbcProxy 测试 Java 应用程序，首先需要生成用于回放 JDBC 调用过程的 request/response 文件，然后将这些 request/response 文件整合在一个文件中，最后将这个整合的数据文件提供给 HTTP 服务器，这样 JdbcProxy 就可以通过 HTTP 服务器访问到数据文件，实现脱离数据库进行测试的目的。</p><p>下面将对 JdbcProxy 提供的每个功能做详细的介绍。</p><h3 id="N1009A">记录方便开发人员和测试人员阅读的 JDBC 调用过程</h3><p>JdbcProxy 可以跟踪 JDBC 调用过程，生成方便开发人员和测试人员阅读的文件格式。在普通的数据库调用中，如果开发人员和测试人员想了解 JDBC 的调用过程，或者需要完整的查看某个 SQL 语句，则需要手工将这些信息打印出来或者记录在日志中。 JdbcProxy 的这个功能就像为 JDBC 的调用过程自动记录了一个日志，开发人员和测试人员可以从日志中获得被调用的每一个方法，以及调用方法的参数和返回值。这样便于开发人员和测试人员发现由于 SQL 语句拼写错误而导致的数据库访问失败，或是由于数据库中没有数据而导致的空指针异常，使应用程序的数据库访问过程更加直观。可以根据<a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#listing1">清单 1</a>中的示例代码生成 JDBC 调用过程。</p><h5 id="listing1">清单 1</h5><div class="codesection"><pre class="displaycode">import java.sql.Statement; 
+
+public class JdbcProxyDemo { 
+    public static void main(String args[]) throws Exception {
+        String driver = "nl.griffelservices.proxy.jdbc.oracle.StubTracerDriver";
+        String url = "jdbc:tracer::COM.ibm.db2.jdbc.app.DB2Driver:jdbc:db2:SAMPLE";
+        Class.forName(driver); 
+        Connection connection = DriverManager.getConnection(url); 
+        Statement stmt = connection.createStatement(); 
+        stmt.executeUpdate("DELETE FROM greetings WHERE greeting='Good Night'");//delete
+        stmt.executeUpdate("INSERT INTO greetings VALUES('Good Evening')"); //insert 
+        stmt.executeUpdate("UPDATE greetings SET greeting = 'Good Night' 
+            WHERE greeting = 'Good Evening'"); //update
+        ResultSet rs = stmt.executeQuery("SELECT * FROM greetings");//select
+        while (rs.next()) { 
+            System.out.println(rs.getString("greeting")); 
+        } 
+        rs.close(); 
+        stmt.close(); 
+        connection.close(); 
+    } 
+ }</pre></div><p>与普通数据库调用不同，<a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#listing1">清单 1</a>中示例程序中所需的数据库驱动是 JdbcProxy 提供的<strong>StubTracerDriver</strong>，URL 的结构如下：</p><div class="codesection"><pre class="displaycode">jdbc:tracer:&lt;filename&gt;:&lt;driver&gt;:&lt;url&gt;</pre></div><p>其中：</p><ul class="ibm-bullet-list"><li>&lt;filename&gt; 是保存结果的文件名；如果为空，结果会被输出到控制台。</li><li>&lt;driver&gt; 是数据库驱动名，该示例程序使用的是 db2 的驱动。</li><li>&lt;url&gt; 是数据源的 URL，该示例程序使用 jdbc:db2:SAMPLE，不需要用户名和密码。</li></ul><p>运行上述程序得到<a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#listing2">清单 2</a>的记录结果：</p><h5 id="listing2">清单 2</h5><div class="codesection"><pre class="displaycode">//<strong>记录调用 getConnection 方法</strong>java.sql.Driver.connect(jdbc:db2:SAMPLE, {}) returns 
+ DB2Connection 
+ { 
+    connectionHandle = 1 
+    SPConnected = false 
+    source = SAMPLE 
+    user = 
+    conArgs = 
+    closed = false 
+    describeCached = false 
+    describeParam = true 
+    isReadOnly = false 
+    autoClose = false 
+    LONGDATA compat = false      
+ } 
+
+ //记录建立的 Connection 对象
+ java.sql.Connection.&lt;init&gt;( 
+ DB2Connection 
+ { 
+    connectionHandle = 1 
+    SPConnected = false 
+    source = SAMPLE 
+    user = 
+    conArgs = 
+    closed = false 
+    describeCached = false 
+    describeParam = true 
+    isReadOnly = false 
+    autoClose = false 
+    LONGDATA compat = false 
+ } 
+ ) 
+ //记录调用 createStatement 方法
+ java.sql.Connection.createStatement() returns 
+ DB2Statement 
+ { 
+    Connection -&gt; DB2Connection 
+    Connection -&gt; { 
+    Connection -&gt;     connectionHandle = 1 
+    Connection -&gt;     SPConnected = false 
+    Connection -&gt;     source = SAMPLE 
+    Connection -&gt;     user = 
+    Connection -&gt;     conArgs = 
+    Connection -&gt;     closed = false 
+    Connection -&gt;     describeCached = false 
+    Connection -&gt;     describeParam = true 
+    Connection -&gt;     isReadOnly = false 
+    Connection -&gt;     autoClose = false 
+    Connection -&gt;     LONGDATA compat = false 
+    Connection -&gt; } 
+
+    ResultSet -&gt; null 
+
+    statementHandle = 1:1 
+    SQL = null 
+    maxRows = 0 
+    maxFieldSize = 0 
+    rowCount = 0 
+    colCount = 0 
+    closed = false 
+    internalStmt = false 
+    returnCode = 0 
+ } 
+
+ //记录建立的 Statement 对象
+ java.sql.Statement.&lt;init&gt;( 
+ DB2Statement 
+ { 
+    Connection -&gt; DB2Connection 
+    Connection -&gt; { 
+    Connection -&gt;     connectionHandle = 1 
+    Connection -&gt;     SPConnected = false 
+    Connection -&gt;     source = SAMPLE 
+    Connection -&gt;     user = 
+    Connection -&gt;     conArgs = 
+    Connection -&gt;     closed = false 
+    Connection -&gt;     describeCached = false 
+    Connection -&gt;     describeParam = true 
+    Connection -&gt;     isReadOnly = false 
+    Connection -&gt;     autoClose = false 
+    Connection -&gt;     LONGDATA compat = false 
+    Connection -&gt; } 
+
+    ResultSet -&gt; null 
+
+    statementHandle = 1:1 
+    SQL = null 
+    maxRows = 0 
+    maxFieldSize = 0 
+    rowCount = 0 
+    colCount = 0 
+    closed = false 
+    internalStmt = false 
+    returnCode = 0 
+ } 
+ ) 
+ //执行删除操作，操作成功，返回值是 1
+ java.sql.Statement.executeUpdate(DELETE FROM greetings WHERE greeting='Good Night') 
+ returns 1 
+ //执行添加操作，操作成功，返回值是 1
+ java.sql.Statement.executeUpdate(INSERT INTO greetings VALUES('Good Evening')) 
+ returns 1 
+ //执行修改操作，操作成功，返回值是 1
+ java.sql.Statement.executeUpdate(UPDATE greetings SET greeting = 'Good Night' 
+     WHERE greeting = 'Good Evening') 
+ returns 1 
+ //执行查询操作并返回结果集
+ java.sql.Statement.executeQuery(SELECT * FROM greetings) returns 
+ DB2ResultSet 
+ { 
+    Statement -&gt; DB2Statement 
+    Statement -&gt; { 
+    Statement -&gt;     Connection -&gt; DB2Connection 
+    Statement -&gt;     Connection -&gt; { 
+    Statement -&gt;     Connection -&gt;     connectionHandle = 1 
+    Statement -&gt;     Connection -&gt;     SPConnected = false 
+    Statement -&gt;     Connection -&gt;     source = SAMPLE 
+    Statement -&gt;     Connection -&gt;     user = 
+    Statement -&gt;     Connection -&gt;     conArgs = 
+    Statement -&gt;     Connection -&gt;     closed = false 
+    Statement -&gt;     Connection -&gt;     describeCached = false 
+    Statement -&gt;     Connection -&gt;     describeParam = true 
+    Statement -&gt;     Connection -&gt;     isReadOnly = false 
+    Statement -&gt;     Connection -&gt;     autoClose = false 
+    Statement -&gt;     Connection -&gt;     LONGDATA compat = false 
+    Statement -&gt;     Connection -&gt; } 
+
+    Statement -&gt;     statementHandle = 1:1 
+    Statement -&gt;     SQL = SELECT * FROM greetings 
+    Statement -&gt;     maxRows = 0 
+    Statement -&gt;     maxFieldSize = 0 
+    Statement -&gt;     rowCount = 0 
+    Statement -&gt;     colCount = 0 
+    Statement -&gt;     closed = false 
+    Statement -&gt;     internalStmt = false 
+    Statement -&gt;     returnCode = 0 
+    Statement -&gt; } 
+
+    numCols = 1 
+    mappedRS = false 
+    nullTag = true 
+    closed = false 
+    maxFieldSize = 0 
+    returnCode = 0 
+    returnLen = 0 
+    colTypes[0] = 0 
+    colSizes[0] = 0 
+ } 
+
+ //记录建立的 ResultSet 对象
+ java.sql.ResultSet.&lt;init&gt;( 
+ DB2ResultSet 
+ { 
+    Statement -&gt; DB2Statement 
+    Statement -&gt; { 
+    Statement -&gt;     Connection -&gt; DB2Connection 
+    Statement -&gt;     Connection -&gt; { 
+    Statement -&gt;     Connection -&gt;     connectionHandle = 1 
+    Statement -&gt;     Connection -&gt;     SPConnected = false 
+    Statement -&gt;     Connection -&gt;     source = SAMPLE 
+    Statement -&gt;     Connection -&gt;     user = 
+    Statement -&gt;     Connection -&gt;     conArgs = 
+    Statement -&gt;     Connection -&gt;     closed = false 
+    Statement -&gt;     Connection -&gt;     describeCached = false 
+    Statement -&gt;     Connection -&gt;     describeParam = true 
+    Statement -&gt;     Connection -&gt;     isReadOnly = false 
+    Statement -&gt;     Connection -&gt;     autoClose = false 
+    Statement -&gt;     Connection -&gt;     LONGDATA compat = false 
+    Statement -&gt;     Connection -&gt; } 
+
+    Statement -&gt;     statementHandle = 1:1 
+    Statement -&gt;     SQL = SELECT * FROM greetings 
+    Statement -&gt;     maxRows = 0 
+    Statement -&gt;     maxFieldSize = 0 
+    Statement -&gt;     rowCount = 0 
+    Statement -&gt;     colCount = 0 
+    Statement -&gt;     closed = false 
+    Statement -&gt;     internalStmt = false 
+    Statement -&gt;     returnCode = 0 
+    Statement -&gt; } 
+
+    numCols = 1 
+    mappedRS = false 
+    nullTag = true 
+    closed = false 
+    maxFieldSize = 0 
+    returnCode = 0 
+    returnLen = 0 
+    colTypes[0] = 0 
+    colSizes[0] = 0 
+ } 
+ ) 
+ //执行 rs.next() 方法，返回值是 true
+ java.sql.ResultSet.next() returns true 
+ //执行 rs.getString() 方法，返回对应列的值
+ java.sql.ResultSet.getString(greeting) returns Good Night 
+ //执行 System.out.println Good Night 
+ java.sql.ResultSet.next() returns true 
+ java.sql.ResultSet.getString(greeting) returns Good Morning 
+ Good Morning 
+ java.sql.ResultSet.next() returns true 
+ java.sql.ResultSet.getString(greeting) returns Good Afternoon 
+ Good Afternoon 
+ //执行 rs.next() 方法，返回值是 false
+ java.sql.ResultSet.next() returns false 
+ //关闭 ResultSet
+ java.sql.ResultSet.close() 
+ //关闭 Statement
+ java.sql.Statement.close() 
+ //关闭 Connection
+ java.sql.Connection.close()</pre></div><p>可以看到，JdbcProxy 记录下了每一个 JDBC 调用的参数和返回值，可以很容易的通过这些值判断出程序在什么地方出现问题。如果运行过程中出现异常，JdbcProxy 还可以将抛出的异常记录下来。</p><h3 id="generate request/response files">记录用于回放的 JDBC 调用过程</h3><p>方便开发人员和测试人员阅读的 JDBC 调用过程其记录形式不便于进行解析，因此并不能直接被用来回放的 JDBC 调用过程。为了简化准备数据的过程，JdbcProxy 还可以生成一种用于回放 JDBC 调用过程的，特别是易于在 HTTP 服务器上使用的记录文件。在运行新的程序之前，我们首先需要新建一个空的文件夹 output 用来存放 JdbcProxy 生成的一系列 request/response 文件，然后将 url 做以下修改，如 <a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#listing3">清单 3</a> 所示。</p><h5 id="listing3">清单 3</h5><div class="codesection"><pre class="displaycode">String url = "jdbc:stubtracer:output:COM.ibm.db2.jdbc.app.DB2Driver:jdbc:db2:SAMPLE";</pre></div><p>URL 结构如下：</p><div class="codesection"><pre class="displaycode">jdbc:stubtracer:&lt;foldername&gt;:&lt;driver&gt;:&lt;url&gt;</pre></div><p>其中：</p><ul class="ibm-bullet-list"><li>&lt;foldername&gt; 是输出 request/response 文件的位置；如果为空则将文件内容输出到控制台。</li><li>&lt;driver&gt; 是数据库驱动名，该示例程序使用的是 DB2 的驱动。</li><li>&lt;url&gt; 是数据源的 URL，该示例程序使用 jdbc:db2:SAMPLE，不需要用户名和密码。</li></ul><p>运行上述程序会在指定目录下生成 32 个以 request/response 开头的文本文件，如<a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#fig1">图 1</a>所示。</p><h5 id="fig1">图 1. request/response 文件</h5><img alt="图 1. request/response文件" src="./使用 JdbcProxy 测试 Java 应用程序_files/requestresponse_files.gif" width="237"><p>这些文件包含了回放 JDBC 调用过程所需的所有请求和响应。以建立 Connection 的请求为例，该示例程序对数据库的第一个请求就是建立 Connection，这个过程记录在 request_0_0.txt 文件中，参见<a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#listing4">清单 4</a>。其中文件名中的 2 个“ 0 ”分别代表本次 JDBC 调用的 id 和 status，调用的方法是 connect 。</p><h5 id="listing4">清单 4</h5><div class="codesection"><pre class="displaycode">&lt;?xml version="1.0" encoding="UTF-8"?&gt; 
+ &lt;request&gt; 
+   &lt;class&gt;java.sql.Driver&lt;/class&gt; 
+   &lt;id&gt;0&lt;/id&gt; 
+   &lt;status&gt;0&lt;/status&gt; 
+   &lt;method&gt;connect&lt;/method&gt; 
+   &lt;parameter&gt; 
+      &lt;class&gt;java.lang.String&lt;/class&gt; 
+      &lt;value&gt;jdbc:db2:SAMPLE&lt;/value&gt; 
+   &lt;/parameter&gt; 
+   &lt;parameter&gt; 
+      &lt;class&gt;java.util.Properties&lt;/class&gt; 
+      &lt;value&gt;{language=C}&lt;/value&gt; 
+   &lt;/parameter&gt; 
+ &lt;/request&gt;</pre></div><p>JdbcProxy 会根据 request 文件中 id 和 status 的值找到对应的 response 文件，在本例中为 response_0_0.txt，参见<a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#listing5">清单 5</a>。在 response_0_0.txt 中，我们看到已经新建了一个 java.sql.Connection 的对象，并且指定了下一个请求的 id 和 status 。</p><h5 id="listing5">清单 5</h5><div class="codesection"><pre class="displaycode">&lt;?xml version="1.0" encoding="UTF-8"?&gt; 
+ &lt;response&gt; 
+   &lt;newstatus&gt;1&lt;/newstatus&gt; 
+   &lt;returnvalue&gt; 
+      &lt;nl.griffelservices.proxy.stub.ProxyObject&gt; 
+         &lt;class&gt;java.sql.Connection&lt;/class&gt; 
+         &lt;id&gt;1&lt;/id&gt; 
+         &lt;status&gt;0&lt;/status&gt; 
+      &lt;/nl.griffelservices.proxy.stub.ProxyObject&gt; 
+   &lt;/returnvalue&gt; 
+ &lt;/response&gt;</pre></div><h3 id="N10121">整合 request/response 文件</h3><p>在上面生成的 request/response 文件还需要进行整合才能提供给 HTTP 服务器用于回放 JDBC 调用过程。可以使用 StubTraceMerger 工具将一系列 request/response 文件整合成一个文件。整合文件需要运行的命令如<a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#listing6">清单 6</a>所示。</p><h5 id="listing6">清单 6</h5><div class="codesection"><pre class="displaycode">StubTracerMerger output</pre></div><p>该命令的结构如下：</p><div class="codesection"><pre class="displaycode">StubTracerMerger &lt;foldername&gt;&nbsp;[&nbsp;&lt;id&gt;&nbsp;[&nbsp;&lt;status&gt;&nbsp;] ]</pre></div><p>其中：</p><ul class="ibm-bullet-list"><li>&lt;foldername&gt; 是 request/response 文件存放的位置，不可为空。</li><li>&lt;id&gt; 是需要整合的初始响应的 id，默认值为 0，即整合完整的 JDBC 调用过程。</li><li>&lt;status&gt; 是需要整合的初始响应的 status，默认值为 0 。</li></ul><p>运行上述命令，StubTracerMerger 会将所有 request/response 文件的内容按照调用的顺序整合在一个 &lt;response&gt; 元素下，并在控制台上输出一段整合的 XML 文件。从 XML 文件中，我们能够看到 StubTracerMerger 将新建的 Connection，Statement 以及 ResultSet 对象记录在 ProxyObject 结点中，调用的方法则被记录在 requestresponse 结点。例如：java.sql.Connection 调用了 createStatement() 以及 close() 两个方法，所以 Connection 的 ProxyObject 结点中包含了两个 requestresponse 子结点；生成的 java.sql.Statement 分别进行了删除、添加、修改、查询，以及关闭 Statement 操作，因此该结点包含 5 个 requestresponse 子结点。其中 id 代表对象的标识，status 代表该对象状态，初始值为 0 。按照这种方式，JdbcProxy 将 Java 应用程序调用 JDBC 访问数据库的过程记录成了一个 XML 文件。<a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#listing7">清单 7</a>中给出一段执行删除操作的示例，读者可以在文章最后的 <a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#download">下载</a> 区下载到完整的 XML 文件。</p><h5 id="listing7">清单 7</h5><div class="codesection"><pre class="displaycode">&lt;?xml version="1.0" encoding="UTF-8"?&gt; 
+ &lt;response&gt; 
+   &lt;newstatus&gt;1&lt;/newstatus&gt; 
+   &lt;returnvalue&gt; 
+      &lt;nl.griffelservices.proxy.stub.ProxyObject&gt; 
+         &lt;!--<strong>初始化 Connection 对象</strong>--&gt; 
+         &lt;class&gt;java.sql.Connection&lt;/class&gt; 
+         &lt;!--<strong>Connection 对象的 id 是 1</strong>--&gt; 
+         &lt;id&gt;1&lt;/id&gt; 
+         &lt;!--<strong>Connection 对象的 status，初始值为 0</strong>--&gt; 
+         &lt;status&gt;0&lt;/status&gt; 
+         &lt;requestresponse&gt; 
+            &lt;request&gt; 
+               &lt;!--<strong>第一次使用 Connection 对象，调用 createStatement 方法，因此 status 赋值 0</strong>--&gt; 
+               &lt;status&gt;0&lt;/status&gt; 
+               &lt;!--<strong>调用 createStatement 方法</strong>--&gt; 
+               &lt;method&gt;createStatement&lt;/method&gt; 
+            &lt;/request&gt; 
+            &lt;response&gt; 
+               &lt;!--<strong>Connection 对象下一次被使用时 status 的值</strong>--&gt; 
+               &lt;newstatus&gt;1&lt;/newstatus&gt; 
+               &lt;returnvalue&gt; 
+                  &lt;nl.griffelservices.proxy.stub.ProxyObject&gt; 
+                     &lt;!--<strong>初始化 Statement 对象</strong>--&gt; 
+                     &lt;class&gt;java.sql.Statement&lt;/class&gt; 
+                     &lt;!--<strong>Statement 对象的 id 是 2</strong>--&gt; 
+                     &lt;id&gt;2&lt;/id&gt; 
+                     &lt;!--<strong>Statement 对象的 status，初始值为 0</strong>--&gt; 
+                     &lt;status&gt;0&lt;/status&gt; 
+                     &lt;!--<strong>执行删除操作的代码</strong>--&gt; 
+                     &lt;requestresponse&gt; 
+                        &lt;request&gt; 
+                        &lt;!--<strong>第一次使用 Statement 对象，调用 executeUpdate 方法，因此 status 赋值 0</strong>--&gt; 
+                           &lt;status&gt;0&lt;/status&gt; 
+                           &lt;!--<strong>调用 executeUpdate 方法</strong>--&gt; 
+                           &lt;method&gt;executeUpdate&lt;/method&gt; 
+                           &lt;!--<strong>executeUpdate 方法的参数</strong>--&gt; 
+                           &lt;parameter&gt; 
+                              &lt;class&gt;java.lang.String&lt;/class&gt; 
+                              &lt;!--<strong>执行删除的 SQL 语句</strong>--&gt; 
+                              &lt;value&gt;DELETE FROM greetings 
+                                           WHERE greeting='Good Night'&lt;/value&gt; 
+                           &lt;/parameter&gt; 
+                        &lt;/request&gt; 
+                        &lt;response&gt; 
+                           &lt;newstatus&gt;1&lt;/newstatus&gt; 
+                           &lt;!--<strong>执行删除操作成功，返回值为 1</strong>--&gt; 
+                           &lt;returnvalue&gt; 
+                              &lt;int&gt;1&lt;/int&gt; 
+                           &lt;/returnvalue&gt; 
+                        &lt;/response&gt; 
+                     &lt;/requestresponse&gt; 
+
+                     &lt;!--<strong>省去执行插入、更新、查询操作的代码</strong>--&gt; 
+
+                     &lt;requestresponse&gt; 
+                        &lt;request&gt; 
+                           &lt;status&gt;4&lt;/status&gt; 
+                           &lt;!--<strong>关闭 Statement 对象</strong>--&gt; 
+                           &lt;method&gt;close&lt;/method&gt; 
+                        &lt;/request&gt; 
+                        &lt;response&gt; 
+                           &lt;newstatus&gt;5&lt;/newstatus&gt; 
+                           &lt;returnvalue/&gt; 
+                        &lt;/response&gt; 
+                     &lt;/requestresponse&gt; 
+                  &lt;/nl.griffelservices.proxy.stub.ProxyObject&gt; 
+               &lt;/returnvalue&gt; 
+            &lt;/response&gt; 
+         &lt;/requestresponse&gt; 
+         &lt;requestresponse&gt; 
+            &lt;request&gt; 
+               &lt;status&gt;1&lt;/status&gt; 
+               &lt;!--<strong>关闭 Connection 对象</strong>--&gt; 
+               &lt;method&gt;close&lt;/method&gt; 
+            &lt;/request&gt; 
+            &lt;response&gt; 
+               &lt;newstatus&gt;2&lt;/newstatus&gt; 
+               &lt;returnvalue/&gt; 
+            &lt;/response&gt; 
+         &lt;/requestresponse&gt; 
+      &lt;/nl.griffelservices.proxy.stub.ProxyObject&gt; 
+   &lt;/returnvalue&gt; 
+ &lt;/response&gt;</pre></div><h3 id="N1018A">通过 HTTP 服务器回放 JDBC 调用过程</h3><p>JdbcProxy 提供了通过 HTTP 服务器回放 JDBC 调用过程的方式，即用户只需要将准备好的数据文件提供给 HTTP 服务器就可以在脱离数据库的情况下模拟对数据库的访问，完成 Java 应用的测试。如果想通过 HTTP 服务器回放 JDBC 调用过程，只需要修改示例程序中的 url，如<a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#listing8">清单 8</a>所示。</p><h5 id="listing8">清单 8</h5><div class="codesection"><pre class="displaycode">String url = "jdbc:stub:localhost:80:1000";</pre></div><p>URL 结构如下：</p><div class="codesection"><pre class="displaycode">jdbc:stub:&lt;hostname&gt;:&lt;port&gt;:&lt;timeout&gt;</pre></div><p>其中：</p><ul class="ibm-bullet-list"><li>&lt;hostname&gt; 是 HTTP 服务器的主机名，本地机器为 localhost 。</li><li>&lt;port&gt; 是 HTTP 服务器的端口号。</li><li>&lt;timeout&gt; 是超时时间，单位是毫秒。</li></ul><p>在该示例程序中我们采用 Apache 的 HTTP server 2.2.4，使用默认端口 80 。用整合的数据文件替换 \htdocs 目录下的默认欢迎页面，这样 HTTP 服务器就可以从本地 80 端口接收请求并在数据文件中匹配到相应的 response，将 response 内容返回给 Java 应用程序。我们可以在控制台得到与直接连接数据库时相同的返回结果，JdbcProxy 可以通过预先准备好的数据文件，在不连接数据库的情况下通过 HTTP 服务器获得准确的响应数据，测试 Java 应用程序是否能够正确执行。</p><p>开发人员和测试人员可以通过修改整合的数据来获得不同的测试场景，例如按照整合文件的数据格式添加新的数据、删除多余的数据、或是修改数据的类型，用来构建不同的测试用例，满足不同测试的需要。</p><h2 id="N101B0">改进 JdbcProxy</h2><p>在整合 request/response 文件时，JdbcProxy 只能将整合的数据文件输出到控制台，这种输出方式非常不利于在回放过程中使用。如果可以直接将其输入到 \htdocs 目录下的默认文件中，则省去了每次移动文件的麻烦。另外，JdbcProxy 只提供通过 HTTP 服务器回放 JDBC 调用过程的方式，必须有 HTTP 服务器的支持。因此，我们对 JdbcProxy 进行了一些改进，首先可以将整合的文件直接输出到指定目录下，其次可以不依靠 HTTP 服务器直接从整合文件中获取 JDBC 响应。</p><p>下面将介绍如何直接生成整合文件以及通过整合文件回放 JDBC 调用过程。</p><h3 id="N101BA">直接生成整合文件</h3><p>在生成整合文件时，我们可以省去一系列生成 request/response 文件的步骤，直接将每个 request 和 response 存储于一个静态的 TreeMap 中，再将 TreeMap 中的内容整合并按照指定路径输出到文件中。这样做可以大大节省依次读取每个 request/response 文件所需要的时间，提高程序运行的效率。同时，可以自行指定整合文件的输出位置，不需要手动将整合的数据文件内容从控制台复制到 \htdocs 目录下的默认欢迎页面，在一定程度上减少了工作量。此处的改动包括：修改了 StubTracerHandler 类的 invoke 方法，在 nl.griffelservices.proxy.stub 包下增加了 FileStubTracerMerger 类，demo 包下增加了 GenerateMergerFile 类。</p><p>在运行程序之前，需要先将 StubTracerHandler 类的 invoke 方法做如下修改：</p><div class="codesection"><pre class="displaycode">tracer.trace(request, response);</pre></div><p>改成</p><div class="codesection"><pre class="displaycode">new FileStubTracerMerger(map,request,response);</pre></div><p>以便直接从内存中读取 response 生成整合文件。此外还需要运行下面程序，如<a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#listing9">清单 9</a>所示。</p><h5 id="listing9">清单 9</h5><div class="codesection"><pre class="displaycode">import java.sql.Statement; 
+public class JdbcProxyDemo { 
+    public static void main(String args[]) throws Exception {
+        String driver = "nl.griffelservices.proxy.jdbc.oracle.StubTracerDriver";　
+        String url = "jdbc:stubtracer::COM.ibm.db2.jdbc.app.DB2Driver:jdbc:db2:SAMPLE";
+        Class.forName(driver); 
+        Connection connection = DriverManager.getConnection(url); 
+        Statement stmt = connection.createStatement(); 
+        stmt.executeUpdate("DELETE FROM greetings WHERE greeting='Good Night'");//delete
+        stmt.executeUpdate("INSERT INTO greetings VALUES('Good Evening')");//insert
+        stmt.executeUpdate("UPDATE greetings SET greeting = 'Good Night' 
+            WHERE greeting = 'Good Evening'"); //update
+        ResultSet rs = stmt.executeQuery("SELECT * FROM greetings");//select
+        while (rs.next()) { 
+            System.out.println(rs.getString("greeting")); 
+        } 
+        rs.close(); 
+        stmt.close(); 
+        connection.close(); 
+　
+        //将整合数据文件输出到 output/mergerfile.xml
+        GenerateMergerFile mergerfile = new GenerateMergerFile("output/mergerfile.xml"); 　
+        mergerfile.generateFile(); 
+    } 
+ }</pre></div><p>其中所需要的 driver 与前面<a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#generate request/response files">记录用于回放的 JDBC 调用过程</a>中的 driver 相同，url 则不需要提供 foldername 。另外还要在程序的最后加入两行代码，GenerateMergerFile 方法所需的参数即整合文件的相对路径和文件名。运行上述程序，在 output 目录下会生成名为 mergerfile.xml 的整合文件，mergerfile.xml 即为测试 Java 应用程序所准备的数据文件。</p><h3 id="N101E1">通过整合文件回放调用过程</h3><p>对于直接通过整合文件回放 JDBC 调用过程的问题，我们重写了 JdbcProxy 中的一些方法。依然使用前面的示例程序，如果采用这种方式回放调用过程，我们要修改 driver 和 url 两个参数，如<a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#listing9">清单 10</a>所示。</p><h5 id="listing11">清单 10</h5><div class="codesection"><pre class="displaycode"> String driver = "nl.griffelservices.proxy.jdbc.oracle.FileStubTracerDriver"; 
+ String url = "jdbc:stub:output/mergerfile.xml";</pre></div><p>通过对这两个参数的修改，JdbcProxy 将调用我们重写的方法，不需要通过 HTTP 服务器而是直接从整合文件中获取程序所需的响应结果。此处的改动包括：在 nl.griffelservices.proxy.stub 包下增加了 FileClient、FileStub、FileStubHandler、FileStubTracerMerger 四个类，在 nl.griffelservices.proxy.jdbc.oracle 包下增加了 FileStubTracerDriver 类，在 nl.griffelservices.proxy.jdbc.util 包下增加了 FileCombinedHandler 类。我们主要修改了 FileCombinedHandler 类中的 DriverUrl 方法用于解析新的参数；修改了 FileClient 类中的 invoke 方法用于从整合文件中读取相应的 response 。读者可以从文章最后的<a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#download">下载区</a>中下载修改后的代码。</p><p>此时数据库驱动是我们改写的提供的<strong>FileStubTracerDriver</strong>，URL 的结构如下：</p><div class="codesection"><pre class="displaycode">jdbc:stub:&lt;filepath&gt;</pre></div><p>其中：</p><ul class="ibm-bullet-list"><li>&lt;filepath&gt; 是整合文件的相对路径和文件名。</li></ul><p>运行上述程序，我们可以在控制台得到与直接连接数据库时相同的返回结果，不必通过 HTTP 服务器 JdbcProxy 也可以进行 Java 应用的测试。</p><h2 id="N1020A">结语</h2><p>JdbcProxy 可以让程序开发人员和测试人员脱离数据库的限制完成测试工作。如果测试工作需要多人共同完成，那么采用 HTTP 服务器的方式能够保证数据的一致性，更加便于小组成员协作；如果准备数据以及测试程序的工作由同一人完成，那么通过整合文件的方式则更加直接，能够提高程序运行的效率。</p><p>本文以一个实例介绍了 JdbcProxy 的基本功能，以及如何使用 JdbcProxy 进行数据的准备和测试。考虑到 JdbcProxy 只能通过 HTTP 服务器回放 JDBC 访问，本文还对 JdbcProxy 进行了改进，提供了直接通过整合的数据文件进行回放的方式。您可以根据实际情况选择合适的回放方式，参照这个实例对 JdbcProxy 进行修改，来测试您的 Java 应用程序，实现脱离数据库的测试工作。</p><p>值得注意的是，我们并不能保证本文所提出的使用 JdbcProxy 测试 Java 应用程序的方法可以完美地解决所有的问题。如果读者希望采用本方案，请参考 JdbcProxy 的文档以了解更多的信息。</p><!--CMA ID: true--><!--Site ID: 10--><!--XSLT stylesheet used to transform this file: dw-document-html-7.0.xsl-->
+<div class="ibm-alternate-rule"><hr></div><p class="ibm-ind-link ibm-back-to-top"><a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#ibm-pcon" class="ibm-anchor-up-link">回页首</a></p><h2 id="download">下载</h2><table class="ibm-data-table dw-download-table" cellpadding="0" cellspacing="0" border="0"><thead><tr><th scope="col">描述</th><th scope="col">名字</th><th scope="col">大小</th></tr></thead><tbody><tr><th scope="row" class="ibm-table-row">本文用到的 JdbcProxy 示例程序</th><td nowrap="nowrap"><a href="http://www.ibm.com/developerworks/apps/download/index.jsp?contentid=351936&filename=JdbcProxyTest.zip&method=http&locale=zh_CN">JdbcProxyTest.zip</a></td><td nowrap="nowrap">235 KB</td></tr><tr><th scope="row" class="ibm-table-row">整合的 XML 文件</th><td nowrap="nowrap"><a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/mergerfile.zip">mergerfile.zip</a></td><td nowrap="nowrap">1 KB</td></tr></tbody></table>
+
+</div>
+</div>
+<!-- 1_1_COLUMN_END -->
+
+<!-- SPLIT_COLUMNS_BEGIN -->
+<div class="ibm-columns">
+
+<!-- 6_4_COLUMN_BEGIN -->
+<div class="ibm-col-6-4">
+
+<h2 id="resources" class="ibm-rule">参考资料 </h2><ul class="ibm-bullet-list"><li>请从 <a href="http://jdbcproxy.sourceforge.net/">JdbcProxy Home Page</a> 中获得最新的程序和文档。</li><li>请从 <a href="http://java.sun.com/javase/technologies/database/">Java SE Technologies - Database</a> 中获得 JDBC 规范。</li><li>请从 <a href="http://www.ibm.com/developerworks/cn/java/">developerWorks Java 专区</a> 中获取更多 Java 方面的知识。</li><li>请从 <a href="http://www.ibm.com/developerworks/cn/opensource/">developerWorks Open source 专区</a> 中获取更多 Open Source 的知识。</li></ul>
+
+<!-- INLINE_COMMENTS_BEGIN -->
+<h2 id="icomments" class="ibm-alternate-rule ibm-no-print">条评论</h2>
+    
+<div class="ibm-no-print" id="dw-icomments-container">	
+	<div id="threadShow"><img id="imgPlHdr" src="./使用 JdbcProxy 测试 Java 应用程序_files/animated-progress-38x38c.gif" alt="" style="display: none;"><div id="cmtTog" style=""><div class="ibm-container ibm-alternate-two dw-commentbox dw-noborder"><div class="ibm-container-body dw-commentbox dw-noborder"><p id="signInSect">请 <a onclick="var e=arguments[0] || window.event; dwsi.siInst &amp;&amp; dwsi.siInst.showSignIn(); if (e.stopPropagation){ e.stopPropagation();} else { e.cancelBubble = true; } e.preventDefault &amp;&amp; e.preventDefault(); return false;" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#">登录</a> 或 <a href="http://www.ibm.com/developerworks/dwwi/DWAuthRouter?m=register&lang=zh_CN&d=http%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fjava%2Fj-lo-jdbcproxy%2F%23icomments">注册</a>  后发表评论。</p><p id="cmtHead"><label for="newCmt"><strong>添加评论:</strong></label></p><p>注意：评论中不支持 HTML 语法</p><div id="infoCmt"></div><form focus="name" enctype="multipart/form-data" method="post" action="" name="form" class="ibm-column-form ibm-styled-form"><p class="6-4-textarea"><textarea rows="5" name="newCmt" id="newCmt" class="dw-inoperable" disabled=""></textarea><br></p><span class="ibm-input-group"><input type="checkbox" value="1" name="comment_notification" id="comment_notification" disabled="disabled"><label id="notifyText" class="ibm-form-note dw-btn-cancel-sec" for="comment_notification">有新评论时提醒我</label></span><span class="ibm-form-note dw-btn-cancel-sec notifySection" id="maxCharsCount">剩余 <span id="charCount">1000</span> 字符</span><p class="ibm-buttons-row"><input type="button" value="发布" name="postCmt" id="postCmt" class="ibm-btn-sec ibm-btn-small ibm-disabled" disabled="disabled"></p></form></div></div><div class="ibm-alternate-rule"><hr></div><div id="topControl" class="ibm-container ibm-alternate-two dw-comment-totals" style="display: none;"><div class="ibm-container-body"><form id="selectComments" method="get" action=""><p>&nbsp;<span class="dw-comment-totals-label"><strong>共有评论 (<span id="numCmts">0</span>)</strong></span><span class="dw-how-many-comments-label" style="display:none" id="dropdownCmts"><label for="howManyComments"><strong>显示：</strong></label>&nbsp;<select name="comments" id="howManyComments" class="dw-how-many-comments"><option selected="selected" value="recent">最新评论   </option></select><input type="image" class="ibm-btn-go" name="ibm-go" value="Go" src="./使用 JdbcProxy 测试 Java 应用程序_files/short-btn.gif" alt="Go"><br></span></p></form></div></div><div id="cmtSect"><div class="comment"><div class="dw-icomment-container"><table class="dw-icomment-body" cellpadding="0" cellspacing="0" width="100%"><tbody><tr><td><p>快来添加第一条评论</p></td></tr></tbody></table></div></div></div></div><div id="bottomControl" class="ibm-container ibm-alternate-two dw-comment-totals" style="display: none;"><div class="ibm-container-body"><form id="selectComments2" method="get" action=""><p>&nbsp;<span class="dw-comment-totals-label"><strong>共有评论 (<span id="numCmts2">0</span>)</strong></span><span class="dw-how-many-comments-label" style="display:none" id="dropdownCmts2"><label for="howManyComments2"><strong>显示：</strong></label>&nbsp;<select name="comments" id="howManyComments2" class="dw-how-many-comments"><option selected="selected" value="recent">最新评论   </option></select><input type="image" class="ibm-btn-go" name="ibm-go" value="Go" src="./使用 JdbcProxy 测试 Java 应用程序_files/short-btn.gif" alt="Go"><br></span></p></form></div></div></div>
+</div>
+<!-- Sign in OVERLAY STARTS HERE -->
+    
+<!-- Sign in OVERLAY STARTS HERE -->
+<div class="ibm-common-overlay" id="signin_overlay">
+<div class="ibm-head">
+<p><a class="ibm-common-overlay-close" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#" onclick="dwsi.siInst.clearForm();">关闭 [x]</a></p>
+</div>
+<div class="ibm-body">
+<div class="ibm-main">
+
+ <div class="ibm-title">
+<h2>developerWorks: 登录</h2>
+<div id="ibm-overlay-error-signin" class="no-display"></div>
+</div>
+<div class="ibm-container ibm-alternate ibm-buttons-last">
+<div class="ibm-container-body">
+<p class="ibm-overlay-intro">标有星（<span class="ibm-required">*<span class="ibm-access">required</span></span>）号的字段是必填字段。</p> 
+<form class="ibm-column-form" id="sFormId" action="" method="post" name="sForm" onsubmit="return false;">
+<p><label for="ibmid">IBM ID:<span class="ibm-required">*<span class="ibm-access">required</span></span></label><span>
+    <input name="ibm-id" id="ibmid" size="25" value="" class="required" type="text" onkeypress="dwsi.siInst.handleEP(event,this.form);">
+    <br><a onclick="window.location=&#39;/developerworks/dwwi/DWAuthRouter?m=reg&amp;lang=zh_CN&amp;d=&#39;+encodeURIComponent(location.protocol + &#39;//&#39; + location.hostname + location.pathname + &#39;#icomments&#39;); return false;" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#" class="ibm-forward-link">需要一个 IBM ID？</a> <br>
+    <a class="ibm-forward-link" href="http://www.ibm.com/developerworks/dwwi/jsp/WSHelp.jsp?lang=zh_CN">忘记 IBM ID？</a> 
+</span>
+</p> 
+<p><label for="password">密码：<span class="ibm-required">*<span class="ibm-access">required</span></span></label><span>
+    <input name="password" id="password" size="25" value="" class="required" type="password" onkeypress="dwsi.siInst.handleEP(event,this.form);">
+    <br><a class="ibm-forward-link" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#" onclick="(function ()
+        {window.location=&#39;https://www.ibm.com/account/profile?page=forgot&amp;lang=zh_CN&amp;appname=ibm&amp;required=null&amp;d=&#39;+encodeURIComponent(dwsi.siInst.getAuthUrl())+&#39;%3Fm%3Dloginpage%26lang%3Dzh_CN%26d%3D&#39;+encodeURIComponent(location.href);})();">忘记密码？</a>
+    <br><a class="ibm-forward-link" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#" onclick="(function () {window.location=&#39;https://www.ibm.com/account/profile?page=chpw&amp;lang=zh_CN&amp;appname=ibm&amp;required=null&amp;d=&#39;+encodeURIComponent(location.href);})();">更改您的密码</a></span></p> 
+<p class="dw-perm-box">
+	<span><input id="perm" type="checkbox" name="perm_name"><label for="perm"> 保持登录。</label></span>
+</p>
+<p>单击提交则表示您同意developerWorks 的条款和条件。 <a href="http://www.ibm.com/developerworks/community/terms?lang=zh">查看条款和条件</a>。</p>
+<div class="ibm-buttons-row">
+   <p><input class="ibm-btn-arrow-pri" name="ibm-submit" value="提交" onclick="dwsi.siInst.signin();return false;" type="submit"><span class="ibm-sep">&nbsp;</span>
+<input value="取消" type="button" name="ibm-cancel" class="ibm-btn-cancel-sec" onclick="dwsi.siInst.clearForm();ibmweb.overlay.hide(&#39;signin_overlay&#39;);return false;"></p>
+</div>
+</form>
+ <div class="ibm-overlay-rule"><hr></div> 
+
+<p>这是您第一次登陆到 developerWorks，已经自动为您创建了您的概要文件。 <strong>选择您概要文件中可以公开的信息的信息（如姓名、国家/地区，以及公司），这些信息同时也会与您所发布的内容相关联。 </strong>您可以随时更新您的 IBM 账号。</p>
+<div><p class="dw-c-overlay-secure">所有提交的信息确保安全。</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+<!-- Display name OVERLAY STARTS HERE -->
+<div class="ibm-common-overlay" id="displayname_overlay">
+<div class="ibm-head">
+<p><a class="ibm-common-overlay-close" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#" onclick="dwsi.siInst.clearForm();">关闭 [x]</a></p>
+</div>
+<div class="ibm-body">
+<div class="ibm-main">
+<div class="ibm-title">
+<h2>选择您的昵称</h2><br><br>
+<div id="ibm-overlay-error-dname" class="no-display"></div>
+</div>
+<div class="ibm-container ibm-alternate ibm-buttons-last">
+<div class="ibm-container-body">
+<p class="ibm-overlay-intro">当您初次登录到 developerWorks 时，将会为您创建一份概要信息，您需要指定一个昵称。您的昵称将和您在 developerWorks 发布的内容显示在一起。</p><p><strong>昵称长度在 3 至 31 个字符之间</strong>。 
+    您的昵称在 developerWorks 社区中必须是唯一的，并且出于隐私保护的原因，不能是您的电子邮件地址。</p>
+<p class="ibm-overlay-intro">标有星（<span class="ibm-required">*<span class="ibm-access">required</span></span>）号的字段是必填字段。</p> 
+<form id="dFormId" method="post" action="" name="dForm" onsubmit="return false;" class="ibm-column-form">
+<p><label for="displayname">昵称：<span class="ibm-required">*<span class="ibm-access">required</span></span></label><span>
+    <input name="displayname" id="displayname" size="25" value="" type="text" onkeypress="dwsi.siInst.handleEP(event,this.form);"></span>
+    <span class="ibm-form-note">(昵称长度在 3 至 31 个字符之间)</span>
+</p>
+<p>单击<strong>提交</strong>则表示您同意developerWorks 的条款和条件。 <a href="http://www.ibm.com/developerworks/community/terms?lang=zh">查看条款和条件</a>.</p>
+<div class="ibm-buttons-row">
+   <p><input class="ibm-btn-arrow-pri" name="ibm-submit" value="提交" onclick="dwsi.siInst.signin();return false;" type="submit"><span class="ibm-sep">&nbsp;</span>
+<input value="取消" type="button" name="ibm-cancel" class="ibm-btn-cancel-sec" onclick="dwsi.siInst.clearForm();ibmweb.overlay.hide(&#39;displayname_overlay&#39;);return false;"></p>
+</div>
+</form>
+<div class="ibm-overlay-rule"><hr></div>
+<div><p class="dw-c-overlay-secure">所有提交的信息确保安全。</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="ibm-footer"></div>
+</div>
+
+
+<!-- INLINE_COMMENTS_END -->
+
+</div>
+<!-- 6_4_COLUMN_END -->
+
+<!-- 6_2_COLUMN_BEGIN -->
+<div class="ibm-col-6-2">
+
+<!-- Next_Steps -->
+<!-- Dig_Deeper -->
+
+
+<!-- Promotion_Module -->
+    
+<!-- PROMOTION_MODULE_START -->
+<div class="ibm-alternate-rule"><hr></div>
+<ul class="ibm-portrait-module-list">
+<li><a class="" href="http://www.ibm.com/developerworks/cn/puresystems/" tabindex="-1" role="presentation"><img height="60" width="60" src="./使用 JdbcProxy 测试 Java 应用程序_files/sm-f-cl-puresystems70.jpg" alt=""></a>
+<h3><a class="ibm-feature-link" href="http://www.ibm.com/developerworks/cn/puresystems/">IBM PureSystems</a></h3>
+<p>IBM PureSystems™ 系列解决方案是一个专家集成系统</p></li>
+<li><a class="" href="http://www.ibm.com/developerworks/cn/views/global/libraryview.jsp?type_by=Knowledge+paths" tabindex="-1" role="presentation"><img height="60" width="60" src="./使用 JdbcProxy 测试 Java 应用程序_files/sm-f-knowledgepath50.jpg" alt=""></a>
+<h3><a class="ibm-feature-link" href="http://www.ibm.com/developerworks/cn/views/global/libraryview.jsp?type_by=Knowledge+paths">developerWorks 学习路线图</a></h3>
+<p>通过学习路线图系统掌握软件开发技能</p></li>
+<li><a class="" href="http://www.ibm.com/developerworks/cn/downloads/" tabindex="-1" role="presentation"><img height="60" width="60" src="./使用 JdbcProxy 测试 Java 应用程序_files/sm-f-evaluationsoftware60.png" alt=""></a>
+<h3><a class="ibm-feature-link" href="http://www.ibm.com/developerworks/cn/downloads/">软件下载资源中心</a></h3>
+<p>软件下载、试用版及云计算</p></li>
+</ul>
+<!-- PROMOTION_MODULE_END -->
+
+</div>
+<!-- 6_2_COLUMN_END -->
+
+</div>
+<!-- SPLIT_COLUMNS_END -->
+
+<!-- BOTTOM_BACK_TO_TOP -->
+<div class="ibm-columns">
+<div class="ibm-col-1-1">
+	<div class="ibm-alternate-rule"><hr></div><p class="ibm-ind-link ibm-back-to-top"><a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#ibm-pcon" class="ibm-anchor-up-link">回页首</a></p>
+</div>
+</div>
+
+<!-- Rating_Meta_BEGIN -->
+<!--Rating_Meta_BEGIN--><div class="metavalue">static.content.url=http://www.ibm.com/developerworks/js/artrating/</div><div class="metavalue">SITE_ID=10</div><div class="metavalue">Zone=Java technology, Open source</div><div class="metavalue">ArticleID=351936</div><div class="metavalue">ArticleTitle=使用 JdbcProxy 测试 Java 应用程序</div><div class="metavalue">publish-date=11142008</div><script language="javascript" type="text/javascript">document.write('<div class="metavalue">url='+location.href.replace(/</g,  '%3C')+'</div>');</script><div class="metavalue">url=http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/</div><!--Rating_Meta_END-->
+<!-- Rating_Meta_END -->
+
+</div>
+<!-- END_IBM_CONTENT_MAIN -->
+
+</div>
+<!-- END_IBM_CONTENT_BODY -->
+
+</div>
+<!-- END_IBM_CONTENT -->
+
+</div></div>
+<!-- LEADSPACE_END -->
+
+
+<!-- END_IBM_PCON -->
+<!-- FOOTER_BEGIN -->
+<!-- FOOTER_BEGIN -->
+<div id="ibm-footer" aria-label="页脚"><!-- IBM footer container; disabled --></div>
+
+<div id="ibm-footer-module-dwwrapper" role="contentinfo" aria-label="developerWorks Footer">
+
+<div id="ibm-footer-module-dw">
+	<div class="dw-footer-columns">
+		<div class="dw-footer-col-5-1">
+			<ul>
+                <li><a href="https://www.ibm.com/developerworks/secure/feedback.jsp?domain=dwchina">帮助</a></li>
+				<li><a href="http://www.ibm.com/developerworks/cn/author/">联系编辑</a></li>
+				<li><a href="https://www.ibm.com/developerworks/secure/myideas2.jsp?domain=dwchina&start=true">提交内容</a></li>
+				<li><a href="http://www.ibm.com/developerworks/cn/sitemap/">网站导航</a></li>
+				<li><a href="http://www.ibm.com/developerworks/cn/rss/">订阅源</a></li>
+			</ul>
+        </div>
+		<div class="dw-footer-col-5-2">
+			<ul>
+			<li><a href="http://www.ibm.com/vrm/newsletter/10104?S_TACT=105AGX52&S_CMP=dwcntop">在线浏览每周时事通讯</a></li>
+				<li><a class="dwcn-sina-link" href="http://weibo.com/ibmdw/" target="_blank">新浪微博</a></li>
+				<li><a href="https://www.ibm.com/developerworks/community/report?lang=zh">报告滥用</a></li>
+				<li><a href="https://www.ibm.com/developerworks/community/terms?lang=zh">使用条款</a></li>
+				<li><a href="https://www.ibm.com/developerworks/cn/community/terms/thirdparty/">第三方提示</a></li>
+			</ul>
+		</div>
+		<div class="dw-footer-col-5-3">
+			<ul>
+				<li><a href="http://www.ibm.com/privacy/cn/zh/">隐私条约</a></li>
+				<li><a href="http://www.ibm.com/ibm/accessibility/cn/">浏览辅助</a></li>
+				<li><a href="http://www.ibm.com/developerworks/cn/academic/">IBM 教育学院教育培养计划</a></li><li><a href="http://www.ibm.com/developerworks/cn/gep/">IBM 创业企业全球扶持计划</a></li><li><a href="http://www.ibm.com/partnerworld/isv/">ISV 资源 (英语)</a></li>
+			</ul>
+		</div>
+		<div class="dw-footer-col-5-4">
+		
+ 
+			<ul>
+				<li><a href="http://www.ibm.com/developerworks/cn/newsletter/">dW 中国每周时事通讯</a><br> 
+				
+				</li>
+			</ul>
+			
+		</div>
+		<div class="dw-footer-col-5-5">
+			<img width="223" height="46" alt="IBM®" src="./使用 JdbcProxy 测试 Java 应用程序_files/dwn-ibm-logo-v17.png">
+			<img class="dw-preload" src="./使用 JdbcProxy 测试 Java 应用程序_files/ibm_sprite_social_blue_ON.png" alt="" width="1" height="1">
+		</div>
+	</div>
+	<!-- Language selector no-script -->
+	<noscript>
+	&lt;div id="dw-footer-selectlang"&gt;
+		&lt;h2&gt;&lt;a name="SELECTLANG"&gt;选择语言：&lt;/a&gt;&lt;/h2&gt;
+		&lt;ul&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/" lang="en"&gt;English&lt;/a&gt;&lt;/li&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/cn/"&gt;中文&lt;/a&gt;&lt;/li&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/jp/" lang="ja"&gt;日本語&lt;/a&gt;&lt;/li&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/ru/" lang="ru"&gt;Русский&lt;/a&gt;&lt;/li&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/br/" lang="pt"&gt;Português (Brasil)&lt;/a&gt;&lt;/li&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/ssa/" lang="es"&gt;Español&lt;/a&gt;&lt;/li&gt;
+			&lt;li&gt;&lt;a href="http://www.ibm.com/developerworks/vn/" lang="vi"&gt;Việt&lt;/a&gt;&lt;/li&gt;
+		&lt;/ul&gt;
+	&lt;/div&gt;
+	</noscript>
+</div>
+
+</div><!-- FOOTER_END --><!-- FOOTER_END -->
+
+<!-- END_IBM-TOP -->
+</div>
+
+<!-- SCRIPTS_INCLUDE_BEGIN -->
+<script type="text/javascript" src="./使用 JdbcProxy 测试 Java 应用程序_files/dw-comments.js">//</script>
+<script type="text/javascript" language="JavaScript">
+		dojo.ready(function(){
+		rBHash = null;
+		rBHash = new Object();
+		rBHash['viperLang'] = 'zh';
+		rBHash['urlLang'] = 'cn';
+		
+		dwsi.siInst = new dwweb.dynnav.dwsi();
+		dwsi.siInst.initSI();		
+
+		// construct the comment widget
+dwc.cmts = '条评论';
+dwc.signInPreText = '请';
+dwc.signIn = '登录';
+dwc.or = '或';
+dwc.register = '注册';
+dwc.signInPostText = '';
+dwc.leaveCmt = '后发表评论。';
+dwc.view = '查看';
+dwc.totalCmts = '共有评论';
+dwc.postYourCmt = '添加您的评论';
+dwc.show = '显示：';
+dwc.recentCmts = '最新评论';
+dwc.allCmts = '所有评论';
+dwc.tooLongCmt = '您的评论超过了 1000 字符限制';
+dwc.numCharsLeft = '剩余 <span id="charCount">{1}</span> 字符';
+dwc.reportAbuse = '报告滥用';
+dwc.notifyMsg = '有新评论时提醒我';
+dwc.htmlWarning = '注意：评论中不支持 HTML 语法'; 
+dwc.cmt = '评论：';
+dwc.addCmts = '添加评论';
+dwc.addCmt = '添加评论';
+dwc.doNotErase = '--在下方添加评论--'; 
+dwc.viewOrAddCmts = '查看或添加评论';
+dwc.reportInapprCont = '举报不良信息';
+dwc.reportInapprContLink = 'http://www.ibm.com/developerworks/forums/forum.jspa?forumID=1834';
+dwc.postingCmt = '正在发布评论……';
+dwc.noCmt = '快来添加第一条评论';
+dwc.netwkErr = '在检索评论时出错，请稍后刷新。';
+dwc.addACmt = '添加评论';
+dwc.instructCmt = '标有星号（<span class="ibm-required">*</span>）的是必填项目。';
+dwc.btnPost = '发布';
+dwc.btnPostAnon = '匿名发布';
+dwc.btnClrCmt = '清除评论';
+dwc.btnCancel = '取消';
+dwc.showRecent = '显示最新的 {1} 条评论'; // {1} is the count to be substituted
+dwc.showNext = '显示后 {1} 条评论'; // {1} is the count to be substituted
+dwc.showAllCmts = '显示所有评论';
+dwc.enterCmt = '请输入评论内容。';
+dwc.loginErr = '暂时无法验证您的登录状态，请稍后再试。';
+dwc.postErr = '暂时无法发布您的评论，请稍后再试。';
+dwc.postBy = '由 <strong>{1}</strong>  于 {2} '; // {1} is the author to be substituted; {2} is the date
+dwc.siteId = 10;
+dwc.lang = 'zh_CN';
+dwc.viperLang = 'zh';
+//dwc.abuseHref =  null;
+dwc.maxChars = 1000;
+dwc.cmtTxt =  '评论：';
+dwc.cmtsTxt =  '评论：';  
+		dwc && new dwc.comments('threadShow','95%',5,'nCmts','icomments');
+		});
+</script>
+<!-- BEGIN: Use this section to set page specific variables for the Unica Page Tag -->
+<script language="JavaScript">var NTPT_PGEXTRA="ibmSkillLevel=3&ibmAdoptPhase=667&ibmRole=710&ibmCmaId=351936&ibmContentAreas=java,opensource";</script>
+<!--END --><!-- SCRIPTS_INCLUDE_END -->
+
+<div id="ibm-metrics">
+<script src="./使用 JdbcProxy 测试 Java 应用程序_files/stats.js" type="text/javascript">//</script>
+</div>
+
+
+<embed style="visibility: hidden;" type="application/xl_chrome_plugin" width="0" height="0"><div class="sogoutip" style="z-index: 2147483645; visibility: hidden; display: none;"></div><div class="sogoubottom" id="sougou_bottom" style="display: block;"></div><div id="ext_stophi" style="z-index: 2147483647;"><div class="extnoticebg"></div><div class="extnotice"><h2>关闭提示 <a href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#" title="关闭提示" id="closenotice" class="closenotice">关闭</a></h2><p id="sogouconfirmtxt"></p>  <a id="sogouconfirm" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#" class="extconfirm">确 认</a> <a id="sogoucancel" href="http://www.ibm.com/developerworks/cn/java/j-lo-jdbcproxy/#" class="extconfirm">取 消</a></div></div><div id="ext_overlay" style="display: none; z-index: 2147483646;" class="ext_overlayBG"></div><iframe class="sogou_sugg_feedbackquan" style="background-color: transparent; border: none; display: block; z-index: 2147483645; background-position: initial initial; background-repeat: initial initial;" frameborder="0" scrolling="no" src="./使用 JdbcProxy 测试 Java 应用程序_files/yun1.htm"></iframe><script src="./使用 JdbcProxy 测试 Java 应用程序_files/pv.gif"></script></body></html>

@@ -1,0 +1,83 @@
+div.topic_page, a {
+    color: #006699;
+    text-decoration: underline;
+}
+
+a:hover {
+    color: #006699;
+}
+
+input.button, input.submit {
+    color: #FFFFFF;
+    background-color: #006699;
+}
+
+div.app_nav, div#page, .comment_title, tr.mouse_over {
+    background-color: white;
+}
+
+div#local, div#main, .blog_main, .pagination a:hover, .pagination a:active {
+    background-color: white;
+    border-color: gray;
+    border-style: dotted;
+}
+
+div#app_list div.decorate, a:hover, div#branding, td.buttons a, .pagination span.current {
+    background-color: #f7f7f7;
+}
+
+.blog_bottom li {
+    border-right-color: #006699;
+    color: #006699;
+}
+
+table.admin thead, .pagination a, .pagination a:visited {
+    color: #006699;
+}
+
+div.app_nav, .pagination span.current {
+    border-color: #006699;
+    color: #006699;
+}
+
+.blog_comment, div.picture_full {
+    border-top-color: #006699;
+}
+
+div#branding {
+    border-color: gray;
+    border-style: dotted;
+    border-width: 1px;
+}
+
+div#local, div#app_list, .blog_main, .pagination a:hover, .pagination a:active {
+    border: gray 1px dotted !important;
+}
+div#app_list {
+    border: 0 none !important;
+}
+td.buttons a {
+    background-color:#006699 !important;
+}
+div#content {
+    margin-top: 5px !important;
+}
+div#branding a, div#branding a:link, div#branding a:active, div#branding a:visited {
+    color:#666666 !important;
+}
+div.left {
+    padding-left: 0px !important;
+    padding-right: 2px !important;
+}
+div.right {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
+
+
+.view a:hover{color:#060;}
+.list_current{}
+.list_current a{ color:#FF6600; font-weight:bold;}
+.list_current a:hover{ color:#FFFFFF; background:#FF6600;}
+#my_resume .editing a.del:hover,
+#my_resume .editing a.add:hover{color: #069;}

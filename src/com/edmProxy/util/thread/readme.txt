@@ -1,0 +1,1 @@
+多线程发送成功，scoket代理成功，javamail不支持http代理

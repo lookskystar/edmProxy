@@ -1,0 +1,519 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0037)http://nkliuliu.iteye.com/blog/963919 -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" dir="ltr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站</title>
+    <meta name="description" content="      年前在考虑搞个关键扩词工具，如果直接抓取google的相关搜索。用不了几次就别封ip了，设了抓取间隔时长也没用（也可能设的时候太短），没办法只能抓取代理ip了，便有了下面的小demo。可惜的是网络资源还是太少，不够抓的，真正能用的代理ip没几个。根本形不成可用的规模。代码如下给可能用到的人做个参考吧：  package com.emar.spider;    import java.ut ...">
+    <meta name="keywords" content="HTML, Google, thread 抓取并验证代理ip小demo">
+    <link rel="shortcut icon" href="http://nkliuliu.iteye.com/images/favicon.ico" type="image/x-icon">
+    <link rel="search" type="application/opensearchdescription+xml" href="http://nkliuliu.iteye.com/open_search.xml" title="ITeye">
+    <link href="http://nkliuliu.iteye.com/rss" rel="alternate" title="刘青山的资料库-发表是最好的记忆" type="application/rss+xml">
+    <link href="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/blog.css" media="screen" rel="stylesheet" type="text/css">
+<link href="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/white.css" media="screen" rel="stylesheet" type="text/css">
+    <script type="text/javascript" async="" src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/ga.js"></script><script type="text/javascript" async="" src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/ga.js"></script><script src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/application.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-535605-1']);
+  _gaq.push(['_setDomainName', 'iteye.com']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+
+      <link href="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/SyntaxHighlighter.css" media="screen" rel="stylesheet" type="text/css">
+  <script src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/shCoreCommon.js" type="text/javascript"></script>
+<script src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/hotkey.js" type="text/javascript"></script>
+  <script src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/code_favorites.js" type="text/javascript"></script>
+<script src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/weiboshare.js" type="text/javascript"></script>
+  <style type="text/css">.dp-j .annotation { color: #646464; }.dp-j .number { color: #C00000; }</style></head>
+  <body class="">
+    <div id="header">
+      <div id="blog_site_nav">
+  <a href="http://www.iteye.com/" class="homepage">首页</a>
+  <a href="http://www.iteye.com/news">资讯</a>
+  <a href="http://www.iteye.com/magazines">精华</a>
+  <a href="http://www.iteye.com/forums">论坛</a>
+  <a href="http://www.iteye.com/ask">问答</a>
+  <a href="http://www.iteye.com/blogs">博客</a>
+  <a href="http://www.iteye.com/blogs/subjects">专栏</a>
+  <a href="http://www.iteye.com/groups">群组</a>
+  <a href="http://nkliuliu.iteye.com/blog/963919#" onclick="return false;" id="msna"><u>更多</u> <small>▼</small></a>
+  <div class="quick_menu" style="display:none;">
+    <a target="_blank" href="http://job.iteye.com/iteye">招聘</a>
+    <a href="http://www.iteye.com/search">搜索</a>
+  </div>
+</div>
+
+      <div id="user_nav">
+      <a href="http://nkliuliu.iteye.com/login" class="welcome" title="登录">您还未登录 !</a>
+    <a href="http://nkliuliu.iteye.com/login">登录</a>
+    <a href="http://nkliuliu.iteye.com/signup" class="nobg">注册</a>
+  </div>
+
+    </div>
+
+    <div id="page">
+      <div id="branding" class="clearfix">
+        <div id="blog_name">
+          <h1><a href="http://nkliuliu.iteye.com/">刘青山的资料库-发表是最好的记忆</a></h1>
+        </div>
+        <div id="fd"></div>
+        <div id="blog_navbar">
+          <ul>
+            <li class="blog_navbar_for"><a href="http://nkliuliu.iteye.com/"><strong>博客</strong></a></li>
+            <li><a href="http://nkliuliu.iteye.com/weibo">微博</a></li>
+            <li><a href="http://nkliuliu.iteye.com/album">相册</a></li>
+            <li><a href="http://nkliuliu.iteye.com/link">收藏</a></li>
+            <li><a href="http://nkliuliu.iteye.com/blog/guest_book">留言</a></li>
+            <li><a href="http://nkliuliu.iteye.com/blog/profile">关于我</a></li>
+          </ul>
+    
+          <div class="search">
+            <form action="http://nkliuliu.iteye.com/blog/search" method="get">
+              <input class="search_text" id="query" name="query" style="margin-left: 10px;width: 110px;" type="text" value="">
+              <input class="submit_search" type="submit" value="">
+            </form>
+          </div> 
+          <div id="fd"></div>         
+        </div>
+      </div>
+      
+      <div id="content" class="clearfix">
+        <div id="main">
+          
+
+
+
+          
+
+
+<div class="h-entry" style="display:none">
+  <a href="http://nkliuliu.iteye.com/" class="p-author" target="_blank">nkliuliu</a>
+</div>
+
+
+<div class="blog_main">
+  <div class="blog_title">
+    <h3>
+      <a href="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站.htm">抓取并验证代理ip小demo</a>
+      <em class="actions">      </em>
+    </h3>
+    <ul class="blog_categories"><strong>博客分类：</strong> <li><a href="http://nkliuliu.iteye.com/category/147751">数据抓取</a></li> </ul>
+        <div class="news_tag"><a href="http://www.iteye.com/blogs/tag/HTML">HTML</a><a href="http://www.iteye.com/blogs/tag/Google">Google</a><a href="http://www.iteye.com/blogs/tag/thread">thread</a>&nbsp;</div>
+  </div>
+
+  <div id="blog_content" class="blog_content">
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 年前在考虑搞个关键扩词工具，如果直接抓取google的相关搜索。用不了几次就别封ip了，设了抓取间隔时长也没用（也可能设的时候太短），没办法只能抓取代理ip了，便有了下面的小demo。可惜的是网络资源还是太少，不够抓的，真正能用的代理ip没几个。根本形不成可用的规模。代码如下给可能用到的人做个参考吧：</p>
+<div class="dp-highlighter" id=""><div class="bar"><div class="tools">Java代码 <embed wmode="transparent" src="/javascripts/syntaxhighlighter/clipboard_new.swf" width="14" height="15" flashvars="clipboard=package%20com.emar.spider%3B%0A%0Aimport%20java.util.HashMap%3B%0Aimport%20java.util.Map%3B%0A%0Aimport%20org.jsoup.Jsoup%3B%0Aimport%20org.jsoup.nodes.Document%3B%0Aimport%20org.jsoup.nodes.Element%3B%0Aimport%20org.jsoup.select.Elements%3B%0A%0Aimport%20com.emar.core.httpClient.HttpclientUtil%3B%0Aimport%20com.emar.core.util.PropertiesUtil%3B%0A%0Apublic%20class%20Proxy%20%7B%0A%09private%20static%20final%20String%20url%20%3D%20%22http%3A%2F%2Fwww.proxycn.com%2Fhtml_proxy%2F30fastproxy-1.html%22%3B%0A%09private%20static%20Map%3CString%2C%20String%3E%20ipMap%20%3D%20new%20HashMap%3CString%2C%20String%3E()%3B%0A%09private%20static%20final%20String%20filePath%20%3D%20%22D%3A%2Fsts%2Fworkspace-sts-2.5.1_t1%2Fsf3a%2Fsrc%2Fmain%2Fresources%2Fproxy.properties%22%3B%0A%0A%09public%20static%20Map%3CString%2C%20String%3E%20getProxyMap()%20%7B%0A%09%09String%20html%20%3D%20%22%22%3B%0A%09%09boolean%20flag%20%3D%20true%3B%0A%09%09while%20(flag)%20%7B%0A%09%09%09try%20%7B%0A%09%09%09%09html%20%3D%20HttpclientUtil.get(url%2C%20null%2C%20%22GB2312%22)%3B%0A%09%09%09%09flag%20%3D%20false%3B%0A%09%09%09%7D%20catch%20(Exception%20e)%20%7B%0A%09%09%09%09e.printStackTrace()%3B%0A%09%09%09%7D%0A%09%09%7D%0A%09%09Document%20doc%20%3D%20Jsoup.parse(html)%3B%0A%09%09Elements%20trs%20%3D%20doc.select(%22tr%5BonDblClick%5D%22)%3B%0A%09%09for%20(Element%20e%20%3A%20trs)%20%7B%0A%09%09%09String%20ip%20%3D%20e.attr(%22onDblClick%22).replaceAll(%22clip%22%2C%20%22%22)%0A%09%09%09%09%09.replaceAll(%22%E5%B7%B2%E6%8B%B7%E8%B4%9D%E5%88%B0%E5%89%AA%E8%B4%B4%E6%9D%BF!%22%2C%20%22%22).replaceAll(%22alert%22%2C%20%22%22)%0A%09%09%09%09%09.replaceAll(%22&#39;%22%2C%20%22%22).replaceAll(%22%3B%22%2C%20%22%22)%0A%09%09%09%09%09.replaceAll(%22%5C%5C(%22%2C%20%22%22).replaceAll(%22%5C%5C)%22%2C%20%22%22)%3B%0A%09%09%09String%5B%5D%20ipArray%20%3D%20ip.split(%22%3A%22)%3B%0A%09%09%09ipMap.put(ipArray%5B0%5D%2C%20ipArray%5B1%5D)%3B%0A%09%09%7D%0A%09%09return%20ipMap%3B%0A%09%7D%0A%0A%09public%20static%20void%20writeValidProxy()%20%7B%0A%09%09Map%3CString%2C%20String%3E%20ipMap%20%3D%20getProxyMap()%3B%0A%09%09System.out.println(%22%E6%9C%AC%E6%AC%A1%E5%85%B1%E8%8E%B7%E5%8F%96%E5%88%B0%E7%9A%84%3A%22%20%2B%20ipMap.size()%20%2B%20%22%E4%B8%AA%E4%BB%A3%E7%90%86%22)%3B%0A%09%09for%20(String%20ip%20%3A%20ipMap.keySet())%20%7B%0A%09%09%09String%20port%20%3D%20ipMap.get(ip)%3B%0A%09%09%09System.out.println(%22%E8%8E%B7%E5%8F%96%E6%96%B0%E7%9A%84%E5%BE%85%E6%A3%80%E9%AA%8C%E7%9A%84%3A%22%20%2B%20ip%20%2B%20%22%3D%22%20%2B%20port)%3B%0A%09%09%09boolean%20flag%20%3D%20HttpclientUtil.checkProxy(ip%2C%20port)%3B%0A%09%09%09if%20(flag)%20%7B%0A%09%09%09%09System.out.println(%22%E5%86%99%E5%85%A5%E6%9C%89%E6%95%88%3A%22%20%2B%20ip%20%2B%20%22%3D%22%20%2B%20port)%3B%0A%09%09%09%09PropertiesUtil.writeProperties(filePath%2C%20ip%2C%20port)%3B%0A%09%09%09%7D%20else%20%7B%0A%09%09%09%09System.out.println(%22%E7%A7%BB%E9%99%A4%E5%A4%B1%E6%95%88%3A%22%20%2B%20ip%20%2B%20%22%3D%22%20%2B%20port)%3B%0A%09%09%09%09PropertiesUtil.removeProperties(filePath%2C%20ip)%3B%0A%09%09%09%7D%0A%09%09%7D%0A%09%7D%0A%0A%09public%20static%20Map%3CString%2C%20String%3E%20getValidProxyMap()%20%7B%0A%09%09return%20PropertiesUtil.readProperties(filePath)%3B%0A%09%7D%0A%0A%09public%20static%20void%20removeInvalidProxy()%20%7B%0A%09%09Map%3CString%2C%20String%3E%20ipMap%20%3D%20getValidProxyMap()%3B%0A%09%09for%20(String%20ip%20%3A%20ipMap.keySet())%20%7B%0A%09%09%09String%20port%20%3D%20ipMap.get(ip)%3B%0A%09%09%09System.out.println(%22%E6%A0%A1%E9%AA%8C%E5%8E%9F%E6%9C%89%3A%22%20%2B%20ip%20%2B%20%22%3D%22%20%2B%20port)%3B%0A%09%09%09boolean%20flag%20%3D%20HttpclientUtil.checkProxy(ip%2C%20port)%3B%0A%09%09%09if%20(!flag)%20%7B%0A%09%09%09%09System.out.println(%22%E7%A7%BB%E9%99%A4%E5%A4%B1%E6%95%88%3A%22%20%2B%20ip%20%2B%20%22%3D%22%20%2B%20port)%3B%0A%09%09%09%09PropertiesUtil.removeProperties(filePath%2C%20ip)%3B%0A%09%09%09%7D%0A%09%09%7D%0A%09%7D%0A%0A%09%2F**%0A%09%20*%20%40param%20args%0A%09%20*%20%40throws%20InterruptedException%0A%09%20*%2F%0A%09public%20static%20void%20main(String%5B%5D%20args)%20%7B%0A%09%09while%20(true)%20%7B%0A%09%09%09try%20%7B%0A%09%09%09%09removeInvalidProxy()%3B%0A%09%09%09%09writeValidProxy()%3B%0A%09%09%09%09Thread.sleep(1000%20*%2060%20*%2030)%3B%0A%09%09%09%7D%20catch%20(Exception%20e)%20%7B%0A%09%09%09%09e.printStackTrace()%3B%0A%09%09%09%7D%0A%09%09%7D%0A%09%7D%0A%7D%0A" quality="high" allowscriptaccess="always" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">&nbsp;<a href="javascript:void()" title="收藏这段代码" onclick="code_favorites_do_favorite(this);return false;"><img class="star" src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/icon_star.png" alt="收藏代码"><img class="spinner" src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/spinner.gif" style="display:none"></a></div></div><ol start="1" class="dp-j"><li><span><span class="keyword">package</span><span>&nbsp;com.emar.spider;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li><span><span class="keyword">import</span><span>&nbsp;java.util.HashMap;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;java.util.Map;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li><span><span class="keyword">import</span><span>&nbsp;org.jsoup.Jsoup;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.jsoup.nodes.Document;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.jsoup.nodes.Element;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;org.jsoup.select.Elements;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li><span><span class="keyword">import</span><span>&nbsp;com.emar.core.httpClient.HttpclientUtil;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;com.emar.core.util.PropertiesUtil;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li><span><span class="keyword">public</span><span>&nbsp;</span><span class="keyword">class</span><span>&nbsp;Proxy&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">final</span><span>&nbsp;String&nbsp;url&nbsp;=&nbsp;</span><span class="string">"http://www.proxycn.com/html_proxy/30fastproxy-1.html"</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;Map&lt;String,&nbsp;String&gt;&nbsp;ipMap&nbsp;=&nbsp;</span><span class="keyword">new</span><span>&nbsp;HashMap&lt;String,&nbsp;String&gt;();&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">final</span><span>&nbsp;String&nbsp;filePath&nbsp;=&nbsp;</span><span class="string">"D:/sts/workspace-sts-2.5.1_t1/sf3a/src/main/resources/proxy.properties"</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;Map&lt;String,&nbsp;String&gt;&nbsp;getProxyMap()&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;html&nbsp;=&nbsp;<span class="string">""</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">boolean</span><span>&nbsp;flag&nbsp;=&nbsp;</span><span class="keyword">true</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span><span>&nbsp;(flag)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">try</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;html&nbsp;=&nbsp;HttpclientUtil.get(url,&nbsp;<span class="keyword">null</span><span>,&nbsp;</span><span class="string">"GB2312"</span><span>);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flag&nbsp;=&nbsp;<span class="keyword">false</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">catch</span><span>&nbsp;(Exception&nbsp;e)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Document&nbsp;doc&nbsp;=&nbsp;Jsoup.parse(html);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Elements&nbsp;trs&nbsp;=&nbsp;doc.select(<span class="string">"tr[onDblClick]"</span><span>);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span><span>&nbsp;(Element&nbsp;e&nbsp;:&nbsp;trs)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;ip&nbsp;=&nbsp;e.attr(<span class="string">"onDblClick"</span><span>).replaceAll(</span><span class="string">"clip"</span><span>,&nbsp;</span><span class="string">""</span><span>)&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.replaceAll(<span class="string">"已拷贝到剪贴板!"</span><span>,&nbsp;</span><span class="string">""</span><span>).replaceAll(</span><span class="string">"alert"</span><span>,&nbsp;</span><span class="string">""</span><span>)&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.replaceAll(<span class="string">"'"</span><span>,&nbsp;</span><span class="string">""</span><span>).replaceAll(</span><span class="string">";"</span><span>,&nbsp;</span><span class="string">""</span><span>)&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.replaceAll(<span class="string">"\\("</span><span>,&nbsp;</span><span class="string">""</span><span>).replaceAll(</span><span class="string">"\\)"</span><span>,&nbsp;</span><span class="string">""</span><span>);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String[]&nbsp;ipArray&nbsp;=&nbsp;ip.split(<span class="string">":"</span><span>);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ipMap.put(ipArray[<span class="number">0</span><span>],&nbsp;ipArray[</span><span class="number">1</span><span>]);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;ipMap;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;writeValidProxy()&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Map&lt;String,&nbsp;String&gt;&nbsp;ipMap&nbsp;=&nbsp;getProxyMap();&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(<span class="string">"本次共获取到的:"</span><span>&nbsp;+&nbsp;ipMap.size()&nbsp;+&nbsp;</span><span class="string">"个代理"</span><span>);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span><span>&nbsp;(String&nbsp;ip&nbsp;:&nbsp;ipMap.keySet())&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;port&nbsp;=&nbsp;ipMap.get(ip);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(<span class="string">"获取新的待检验的:"</span><span>&nbsp;+&nbsp;ip&nbsp;+&nbsp;</span><span class="string">"="</span><span>&nbsp;+&nbsp;port);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">boolean</span><span>&nbsp;flag&nbsp;=&nbsp;HttpclientUtil.checkProxy(ip,&nbsp;port);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(flag)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(<span class="string">"写入有效:"</span><span>&nbsp;+&nbsp;ip&nbsp;+&nbsp;</span><span class="string">"="</span><span>&nbsp;+&nbsp;port);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PropertiesUtil.writeProperties(filePath,&nbsp;ip,&nbsp;port);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">else</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(<span class="string">"移除失效:"</span><span>&nbsp;+&nbsp;ip&nbsp;+&nbsp;</span><span class="string">"="</span><span>&nbsp;+&nbsp;port);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PropertiesUtil.removeProperties(filePath,&nbsp;ip);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;Map&lt;String,&nbsp;String&gt;&nbsp;getValidProxyMap()&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;PropertiesUtil.readProperties(filePath);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;removeInvalidProxy()&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Map&lt;String,&nbsp;String&gt;&nbsp;ipMap&nbsp;=&nbsp;getValidProxyMap();&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span><span>&nbsp;(String&nbsp;ip&nbsp;:&nbsp;ipMap.keySet())&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;port&nbsp;=&nbsp;ipMap.get(ip);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(<span class="string">"校验原有:"</span><span>&nbsp;+&nbsp;ip&nbsp;+&nbsp;</span><span class="string">"="</span><span>&nbsp;+&nbsp;port);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">boolean</span><span>&nbsp;flag&nbsp;=&nbsp;HttpclientUtil.checkProxy(ip,&nbsp;port);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(!flag)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(<span class="string">"移除失效:"</span><span>&nbsp;+&nbsp;ip&nbsp;+&nbsp;</span><span class="string">"="</span><span>&nbsp;+&nbsp;port);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PropertiesUtil.removeProperties(filePath,&nbsp;ip);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@param&nbsp;args</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;@throws&nbsp;InterruptedException</span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;main(String[]&nbsp;args)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span><span>&nbsp;(</span><span class="keyword">true</span><span>)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">try</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;removeInvalidProxy();&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;writeValidProxy();&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thread.sleep(<span class="number">1000</span><span>&nbsp;*&nbsp;</span><span class="number">60</span><span>&nbsp;*&nbsp;</span><span class="number">30</span><span>);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">catch</span><span>&nbsp;(Exception&nbsp;e)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>}&nbsp;&nbsp;</span></li></ol></div><pre class="java" name="code" style="display: none;" codeable_id="963919" codeable_type="Blog" source_url="http://nkliuliu.iteye.com/blog/963919" pre_index="0" title="抓取并验证代理ip小demo">package com.emar.spider;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import com.emar.core.httpClient.HttpclientUtil;
+import com.emar.core.util.PropertiesUtil;
+
+public class Proxy {
+	private static final String url = "http://www.proxycn.com/html_proxy/30fastproxy-1.html";
+	private static Map&lt;String, String&gt; ipMap = new HashMap&lt;String, String&gt;();
+	private static final String filePath = "D:/sts/workspace-sts-2.5.1_t1/sf3a/src/main/resources/proxy.properties";
+
+	public static Map&lt;String, String&gt; getProxyMap() {
+		String html = "";
+		boolean flag = true;
+		while (flag) {
+			try {
+				html = HttpclientUtil.get(url, null, "GB2312");
+				flag = false;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		Document doc = Jsoup.parse(html);
+		Elements trs = doc.select("tr[onDblClick]");
+		for (Element e : trs) {
+			String ip = e.attr("onDblClick").replaceAll("clip", "")
+					.replaceAll("已拷贝到剪贴板!", "").replaceAll("alert", "")
+					.replaceAll("'", "").replaceAll(";", "")
+					.replaceAll("\\(", "").replaceAll("\\)", "");
+			String[] ipArray = ip.split(":");
+			ipMap.put(ipArray[0], ipArray[1]);
+		}
+		return ipMap;
+	}
+
+	public static void writeValidProxy() {
+		Map&lt;String, String&gt; ipMap = getProxyMap();
+		System.out.println("本次共获取到的:" + ipMap.size() + "个代理");
+		for (String ip : ipMap.keySet()) {
+			String port = ipMap.get(ip);
+			System.out.println("获取新的待检验的:" + ip + "=" + port);
+			boolean flag = HttpclientUtil.checkProxy(ip, port);
+			if (flag) {
+				System.out.println("写入有效:" + ip + "=" + port);
+				PropertiesUtil.writeProperties(filePath, ip, port);
+			} else {
+				System.out.println("移除失效:" + ip + "=" + port);
+				PropertiesUtil.removeProperties(filePath, ip);
+			}
+		}
+	}
+
+	public static Map&lt;String, String&gt; getValidProxyMap() {
+		return PropertiesUtil.readProperties(filePath);
+	}
+
+	public static void removeInvalidProxy() {
+		Map&lt;String, String&gt; ipMap = getValidProxyMap();
+		for (String ip : ipMap.keySet()) {
+			String port = ipMap.get(ip);
+			System.out.println("校验原有:" + ip + "=" + port);
+			boolean flag = HttpclientUtil.checkProxy(ip, port);
+			if (!flag) {
+				System.out.println("移除失效:" + ip + "=" + port);
+				PropertiesUtil.removeProperties(filePath, ip);
+			}
+		}
+	}
+
+	/**
+	 * @param args
+	 * @throws InterruptedException
+	 */
+	public static void main(String[] args) {
+		while (true) {
+			try {
+				removeInvalidProxy();
+				writeValidProxy();
+				Thread.sleep(1000 * 60 * 30);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+}
+</pre>
+&nbsp;
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+  </div>
+
+  
+
+
+  
+  
+  <div id="bottoms" class="clearfix">
+    <div id="digg_bottom" class="clearfix"><div class="digged"><strong>1</strong> <br>顶</div><div class="digged"><strong>5</strong> <br>踩</div></div>
+    <div id="share_weibo">分享到：
+      <a data-type="sina" href="javascript:;" title="分享到新浪微博"><img src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/sina.jpg"></a>
+      <a data-type="qq" href="javascript:;" title="分享到腾讯微博"><img src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/tec.jpg"></a>
+    </div>
+  </div>
+
+  <div class="blog_nav">
+    <div class="pre_next">
+      <a href="http://nkliuliu.iteye.com/blog/963933" class="next" title="抓取google的相关搜索词">抓取google的相关搜索词</a>
+      |
+      <a href="http://nkliuliu.iteye.com/blog/963896" class="pre" title="百度关键词自动竞价优化算法">百度关键词自动竞价优化算法</a>
+    </div>
+  </div>
+  <div class="blog_bottom">
+    <ul>
+      <li>2011-03-16 11:11</li>
+      <li>浏览 1013</li>
+      <li><a href="http://nkliuliu.iteye.com/blog/963919#comments">评论(2)</a></li>
+      
+      
+      <li>分类:<a href="http://www.iteye.com/blogs/category/language">编程语言</a></li>      
+      <li class="last"><a href="http://www.iteye.com/wiki/blog/963919" target="_blank" class="more">相关推荐</a></li>
+    </ul>
+  </div>
+
+  <div class="blog_comment">
+    <h5>评论</h5>
+    <a id="comments" name="comments"></a>
+    <div id="bc1982078">
+  <div class="comment_title">
+    2 楼
+    <a href="http://nkliuliu.iteye.com/" target="_blank" title="nkliuliu">nkliuliu</a>
+    2011-03-17&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content">恩，异曲同工吧。代码写的确实不简洁。</div>
+</div>
+
+<div id="bc1981171">
+  <div class="comment_title">
+    1 楼
+    <a href="http://li2005.iteye.com/" target="_blank" title="li2005">li2005</a>
+    2011-03-17&nbsp;&nbsp;
+    
+    
+  </div>
+  <div class="comment_content">楼主，我也玩过网页抓取代理ＩＰ，用正则表达式会很方便</div>
+</div>
+
+
+    
+    
+  </div>
+
+  <div class="blog_comment">
+    <h5>发表评论</h5>
+            <p style="text-align:center; margin-top:30px;margin-bottom:0px;"><a href="http://nkliuliu.iteye.com/login" style="background-color:white;"> <img src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/login_icon.png" style="vertical-align:middle; margin-right: 10px;"></a><a href="http://nkliuliu.iteye.com/login">  您还没有登录,请您登录后再发表评论 </a></p>
+      </div>
+</div>
+
+
+<script type="text/javascript">
+  dp.SyntaxHighlighter.HighlightAll('code', true, true);
+
+  $$('#main .blog_content pre[name=code]').each(function(pre, index){ // blog content
+    var post_id = 963919;
+    var location = window.location;
+    source_url = location.protocol + "//" + location.host + location.pathname + location.search;
+    pre.writeAttribute('codeable_id', post_id);
+    pre.writeAttribute('codeable_type', "Blog");
+    pre.writeAttribute('source_url', source_url);
+    pre.writeAttribute('pre_index', index);
+    pre.writeAttribute('title', '抓取并验证代理ip小demo');
+  });
+
+  fix_image_size($$('div.blog_content img'), 700);
+
+  function processComment() {
+    $$('#main .blog_comment > div').each(function(comment){// comment
+      var post_id = comment.id.substr(2);
+      $$("#"+comment.id+" pre[name=code]").each(function(pre, index){
+        var location = window.location;
+        source_url = location.protocol + "//" + location.host + location.pathname + location.search;
+        source_url += "#" + comment.id;
+        pre.writeAttribute('codeable_id', post_id);
+        pre.writeAttribute('codeable_type', "BlogComment");
+        pre.writeAttribute('source_url', source_url);
+        pre.writeAttribute('pre_index', index);
+        pre.writeAttribute('title', '抓取并验证代理ip小demo');
+      });
+    });
+  }
+
+  function quote_comment(id) {
+    new Ajax.Request('/editor/quote', {
+      parameters: {'id':id, 'type':'BlogComment'},
+      onSuccess:function(response){editor.bbcode_editor.textarea.insertAfterSelection(response.responseText);
+        Element.scrollTo(editor.bbcode_editor.textarea.element);}
+    });
+  }
+
+  code_favorites_init();
+  processComment();
+  new WeiboShare({share_buttons: $('share_weibo'), img_scope: $('blog_content')});
+</script>
+
+
+
+
+        </div>
+
+        <div id="local">
+          <div class="local_top"></div>
+          <div id="blog_owner">
+  <div id="blog_owner_logo"><a href="http://nkliuliu.iteye.com/"><img alt="nkliuliu的博客" class="logo" src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/a0c92711-4afb-3694-af4d-a79dbaf663cc.jpg" title="nkliuliu的博客: 刘青山的资料库-发表是最好的记忆"></a></div>
+  <div id="blog_owner_name">nkliuliu</div>
+</div>
+
+          <div id="blog_actions">
+            <ul>
+              <li>浏览: 46555 次</li>
+              <li>性别: <img alt="Icon_minigender_1" src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/icon_minigender_1.gif" title="男"></li>
+              <li>来自: 北京</li>
+              <li><img src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/offline.gif"></li>
+              
+            </ul>
+          </div>
+          <div id="user_visits" class="clearfix">
+            <h5>最近访客 <span style="font-weight:normal;font-size:12px;padding-left:30px;"><a href="http://nkliuliu.iteye.com/blog/user_visits">更多访客&gt;&gt;</a></span></h5>
+            
+              <div class="user_visit">
+                <div class="logo"><a href="http://mengyang.iteye.com/" target="_blank"><img alt="mengyang的博客" class="logo" src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/user-logo-thumb.gif" title="mengyang的博客: "></a></div>
+                <div class="left"><a href="http://mengyang.iteye.com/" target="_blank" title="mengyang">mengyang</a></div>
+              </div>
+            
+              <div class="user_visit">
+                <div class="logo"><a href="http://shenjun134.iteye.com/" target="_blank"><img alt="shenjun134的博客" class="logo" src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/800d0ade-ecd9-3c2c-809b-51d9ef87ff5d-thumb.jpg" title="shenjun134的博客: "></a></div>
+                <div class="left"><a href="http://shenjun134.iteye.com/" target="_blank" title="shenjun134">shenjun134</a></div>
+              </div>
+            
+              <div class="user_visit">
+                <div class="logo"><a href="http://lioncode.iteye.com/" target="_blank"><img alt="lioncode的博客" class="logo" src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/user-logo-thumb.gif" title="lioncode的博客: "></a></div>
+                <div class="left"><a href="http://lioncode.iteye.com/" target="_blank" title="lioncode">lioncode</a></div>
+              </div>
+            
+              <div class="user_visit">
+                <div class="logo"><a href="http://singleswings.iteye.com/" target="_blank"><img alt="singleswings的博客" class="logo" src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/user-logo-thumb.gif" title="singleswings的博客: "></a></div>
+                <div class="left"><a href="http://singleswings.iteye.com/" target="_blank" title="singleswings">singleswings</a></div>
+              </div>
+            
+          </div>
+
+          
+
+                      <div id="blog_menu">
+              <h5>文章分类</h5>
+              <ul>
+                <li><a href="http://nkliuliu.iteye.com/">全部博客 (80)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/132762">liunx应用 (12)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/132582">web容器 (8)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/132579">spring (7)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/132580">maven (7)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/133221">数据库 (4)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/136903">数据结构和算法 (9)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/132584">web前端 (5)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/133223">版本控制 (4)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/132587">jvm原理和调优 (4)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/134207">产品设计 (2)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/137708">架构设计 (6)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/134006">struts2 (1)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/134063">编程感悟 (2)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/134209">灌水帖 (1)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/137702">软件测试 (3)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/139707">webService (1)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/147751">数据抓取 (2)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/155357">新公司项目认识历程 (1)</a></li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/category/195387">python (0)</a></li>
+                
+              </ul>
+            </div>
+            <div id="month_blogs">
+              <h5>社区版块</h5>
+              <ul>
+                <li><a href="http://nkliuliu.iteye.com/blog/news">我的资讯</a> (0)</li>
+                <li>
+                  <a href="http://nkliuliu.iteye.com/blog/post">我的论坛</a> (14)
+                </li>
+                <li><a href="http://nkliuliu.iteye.com/blog/answered_problems">我的问答</a> (7)</li>
+              </ul>
+            </div>
+            <div id="month_blogs">
+              <h5>存档分类</h5>
+              <ul>
+                
+                  <li><a href="http://nkliuliu.iteye.com/blog/monthblog/2011-09">2011-09</a> (1)</li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/blog/monthblog/2011-06">2011-06</a> (2)</li>
+                
+                  <li><a href="http://nkliuliu.iteye.com/blog/monthblog/2011-05">2011-05</a> (2)</li>
+                
+                <li><a href="http://nkliuliu.iteye.com/blog/monthblog_more">更多存档...</a></li>
+              </ul>
+            </div>
+            
+            
+
+            <div id="guest_books">
+              <h5>最新评论</h5>
+              <ul>
+                
+                <li>
+                  <a href="http://xiaoqiang2008.iteye.com/" target="_blank" title="xiaoqiang2008">xiaoqiang2008</a>： 
+                  执行两次的原因是什么，好像楼主没弄清楚啊！是不是在web.xm ...<br>
+                  <a href="http://nkliuliu.iteye.com/blog/816335#bc2313464">spring定时任务执行两次</a>
+                </li>
+                
+                <li>
+                  <a href="http://zx527291227.iteye.com/" target="_blank" title="zx527291227">zx527291227</a>： 
+                  你好！按照你的说我尝试了下但是还是会访问两次，能帮忙看下是什么 ...<br>
+                  <a href="http://nkliuliu.iteye.com/blog/816335#bc2282144">spring定时任务执行两次</a>
+                </li>
+                
+                <li>
+                  <a href="http://forcer521.iteye.com/" target="_blank" title="forcer521">forcer521</a>： 
+                  现在做的啥项目啊？<br>
+                  <a href="http://nkliuliu.iteye.com/blog/1028200#bc2269471">艰难的项目部署历程</a>
+                </li>
+                
+                <li>
+                  <a href="http://forcer521.iteye.com/" target="_blank" title="forcer521">forcer521</a>： 
+                  弄成树，直接打勾不更好？<br>
+                  <a href="http://nkliuliu.iteye.com/blog/983020#bc2269469">jquery省市二级联动多选</a>
+                </li>
+                
+                <li>
+                  <a href="http://mulanhua.iteye.com/" target="_blank" title="mulanhua">mulanhua</a>： 
+                  挑选公司和项目组也要看使用的IDE和部署管理工具。Maven真 ...<br>
+                  <a href="http://nkliuliu.iteye.com/blog/1028200#bc2255866">艰难的项目部署历程</a>
+                </li>
+                
+              </ul>
+            </div>
+
+            <div class="local_bottom"></div>
+          
+        </div>
+      </div>
+
+      <div id="footer" class="clearfix">
+        <div id="copyright">
+          <hr>
+          声明：ITeye文章版权属于作者，受法律保护。没有作者书面许可不得转载。若作者同意转载，必须以超链接形式标明文章原始出处和作者。<br>
+          © 2003-2012 ITeye.com.   All rights reserved.  [ 京ICP证110151号  京公网安备110105010620 ]
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+  document.write("<img src='http://stat.iteye.com/?url="+ encodeURIComponent(document.location.href) + "&referrer=" + encodeURIComponent(document.referrer) + "&user_id=' width='0' height='0' />");
+</script><img src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/saved_resource" width="0" height="0">
+
+<script src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/tracking.js" type="text/javascript"></script>
+
+    
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-20494495-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+      
+    
+  
+
+<embed style="visibility: hidden;" type="application/xl_chrome_plugin" width="0" height="0"><div class="sogoutip" style="z-index: 2147483645; visibility: hidden; display: none;"></div><div class="sogoubottom" id="sougou_bottom" style="display: none;"></div><div id="ext_stophi" style="z-index: 2147483647;"><div class="extnoticebg"></div><div class="extnotice"><h2>关闭提示 <a href="http://nkliuliu.iteye.com/blog/963919#" title="关闭提示" id="closenotice" class="closenotice">关闭</a></h2><p id="sogouconfirmtxt"></p>  <a id="sogouconfirm" href="http://nkliuliu.iteye.com/blog/963919#" class="extconfirm">确 认</a> <a id="sogoucancel" href="http://nkliuliu.iteye.com/blog/963919#" class="extconfirm">取 消</a></div></div><div id="ext_overlay" style="display: none; z-index: 2147483646;" class="ext_overlayBG"></div><iframe class="sogou_sugg_feedbackquan" style="background-color: transparent; border: none; display: none; z-index: 2147483645; background-position: initial initial; background-repeat: initial initial;" frameborder="0" scrolling="no" src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/yun1.htm"></iframe><script src="./抓取并验证代理ip小demo - 刘青山的资料库-发表是最好的记忆 - ITeye技术网站_files/pv.gif"></script></body></html>

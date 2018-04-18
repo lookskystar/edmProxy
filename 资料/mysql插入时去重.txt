@@ -1,0 +1,22 @@
+insert into  proxy_tab
+(proxyHost) values("173.234.50.210") 
+where ("173.234.50.210") not exists
+(select proxyHost from proxy_tab where 
+proxy_tab.proxyHost="173.234.50.210");
+
+
+
+INSERT INTO test(id, name)
+SELECT id, name FROM tset1
+
+WHERE not exists (select * from test where tset.id = tset1.id);
+
+
+
+insert into  proxy_tab(proxyHost,proxyPort,proxyType,proxyAccount,proxyPassword,valid,start,createDate,proxyCount,lastProxyDate,remark) 
+select ?,?,?,?,?,?,?,?,?,?,? 
+from dual
+WHERE
+NOT EXISTS
+(select proxyHost from proxy_tab where 
+proxyHost=?);

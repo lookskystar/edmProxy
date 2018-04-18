@@ -1,0 +1,24 @@
+保留变量：
+{email} 收信email，即list里的第0列
+{offerLink} offer链接，从任务属性里读取
+{unsubscribeLink} 取消订阅链接，从任务属性里读取
+{complaintLink} 投诉链接，从任务属性里读取
+{pixelCode} pixel代码，从任务属性里读取
+
+扩展变量
+{col1} 对应list第1列的内容，因为email是第0列
+{col2} 对应list第2列的内容
+{col3} 对应list第3列的内容
+...
+
+list列表，一行一个，如果不包含扩展属性，一行就一个email,如果包含扩展属性，则用csv格式，即每行数据的各个列用英文逗号分割。第0个是email地址，后面是扩展内容。
+例如：
+adrian.bean@gmail.com,adrian,bean,f,25
+adrian.becerra@gmail.com,adrian,bentley,m,30
+adrian.bentley@gmail.com,adrian,bentley,m,35
+
+如果发送第一行 则变量{col1}=adrian  {col2}=bean {col3}=f {col4}=30，所以{email}={col0},{email}是{col0}的别名。
+
+建议扩展变量的处理方法：用split(',')方法把此行的内容切成一个字符数组expVariables。替换变量时，遇到col开头的，则说明是扩展变量，取col后面的数字作为索引index,然后用expVariables[index]即可取出此变量的值。如果索引的值超出数组范围，则不替换，原样输出。
+
+同样，遇到不存在的变量，也原样输出。

@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Sat Dec 21 11:58:50 ACT 2013
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=edmProxy_fat.jar
+manifest.mergeall=true
+manifest.mainclass=com.edmProxy.gui.MainFrame
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=
+includes=

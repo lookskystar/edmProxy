@@ -1,0 +1,1105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- saved from url=(0053)http://blog.csdn.net/a9529lty/article/details/7174265 -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Java Socket发送与接收HTTP消息简单实现 - 
+        - 博客频道 - CSDN.NET</title>
+    
+    <meta name="description" content="在上次Java Socket现实简单的HTTP服务我们实现了简单的HTTP服务，它可以用来模拟HTTP服务，用它可以截获HTTP请求的原始码流，让我们很清楚的了解到我们向服务发的HTTP消息的结构，对HTTP请求消息有个清晰的认识。这一节我想写了一个客户的程序，就是用来模拟浏览器，用来向服务器发送HTTP请求，最得要的是可以用它来显示服务器发回来的HTTP响应消息的一般结构。import ja">
+    <script type="text/javascript" async="" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/ga.js"></script><script src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/jquery.js" type="text/javascript"></script>
+    <script type="text/javascript" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/ad.js"></script>
+    <link rel="Stylesheet" type="text/css" href="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/style.css">
+    <link id="RSSLink" title="RSS" type="application/rss+xml" rel="alternate" href="http://blog.csdn.net/a9529lty/rss/list">
+    <link rel="shortcut icon" href="http://blog.csdn.net/favicon.ico">
+    <link type="text/css" rel="stylesheet" href="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/default.css">
+
+<link href="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/bdsstyle.css" rel="stylesheet" type="text/css"><script type="text/javascript" charset="utf-8" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/tracking.js"></script><script type="text/javascript" charset="utf-8" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/main.js"></script><link type="text/css" rel="stylesheet" href="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/style(1).css"><script src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/logger.js"></script></head>
+<body class=""><div id="BAIDU_CLB_wh2137476" style="position: absolute; left: -1px; bottom: -1px; z-index: 0; width: 0px; height: 0px; overflow: hidden; visibility: hidden; display: none;"><iframe id="BAIDU_CLB_wh4509128" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/o.htm" style="width: 0px; height: 0px; visibility: hidden; display: none;"></iframe></div><iframe style="display: none;" frameborder="0"></iframe><div id="bdshare_s" style="display: block;"><iframe id="bdsIfr" style="position:absolute;display:none;z-index:9999;" frameborder="0"></iframe><div id="bdshare_l" style="display: none;"><div id="bdshare_l_c"><h6>分享到</h6><ul><li><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="bds_mshare mshare">一键分享</a></li><li><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="bds_qzone qqkj">QQ空间</a></li><li><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="bds_tsina xlwb">新浪微博</a></li><li><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="bds_bdysc bdysc">百度云收藏</a></li><li><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="bds_renren rrw">人人网</a></li><li><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="bds_tqq txwb">腾讯微博</a></li><li><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="bds_bdxc bdxc">百度相册</a></li><li><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="bds_kaixin001 kxw">开心网</a></li><li><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="bds_tqf txpy">腾讯朋友</a></li><li><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="bds_tieba bdtb">百度贴吧</a></li><li><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="bds_douban db">豆瓣网</a></li><li><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="bds_tsohu shwb">搜狐微博</a></li><li><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="bds_bdhome bdhome">百度新首页</a></li><li><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="bds_sqq sqq">QQ好友</a></li><li><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="bds_thx thx">和讯微博</a></li><li><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="bds_more">更多...</a></li></ul><p><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="goWebsite">百度分享</a></p></div></div></div>
+    <script src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/pub_topnav_2011.js" type="text/javascript"></script><link rel="stylesheet" type="text/css" href="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/navtop_2012.css">
+<div class="nav_top_2011">
+<p><span style="color:red;">您还未登录！</span>|<a href="https://passport.csdn.net/account/login" target="_top">登录</a>|<a href="https://passport.csdn.net/account/register" target="_top">注册</a>|<a href="https://passport.csdn.net/help/faq" target="_blank">帮助</a></p><ul>
+<li><a href="http://www.csdn.net/" target="_blank" style="color: red;">首页</a></li>
+<li><a href="http://news.csdn.net/" target="_blank">业界</a></li>
+<li><a href="http://mobile.csdn.net/" target="_blank">移动</a></li>
+<li><a href="http://cloud.csdn.net/" target="_blank">云计算</a></li>
+<li><a href="http://sd.csdn.net/" target="_blank">研发</a></li>
+<li><a href="http://bbs.csdn.net/" target="_blank">论坛</a></li>
+<li><a href="http://blog.csdn.net/" target="_blank">博客</a></li>
+<li><a href="http://download.csdn.net/" target="_blank">下载</a></li>
+<li class="more"><h2 id="topnav_btnmore" onclick="showNavMore(this)"><a href="javascript:void(0);">更多</a></h2>
+<div id="topnav_hidlist">
+<iframe name="nav_frm" src="about:blank" width="92" height="178" scrolling="no" frameborder="no"></iframe>
+</div>
+</li>
+</ul>
+</div>
+
+    <div id="container">
+        <div id="header">
+    <div class="header">
+        <div id="blog_title">
+            <h1>
+                <a href="http://blog.csdn.net/a9529lty"></a></h1>
+            <h2></h2>
+            <div class="clear">
+            </div>
+        </div>
+        <div class="clear">
+        </div>
+    </div>
+</div>
+<div id="navigator">
+    <div class="navigator_bg">
+    </div>
+    <div class="navigator">
+        <ul>
+                <li id="btnContents"><a href="http://blog.csdn.net/a9529lty?viewmode=contents"><span>
+                    <img src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/ico_list.gif">目录视图</span></a></li>
+                <li id="btnView"><a href="http://blog.csdn.net/a9529lty?viewmode=list"><span>
+                    <img src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/ico_summary.gif">摘要视图</span></a></li>
+                <li id="btnRss"><a href="http://blog.csdn.net/a9529lty/rss/list"><span>
+                    <img src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/ico_rss.gif">订阅</span></a></li>
+</ul>
+    </div>
+</div>
+<script type="text/javascript">
+    var username = "a9529lty";
+    var _blogger = username;
+    var blog_address = "http://blog.csdn.net/a9529lty";
+    var static_host = "http://static.blog.csdn.net";
+    var currentUserName = "";
+</script>
+
+        <div id="body">
+            <div id="main">
+                <div class="main">
+<div class="notice tracking-ad" data-mod="popu_3"> 
+
+<a href="http://vote.blog.csdn.net/blogstar2013" target="_blank">
+<font color="blue">投票赢好礼，周周有惊喜！
+ </font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<a href="http://blog.csdn.net/blogdevteam/article/details/17440147" target="_blank"><font color="red">2014年4月微软MVP申请开始了！
+</font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<a href="http://blog.csdn.net/csdn_ask/article/details/16943685" target="_blank">
+<font color="blue">消灭0回答，赢下载分
+ </font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+<a href="http://blog.csdn.net/blogdevteam/article/details/17356319" target="_blank">
+<font color="red">“我的2013”年度征文活动火爆进行中！
+ </font></a>
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+
+<a href="http://www.csdn.net/article/2013-12-17/2817828" target="_blank">
+<font color="red">专访Kinect手语翻译系统团队
+ </font></a>
+
+
+</div>                    <link href="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/comment1.css" type="text/css" rel="stylesheet">
+<link href="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/style1.css" type="text/css" rel="stylesheet">
+<div id="article_details" class="details">
+    <div class="article_title">
+    <span class="ico ico_type_Repost"></span>
+    <h3>
+        <span class="link_title"><a href="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET.htm">
+        Java Socket发送与接收HTTP消息简单实现
+        </a></span>
+    </h3>
+</div>
+
+    <div class="article_manage">
+        <span class="link_categories">
+        分类：
+            <a href="http://blog.csdn.net/a9529lty/article/category/352340">Java</a> 
+        </span>
+    <span class="link_postdate">2012-01-04 10:52</span>
+    <span class="link_view" title="阅读次数">6092人阅读</span>
+    <span class="link_comments" title="评论次数"><a href="http://blog.csdn.net/a9529lty/article/details/7174265#comments">评论</a>(0)</span>
+    <span class="link_collect"><a href="javascript:void(0);" onclick="javascript:collectArticle(&#39;Java Socket发送与接收HTTP消息简单实现&#39;,&#39;7174265&#39;);return false;" title="收藏">收藏</a></span>
+    <span class="link_report"><a href="http://blog.csdn.net/a9529lty/article/details/7174265#report" onclick="javascript:report(7174265,2);return false;" title="举报">举报</a></span>
+    
+</div>
+<div class="tag2box"><a href="http://www.csdn.net/tag/socket" target="_blank">socket</a><a href="http://www.csdn.net/tag/java" target="_blank">java</a><a href="http://www.csdn.net/tag/%e6%9c%8d%e5%8a%a1%e5%99%a8" target="_blank">服务器</a><a href="http://www.csdn.net/tag/null" target="_blank">null</a><a href="http://www.csdn.net/tag/import" target="_blank">import</a><a href="http://www.csdn.net/tag/byte" target="_blank">byte</a></div>
+
+    
+<div id="article_content" class="article_content">
+
+&nbsp;
+<p><span style="font-size:13px">在上次</span><span style="font-size:13px">Java Socket现实简单的HTTP服务</span><span style="font-size:13px">我们实现了简单的HTTP服务，它可以用来模拟HTTP服务，用它可以截获HTTP请求的原始码流，让我们很清楚的了解到我们向服务发的HTTP消息的结构，对HTTP请求消息有个清晰的认识。这一节我想写了一个客户的程序，就是用来模拟浏览器，用来向服务器发送HTTP请求，最得要的是可以用它来显示服务器发回来的HTTP响应消息的一般结构。</span></p>
+<div class="dp-highlighter bg_java"><div class="bar"><div class="tools"><b>[java]</b> <a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 383px; top: 560px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_1" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_1" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=1&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-j"><li class="alt"><span><span class="keyword">import</span><span>&nbsp;java.io.IOException;&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">import</span><span>&nbsp;java.io.InputStream;&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">import</span><span>&nbsp;java.io.OutputStreamWriter;&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">import</span><span>&nbsp;java.net.InetAddress;&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">import</span><span>&nbsp;java.net.Socket;&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">import</span><span>&nbsp;java.net.UnknownHostException;&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">import</span><span>&nbsp;java.util.ArrayList;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="comment">/**</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;*&nbsp;一个简单的HTTP客户端，发送HTTP请求，模拟浏览器</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;*&nbsp;可打印服务器发送过来的HTTP消息</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">public</span><span>&nbsp;</span><span class="keyword">class</span><span>&nbsp;SimpleHttpClient&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;String&nbsp;encoding&nbsp;=&nbsp;</span><span class="string">"GBK"</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;main(String[]&nbsp;args)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">try</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Socket&nbsp;s&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;Socket(InetAddress.getLocalHost(),&nbsp;</span><span class="number">8080</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OutputStreamWriter&nbsp;osw&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;OutputStreamWriter(s.getOutputStream());&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;StringBuffer&nbsp;sb&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;StringBuffer();&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sb.append(<span class="string">"GET&nbsp;/HttpStream/gb2312.jsp&nbsp;HTTP/1.1\r\n"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sb.append(<span class="string">"Host:&nbsp;localhost:8088\r\n"</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sb.append(<span class="string">"Connection:&nbsp;Keep-Alive\r\n"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//注，这是关键的关键，忘了这里让我搞了半个小时。这里一定要一个回车换行，表示消息头完，不然服务器会等待</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sb.append(<span class="string">"\r\n"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;osw.write(sb.toString());&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;osw.flush();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//--输出服务器传回的消息的头信息</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InputStream&nbsp;is&nbsp;=&nbsp;s.getInputStream();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;line&nbsp;=&nbsp;<span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span><span>&nbsp;contentLength&nbsp;=&nbsp;</span><span class="number">0</span><span>;</span><span class="comment">//服务器发送回来的消息长度</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;读取所有服务器发送过来的请求参数头部信息</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">do</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;line&nbsp;=&nbsp;readLine(is,&nbsp;<span class="number">0</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//如果有Content-Length消息头时取出</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(line.startsWith(</span><span class="string">"Content-Length"</span><span>))&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;contentLength&nbsp;=&nbsp;Integer.parseInt(line.split(<span class="string">":"</span><span>)[</span><span class="number">1</span><span>].trim());&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//打印请求部信息</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(line);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//如果遇到了一个单独的回车换行，则表示请求头结束</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">while</span><span>&nbsp;(!line.equals(</span><span class="string">"\r\n"</span><span>));&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//--输消息的体</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.print(readLine(is,&nbsp;contentLength));&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//关闭流</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is.close();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">catch</span><span>&nbsp;(UnknownHostException&nbsp;e)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">catch</span><span>&nbsp;(IOException&nbsp;e)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;这里我们自己模拟读取一行，因为如果使用API中的BufferedReader时，它是读取到一个回车换行后</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;才返回，否则如果没有读取，则一直阻塞，直接服务器超时自动关闭为止，如果此时还使用BufferedReader</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;来读时，因为读到最后一行时，最后一行后不会有回车换行符，所以就会等待。如果使用服务器发送回来的</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;消息头里的Content-Length来截取消息体，这样就不会阻塞</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;contentLe&nbsp;参数&nbsp;如果为0时，表示读头，读时我们还是一行一行的返回；如果不为0，表示读消息体，</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;时我们根据消息体的长度来读完消息体后，客户端自动关闭流，这样不用先到服务器超时来关闭。</span>&nbsp;</span></li><li class=""><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;String&nbsp;readLine(InputStream&nbsp;is,&nbsp;</span><span class="keyword">int</span><span>&nbsp;contentLe)&nbsp;</span><span class="keyword">throws</span><span>&nbsp;IOException&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ArrayList&nbsp;lineByteList&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;ArrayList();&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">byte</span><span>&nbsp;readByte;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span><span>&nbsp;total&nbsp;=&nbsp;</span><span class="number">0</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(contentLe&nbsp;!=&nbsp;</span><span class="number">0</span><span>)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">do</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;readByte&nbsp;=&nbsp;(<span class="keyword">byte</span><span>)&nbsp;is.read();&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lineByteList.add(Byte.valueOf(readByte));&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;total++;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">while</span><span>&nbsp;(total&nbsp;&lt;&nbsp;contentLe);</span><span class="comment">//消息体读还未读完</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">else</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">do</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;readByte&nbsp;=&nbsp;(<span class="keyword">byte</span><span>)&nbsp;is.read();&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lineByteList.add(Byte.valueOf(readByte));&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">while</span><span>&nbsp;(readByte&nbsp;!=&nbsp;</span><span class="number">10</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">byte</span><span>[]&nbsp;tmpByteArr&nbsp;=&nbsp;</span><span class="keyword">new</span><span>&nbsp;</span><span class="keyword">byte</span><span>[lineByteList.size()];&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span><span>&nbsp;(</span><span class="keyword">int</span><span>&nbsp;i&nbsp;=&nbsp;</span><span class="number">0</span><span>;&nbsp;i&nbsp;&lt;&nbsp;lineByteList.size();&nbsp;i++)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tmpByteArr[i]&nbsp;=&nbsp;((Byte)&nbsp;lineByteList.get(i)).byteValue();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lineByteList.clear();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;</span><span class="keyword">new</span><span>&nbsp;String(tmpByteArr,&nbsp;encoding);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li></ol></div><pre class="java" name="code" style="display: none;">import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+
+/**
+ * 一个简单的HTTP客户端，发送HTTP请求，模拟浏览器
+ * 可打印服务器发送过来的HTTP消息
+ */
+public class SimpleHttpClient {
+	private static String encoding = "GBK";
+
+	public static void main(String[] args) {
+		try {
+			Socket s = new Socket(InetAddress.getLocalHost(), 8080);
+			OutputStreamWriter osw = new OutputStreamWriter(s.getOutputStream());
+			StringBuffer sb = new StringBuffer();
+			sb.append("GET /HttpStream/gb2312.jsp HTTP/1.1\r\n");
+			sb.append("Host: localhost:8088\r\n");
+			sb.append("Connection: Keep-Alive\r\n");
+			//注，这是关键的关键，忘了这里让我搞了半个小时。这里一定要一个回车换行，表示消息头完，不然服务器会等待
+			sb.append("\r\n");
+			osw.write(sb.toString());
+			osw.flush();
+
+			//--输出服务器传回的消息的头信息
+			InputStream is = s.getInputStream();
+			String line = null;
+			int contentLength = 0;//服务器发送回来的消息长度
+			// 读取所有服务器发送过来的请求参数头部信息
+			do {
+				line = readLine(is, 0);
+				//如果有Content-Length消息头时取出
+				if (line.startsWith("Content-Length")) {
+					contentLength = Integer.parseInt(line.split(":")[1].trim());
+				}
+				//打印请求部信息
+				System.out.print(line);
+				//如果遇到了一个单独的回车换行，则表示请求头结束
+			} while (!line.equals("\r\n"));
+
+			//--输消息的体
+			System.out.print(readLine(is, contentLength));
+
+			//关闭流
+			is.close();
+
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/*
+	 * 这里我们自己模拟读取一行，因为如果使用API中的BufferedReader时，它是读取到一个回车换行后
+	 * 才返回，否则如果没有读取，则一直阻塞，直接服务器超时自动关闭为止，如果此时还使用BufferedReader
+	 * 来读时，因为读到最后一行时，最后一行后不会有回车换行符，所以就会等待。如果使用服务器发送回来的
+	 * 消息头里的Content-Length来截取消息体，这样就不会阻塞
+	 * 
+	 * contentLe 参数 如果为0时，表示读头，读时我们还是一行一行的返回；如果不为0，表示读消息体，
+	 * 时我们根据消息体的长度来读完消息体后，客户端自动关闭流，这样不用先到服务器超时来关闭。
+	 */
+	private static String readLine(InputStream is, int contentLe) throws IOException {
+		ArrayList lineByteList = new ArrayList();
+		byte readByte;
+		int total = 0;
+		if (contentLe != 0) {
+			do {
+				readByte = (byte) is.read();
+				lineByteList.add(Byte.valueOf(readByte));
+				total++;
+			} while (total &lt; contentLe);//消息体读还未读完
+		} else {
+			do {
+				readByte = (byte) is.read();
+				lineByteList.add(Byte.valueOf(readByte));
+			} while (readByte != 10);
+		}
+
+		byte[] tmpByteArr = new byte[lineByteList.size()];
+		for (int i = 0; i &lt; lineByteList.size(); i++) {
+			tmpByteArr[i] = ((Byte) lineByteList.get(i)).byteValue();
+		}
+		lineByteList.clear();
+
+		return new String(tmpByteArr, encoding);
+	}
+}</pre>
+<p><br>
+&nbsp;</p>
+<p><span style="font-size:13px; color:#0066cc">运行时访问一个页面打印如下：</span></p>
+<p>
+</p><table border="0" style="border-bottom-color:#000000; border-right-width:0px; background-color:#000000; border-top-color:#000000; border-top-width:0px; border-bottom-width:0px; border-right-color:#000000; border-left-color:#000000; border-left-width:0px">
+<tbody>
+<tr>
+<td>
+<p><span style="color:#00ff00">HTTP/1.1 200 OK<br>
+Server: Apache-Coyote/1.1<br>
+Set-Cookie: JSESSIONID=61F659691475622CE7AB9C84E7AE7273; Path=/HttpStream<br>
+Content-Type: text/html;charset=GB2312<br>
+Content-Length: 81<br>
+Date: Mon, 09 Nov 2009 13:15:23 GMT</span></p>
+<p><span style="color:#00ff00">&nbsp;&nbsp; <br>
+&lt;html&gt;&nbsp;&nbsp; <br>
+&nbsp;&nbsp;&nbsp; &lt;body&gt;&nbsp;&nbsp; <br>
+&nbsp;&nbsp;你好，这是一个简单的测试<br>
+&nbsp;&nbsp;&nbsp; &lt;/body&gt;&nbsp; <br>
+&lt;/html&gt;</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p></p>
+<p>&nbsp;</p>
+<p><span style="font-size:13px">下面来个文件下载的看怎么样?</span></p>
+<p>&nbsp;</p>
+<p><span style="font-size:13px; color:#0066cc">请求的Jsp页面如下：</span></p>
+<div class="dp-highlighter bg_java"><div class="bar"><div class="tools"><b>[java]</b> <a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 383px; top: 2785px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_2" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_2" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=2&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-j"><li class="alt"><span><span>&lt;%</span><span class="annotation">@page</span><span>&nbsp;</span><span class="keyword">import</span><span>=</span><span class="string">"java.io.InputStream"</span><span>&nbsp;contentType=</span><span class="string">"text/html;&nbsp;charset=GB2312"</span><span>%&gt;&nbsp;&nbsp;</span></span></li><li class=""><span>&lt;%<span class="annotation">@page</span><span>&nbsp;</span><span class="keyword">import</span><span>=</span><span class="string">"java.io.FileInputStream"</span><span>%&gt;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&lt;%<span class="annotation">@page</span><span>&nbsp;</span><span class="keyword">import</span><span>=</span><span class="string">"java.io.OutputStream"</span><span>%&gt;&lt;html&gt;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&lt;body&gt;&nbsp;&lt;br&gt;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;%&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">try</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InputStream&nbsp;is&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;FileInputStream(</span><span class="string">"e:/tmp/file2.txt"</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OutputStream&nbsp;os&nbsp;=&nbsp;response.getOutputStream();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">byte</span><span>[]&nbsp;readContent&nbsp;=&nbsp;</span><span class="keyword">new</span><span>&nbsp;</span><span class="keyword">byte</span><span>[</span><span class="number">1024</span><span>];&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span><span>&nbsp;readCount&nbsp;=&nbsp;</span><span class="number">0</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span><span>&nbsp;(is.available()&nbsp;&gt;&nbsp;</span><span class="number">0</span><span>)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;readCount&nbsp;=&nbsp;is.read(readContent);&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;os.write(readContent,&nbsp;<span class="number">0</span><span>,&nbsp;readCount);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is.close();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//注这里一定要关闭，不然的话抛异常，异常请见下面，原因就是response.getWriter()</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//与response.getOutputStream()不能同时使用，如果在这里关闭了，前面与后面向</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//out对象里写的数据就不会刷新到客户端了，只有向response.getOutputStream()写的</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//数据会输出到客户端。</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;os.close();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">catch</span><span>&nbsp;(Exception&nbsp;e)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%&gt;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&lt;/body&gt;&nbsp;&nbsp;</span></li><li class=""><span>&lt;/html&gt;&nbsp;&nbsp;</span></li></ol></div><pre class="java" name="code" style="display: none;">&lt;%@page import="java.io.InputStream" contentType="text/html; charset=GB2312"%&gt;
+&lt;%@page import="java.io.FileInputStream"%&gt;
+
+&lt;%@page import="java.io.OutputStream"%&gt;&lt;html&gt;
+	&lt;body&gt;&nbsp;&lt;br&gt;
+		&lt;%
+			try {
+				InputStream is = new FileInputStream("e:/tmp/file2.txt");
+				OutputStream os = response.getOutputStream();
+				byte[] readContent = new byte[1024];
+				int readCount = 0;
+				while (is.available() &gt; 0) {
+					readCount = is.read(readContent);
+					os.write(readContent, 0, readCount);
+				}
+				
+				is.close();
+				//注这里一定要关闭，不然的话抛异常，异常请见下面，原因就是response.getWriter()
+				//与response.getOutputStream()不能同时使用，如果在这里关闭了，前面与后面向
+				//out对象里写的数据就不会刷新到客户端了，只有向response.getOutputStream()写的
+				//数据会输出到客户端。
+				os.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		%&gt;
+	&lt;/body&gt;
+&lt;/html&gt;</pre>
+<p><br>
+&nbsp;</p>
+<p><span style="font-size:13px; color:#0066cc">如里上面Jsp下载页面中的 os.close() 注释掉的话会抛如下异常：</span></p>
+<p><strong><span style="color:#ffffff; background-color:#525d76">exception</span></strong>
+</p>
+<pre>org.apache.jasper.JasperException: getOutputStream() has already been called for this response
+	org.apache.jasper.servlet.JspServletWrapper.handleJspException(JspServletWrapper.java:476)
+	org.apache.jasper.servlet.JspServletWrapper.service(JspServletWrapper.java:383)
+	org.apache.jasper.servlet.JspServlet.serviceJspFile(JspServlet.java:315)
+	org.apache.jasper.servlet.JspServlet.service(JspServlet.java:265)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:803)
+</pre>
+<p>&nbsp;</p>
+<p><strong><span style="color:#ffffff; background-color:#525d76">root cause</span></strong>
+</p>
+<pre>java.lang.IllegalStateException: getOutputStream() has already been called for this response
+	org.apache.catalina.connector.Response.getWriter(Response.java:601)
+	org.apache.catalina.connector.ResponseFacade.getWriter(ResponseFacade.java:196)
+	org.apache.jasper.runtime.JspWriterImpl.initOut(JspWriterImpl.java:125)
+	org.apache.jasper.runtime.JspWriterImpl.flushBuffer(JspWriterImpl.java:118)
+	org.apache.jasper.runtime.PageContextImpl.release(PageContextImpl.java:185)
+	org.apache.jasper.runtime.JspFactoryImpl.internalReleasePageContext(JspFactoryImpl.java:116)
+	org.apache.jasper.runtime.JspFactoryImpl.releasePageContext(JspFactoryImpl.java:76)
+	org.apache.jsp.gb2312_jsp._jspService(gb2312_jsp.java:78)
+	org.apache.jasper.runtime.HttpJspBase.service(HttpJspBase.java:98)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:803)
+	org.apache.jasper.servlet.JspServletWrapper.service(JspServletWrapper.java:328)
+	org.apache.jasper.servlet.JspServlet.serviceJspFile(JspServlet.java:315)
+	org.apache.jasper.servlet.JspServlet.service(JspServlet.java:265)
+	javax.servlet.http.HttpServlet.service(HttpServlet.java:803)
+</pre>
+<p>&nbsp;</p>
+<p><span style="font-size:13px; color:#0066cc">以下是服务器经过编译生成的servlet类文件：</span></p>
+<div class="dp-highlighter bg_java"><div class="bar"><div class="tools"><b>[java]</b> <a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="ViewSource" title="view plain" onclick="dp.sh.Toolbar.Command(&#39;ViewSource&#39;,this);return false;">view plain</a><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="CopyToClipboard" title="copy" onclick="dp.sh.Toolbar.Command(&#39;CopyToClipboard&#39;,this);return false;">copy</a><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="PrintSource" title="print" onclick="dp.sh.Toolbar.Command(&#39;PrintSource&#39;,this);return false;">print</a><a href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="About" title="?" onclick="dp.sh.Toolbar.Command(&#39;About&#39;,this);return false;">?</a><div style="position: absolute; left: 383px; top: 4168px; width: 18px; height: 18px; z-index: 99;"><embed id="ZeroClipboardMovie_3" src="http://static.blog.csdn.net/scripts/ZeroClipboard/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="18" height="18" name="ZeroClipboardMovie_3" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=3&amp;width=18&amp;height=18" wmode="transparent"></div></div></div><ol start="1" class="dp-j"><li class="alt"><span><span class="keyword">package</span><span>&nbsp;org.apache.jsp;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">import</span><span>&nbsp;javax.servlet.*;&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">import</span><span>&nbsp;javax.servlet.http.*;&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">import</span><span>&nbsp;javax.servlet.jsp.*;&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">import</span><span>&nbsp;java.io.InputStream;&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">import</span><span>&nbsp;java.io.FileInputStream;&nbsp;&nbsp;</span></span></li><li class=""><span><span class="keyword">import</span><span>&nbsp;java.io.OutputStream;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">public</span><span>&nbsp;</span><span class="keyword">final</span><span>&nbsp;</span><span class="keyword">class</span><span>&nbsp;gb2312_jsp&nbsp;</span><span class="keyword">extends</span><span>&nbsp;org.apache.jasper.runtime.HttpJspBase&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">implements</span><span>&nbsp;org.apache.jasper.runtime.JspSourceDependent&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;java.util.List&nbsp;_jspx_dependants;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;Object&nbsp;getDependants()&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;_jspx_dependants;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;_jspService(HttpServletRequest&nbsp;request,&nbsp;HttpServletResponse&nbsp;response)&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">throws</span><span>&nbsp;java.io.IOException,&nbsp;ServletException&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;JspFactory&nbsp;_jspxFactory&nbsp;=&nbsp;<span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;PageContext&nbsp;pageContext&nbsp;=&nbsp;<span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;HttpSession&nbsp;session&nbsp;=&nbsp;<span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;ServletContext&nbsp;application&nbsp;=&nbsp;<span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;ServletConfig&nbsp;config&nbsp;=&nbsp;<span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;JspWriter&nbsp;out&nbsp;=&nbsp;<span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;Object&nbsp;page&nbsp;=&nbsp;<span class="keyword">this</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;JspWriter&nbsp;_jspx_out&nbsp;=&nbsp;<span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;PageContext&nbsp;_jspx_page_context&nbsp;=&nbsp;<span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">try</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_jspxFactory&nbsp;=&nbsp;JspFactory.getDefaultFactory();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;response.setContentType(<span class="string">"text/html;&nbsp;charset=GB2312"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pageContext&nbsp;=&nbsp;_jspxFactory.getPageContext(<span class="keyword">this</span><span>,&nbsp;request,&nbsp;response,&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">null</span><span>,&nbsp;</span><span class="keyword">true</span><span>,&nbsp;</span><span class="number">8192</span><span>,&nbsp;</span><span class="keyword">true</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_jspx_page_context&nbsp;=&nbsp;pageContext;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;application&nbsp;=&nbsp;pageContext.getServletContext();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;config&nbsp;=&nbsp;pageContext.getServletConfig();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;session&nbsp;=&nbsp;pageContext.getSession();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out&nbsp;=&nbsp;pageContext.getOut();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_jspx_out&nbsp;=&nbsp;out;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out.write(<span class="string">"\r\n"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out.write(<span class="string">"\r\n"</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out.write(<span class="string">"\r\n"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out.write(<span class="string">"&lt;html&gt;\r\n"</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out.write(<span class="string">"\t&lt;body&gt;&nbsp;&lt;br&gt;\r\n"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out.write(<span class="string">"\t\t"</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">try</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InputStream&nbsp;is&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;FileInputStream(</span><span class="string">"e:/tmp/file2.txt"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OutputStream&nbsp;os&nbsp;=&nbsp;response.getOutputStream();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">byte</span><span>[]&nbsp;readContent&nbsp;=&nbsp;</span><span class="keyword">new</span><span>&nbsp;</span><span class="keyword">byte</span><span>[</span><span class="number">1024</span><span>];&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">int</span><span>&nbsp;readCount&nbsp;=&nbsp;</span><span class="number">0</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span><span>&nbsp;(is.available()&nbsp;&gt;&nbsp;</span><span class="number">0</span><span>)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;readCount&nbsp;=&nbsp;is.read(readContent);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;os.write(readContent,&nbsp;<span class="number">0</span><span>,&nbsp;readCount);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;is.close();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//注这里一定要关闭，不然的话抛异常，异常请见下面，原因就是response.getWriter()</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//与response.getOutputStream()不能同时使用，如果在这里关闭了，前面与后面向</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//out对象里写的数据就不会刷新到客户端了，只有向response.getOutputStream()写的</span><span>&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//数据会输出到客户端。</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;os.close();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">catch</span><span>&nbsp;(Exception&nbsp;e)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out.write(<span class="string">"\r\n"</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out.write(<span class="string">"\t&lt;/body&gt;\r\n"</span><span>);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out.write(<span class="string">"&lt;/html&gt;"</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">catch</span><span>&nbsp;(Throwable&nbsp;t)&nbsp;{&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(!(t&nbsp;</span><span class="keyword">instanceof</span><span>&nbsp;SkipPageException)){&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out&nbsp;=&nbsp;_jspx_out;&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(out&nbsp;!=&nbsp;</span><span class="keyword">null</span><span>&nbsp;&amp;&amp;&nbsp;out.getBufferSize()&nbsp;!=&nbsp;</span><span class="number">0</span><span>)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out.clearBuffer();&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(_jspx_page_context&nbsp;!=&nbsp;</span><span class="keyword">null</span><span>)&nbsp;_jspx_page_context.handlePageException(t);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">finally</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(_jspxFactory&nbsp;!=&nbsp;</span><span class="keyword">null</span><span>)&nbsp;_jspxFactory.releasePageContext(_jspx_page_context);&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li></ol></div><pre class="java" name="code" style="display: none;">package org.apache.jsp;
+
+import javax.servlet.*;
+import javax.servlet.http.*;
+import javax.servlet.jsp.*;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.OutputStream;
+
+public final class gb2312_jsp extends org.apache.jasper.runtime.HttpJspBase
+    implements org.apache.jasper.runtime.JspSourceDependent {
+
+  private static java.util.List _jspx_dependants;
+
+  public Object getDependants() {
+    return _jspx_dependants;
+  }
+
+  public void _jspService(HttpServletRequest request, HttpServletResponse response)
+        throws java.io.IOException, ServletException {
+
+    JspFactory _jspxFactory = null;
+    PageContext pageContext = null;
+    HttpSession session = null;
+    ServletContext application = null;
+    ServletConfig config = null;
+    JspWriter out = null;
+    Object page = this;
+    JspWriter _jspx_out = null;
+    PageContext _jspx_page_context = null;
+
+
+    try {
+      _jspxFactory = JspFactory.getDefaultFactory();
+      response.setContentType("text/html; charset=GB2312");
+      pageContext = _jspxFactory.getPageContext(this, request, response,
+      			null, true, 8192, true);
+      _jspx_page_context = pageContext;
+      application = pageContext.getServletContext();
+      config = pageContext.getServletConfig();
+      session = pageContext.getSession();
+      out = pageContext.getOut();
+      _jspx_out = out;
+
+      out.write("\r\n");
+      out.write("\r\n");
+      out.write("\r\n");
+      out.write("&lt;html&gt;\r\n");
+      out.write("\t&lt;body&gt;&nbsp;&lt;br&gt;\r\n");
+      out.write("\t\t");
+
+			try {
+				InputStream is = new FileInputStream("e:/tmp/file2.txt");
+				OutputStream os = response.getOutputStream();
+				byte[] readContent = new byte[1024];
+				int readCount = 0;
+				while (is.available() &gt; 0) {
+					readCount = is.read(readContent);
+					os.write(readContent, 0, readCount);
+				}
+				
+				is.close();
+				//注这里一定要关闭，不然的话抛异常，异常请见下面，原因就是response.getWriter()
+				//与response.getOutputStream()不能同时使用，如果在这里关闭了，前面与后面向
+				//out对象里写的数据就不会刷新到客户端了，只有向response.getOutputStream()写的
+				//数据会输出到客户端。
+				os.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		
+      out.write("\r\n");
+      out.write("\t&lt;/body&gt;\r\n");
+      out.write("&lt;/html&gt;");
+    } catch (Throwable t) {
+      if (!(t instanceof SkipPageException)){
+        out = _jspx_out;
+        if (out != null &amp;&amp; out.getBufferSize() != 0)
+          out.clearBuffer();
+        if (_jspx_page_context != null) _jspx_page_context.handlePageException(t);
+      }
+    } finally {
+      if (_jspxFactory != null) _jspxFactory.releasePageContext(_jspx_page_context);
+    }
+  }
+}</pre>
+<p><br>
+&nbsp;</p>
+<p><span style="font-size:13px; color:#0066cc">最后是服务向客户端输出的码流如下：</span></p>
+<p>&nbsp;</p>
+<p>
+</p><table border="0" style="border-bottom-color:#000000; border-right-width:0px; background-color:#000000; border-top-color:#000000; border-top-width:0px; border-bottom-width:0px; border-right-color:#000000; border-left-color:#000000; border-left-width:0px">
+<tbody>
+<tr>
+<td>
+<p><span style="color:#00ff00">HTTP/1.1 200 OK<br>
+Server: Apache-Coyote/1.1<br>
+Set-Cookie: JSESSIONID=328097D70C625E8A9279FF9472319A5D; Path=/HttpStream<br>
+Content-Type: text/html;charset=GB2312<br>
+Content-Length: 60<br>
+Date: Mon, 09 Nov 2009 13:19:22 GMT</span></p>
+<p>&nbsp;</p>
+<p><span style="color:#00ff00">这是测试文件的内容:<br>
+中a </span><a href="mailto:~!@#%24%%5E&*()_+%7B%7D%7C:%5C"><span style="color:#00ff00">~!@#$%^&amp;*()_+{}|:\</span></a><span style="color:#00ff00">" &lt;&gt;?`-=[]\\;',./</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p></p>
+
+</div>
+
+
+
+<!-- Baidu Button BEGIN -->
+<div id="bdshare" class="bdshare_t bds_tools get-codes-bdshare" style="float: right;">
+<a class="bds_qzone" title="分享到QQ空间" href="http://blog.csdn.net/a9529lty/article/details/7174265#"></a>
+<a class="bds_tsina" title="分享到新浪微博" href="http://blog.csdn.net/a9529lty/article/details/7174265#"></a>
+<a class="bds_tqq" title="分享到腾讯微博" href="http://blog.csdn.net/a9529lty/article/details/7174265#"></a>
+<a class="bds_renren" title="分享到人人网" href="http://blog.csdn.net/a9529lty/article/details/7174265#"></a>
+<a class="bds_t163" title="分享到网易微博" href="http://blog.csdn.net/a9529lty/article/details/7174265#"></a>
+<span class="bds_more">更多</span>
+<a class="shareCount" href="http://blog.csdn.net/a9529lty/article/details/7174265#" title="累计分享0次">0</a>
+</div>
+<!-- Baidu Button END -->
+
+
+<!--192.168.100.33-->
+<div class="article_next_prev">
+            <li class="prev_article"><span>上一篇：</span><a href="http://blog.csdn.net/a9529lty/article/details/7174259">Java Socket现实简单的HTTP服务</a></li>
+            <li class="next_article"><span>下一篇：</span><a href="http://blog.csdn.net/a9529lty/article/details/7174302">关于IFRAME 自适应高度的研究</a></li>
+</div>
+
+<!-- Baidu Button BEGIN -->
+<script type="text/javascript" id="bdshare_js" data="type=tools&amp;uid=1536434" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/bds_s_v2.js"></script>
+
+<script type="text/javascript">
+    document.getElementById("bdshell_js").src = "http://bdimg.share.baidu.com/static/js/shell_v2.js?cdnversion=" + Math.ceil(new Date()/3600000)
+</script>
+<!-- Baidu Button END -->
+
+</div>
+    <div id="ad_cen">
+        <script type="text/javascript">            BAIDU_CLB_SLOT_ID = "117306";</script>
+        <script type="text/javascript" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/o.js"></script><div id="BAIDU_CLB_SLOT_PS_117306"></div><script charset="utf-8" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/ecom"></script><script type="text/javascript">
+/*728*90，博客内页*/
+var cpro_id = "u1405018";
+</script>
+<script src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/c.js" type="text/javascript"></script><script type="text/javascript" charset="utf-8" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/ecom(1)"></script><div style="display:none">-</div> <iframe id="cproIframe1" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/snippetcacher.htm" width="728" height="90" align="center,center" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" allowtransparency="true"></iframe>
+    </div>
+    <script type="text/javascript">
+        //new Ad(4, 'ad_cen');
+    </script>
+<div id="comment_title" class="panel_head">
+    查看评论<a name="comments"></a></div>
+<div id="comment_list"><br>&nbsp;&nbsp;暂无评论<br><br><div class="clear"></div></div>
+<div id="comment_bar">
+</div>
+<div id="comment_form"><div class="guest_link">您还没有登录,请<a href="javascript:void(0);" onclick="javascript:csdn.showLogin(function (dat) {js_logined(dat.data.userName);});">[登录]</a>或<a href="http://passport.csdn.net/account/register?from=http%3A%2F%2Fblog.csdn.net%2Fa9529lty%2Farticle%2Fdetails%2F7174265">[注册]</a></div></div>
+<div class="announce">
+    * 以上用户言论只代表其个人观点，不代表CSDN网站的观点或立场<a name="reply"></a><a name="quote"></a></div>
+<script type="text/javascript">
+    var fileName = '7174265';
+    var commentscount = 0;
+    var islock = false
+</script>
+<script type="text/javascript" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/comment.js"></script>
+    <div id="ad_bot">
+    <iframe id="ad_frm_0" frameborder="0" scrolling="no" style="border-width: 0px; overflow: hidden; width: 1094px; height: 170px;" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/ad(1).htm"></iframe></div>
+    <script type="text/javascript">
+    new Ad(5, 'ad_bot');
+    </script>
+<div id="report_dialog">
+</div>
+<div id="d-top" style="display: none;">
+    <a id="d-top-a" href="http://blog.csdn.net/a9529lty/article/details/7174265#" title="回到顶部">
+        <img src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/top.png" alt="TOP"></a>
+</div>
+<script type="text/javascript">
+    $(function ()
+    {
+        var d_top = $('#d-top');
+        document.onscroll = function ()
+        {
+            var scrTop = (document.body.scrollTop || document.documentElement.scrollTop);
+            if (scrTop > 500)
+            {
+                d_top.show();
+            } else
+            {
+                d_top.hide();
+            }
+        }
+        $('#d-top-a').click(function ()
+        {
+            scrollTo(0, 0);
+            this.blur();
+            return false;
+        });
+    });
+  
+</script>
+<style type="text/css">
+    .tag_list
+    {
+        background: none repeat scroll 0 0 #FFFFFF;
+        border: 1px solid #D7CBC1;
+        color: #000000;
+        font-size: 12px;
+        line-height: 20px;
+        list-style: none outside none;
+        margin: 10px 2% 0 1%;
+        padding: 1px;
+    }
+    .tag_list h5
+    {
+        background: none repeat scroll 0 0 #E0DBD3;
+        color: #47381C;
+        font-size: 12px;
+        height: 24px;
+        line-height: 24px;
+        padding: 0 5px;
+        margin: 0;
+    }
+    .tag_list h5 a
+    {
+        color: #47381C;
+    }
+    .classify
+    {
+        margin: 10px 0;
+        padding: 4px 12px 8px;
+    }
+    .classify a
+    {
+        margin-right: 20px;
+        white-space: nowrap;
+    }
+</style>
+<div class="tag_list">
+    <h5>
+        <a href="http://www.csdn.net/tag/" target="_blank">核心技术类目</a></h5>
+    <div class="classify">
+<a title="全部主题" href="http://www.csdn.net/tag" target="_blank" onclick="LogClickCount(this,336);">全部主题</a>
+<a title="Java" href="http://www.csdn.net/tag/Java" target="_blank" onclick="LogClickCount(this,336);">Java</a>
+<a title="VPN" href="http://www.csdn.net/tag/vpn" target="_blank" onclick="LogClickCount(this,336);">VPN</a>
+<a title="Android" href="http://www.csdn.net/tag/android" target="_blank" onclick="LogClickCount(this,336);">Android</a>
+<a title="iOS" href="http://www.csdn.net/tag/ios" target="_blank" onclick="LogClickCount(this,336);">iOS</a>
+<a title="ERP" href="http://www.csdn.net/tag/erp" target="_blank" onclick="LogClickCount(this,336);">ERP</a>
+<a title="IE10" href="http://www.csdn.net/tag/ie10" target="_blank" onclick="LogClickCount(this,336);">IE10</a>
+<a title="Eclipse" href="http://www.csdn.net/tag/eclipse" target="_blank" onclick="LogClickCount(this,336);">Eclipse</a>
+<a title="CRM" href="http://www.csdn.net/tag/crm" target="_blank" onclick="LogClickCount(this,336);">CRM</a>
+<a title="JavaScript" href="http://www.csdn.net/tag/javascript" target="_blank" onclick="LogClickCount(this,336);">JavaScript</a>
+<a title="Ubuntu" href="http://www.csdn.net/tag/ubuntu" target="_blank" onclick="LogClickCount(this,336);">Ubuntu</a>
+<a title="NFC" href="http://www.csdn.net/tag/nfc" target="_blank" onclick="LogClickCount(this,336);">NFC</a>
+<a title="WAP" href="http://www.csdn.net/tag/wap" target="_blank" onclick="LogClickCount(this,336);">WAP</a>
+<a title="jQuery" href="http://www.csdn.net/tag/jquery" target="_blank" onclick="LogClickCount(this,336);">jQuery</a>
+<a title="数据库" href="http://www.csdn.net/tag/%E6%95%B0%E6%8D%AE%E5%BA%93" target="_blank" onclick="LogClickCount(this,336);">数据库</a>
+<a title="BI" href="http://www.csdn.net/tag/bi" target="_blank" onclick="LogClickCount(this,336);">BI</a>
+<a title="HTML5" href="http://www.csdn.net/tag/html5" target="_blank" onclick="LogClickCount(this,336);">HTML5</a>
+<a title="Spring" href="http://www.csdn.net/tag/spring" target="_blank" onclick="LogClickCount(this,336);">Spring</a>
+<a title="Apache" href="http://www.csdn.net/tag/apache" target="_blank" onclick="LogClickCount(this,336);">Apache</a>
+<a title="Hadoop" href="http://www.csdn.net/tag/hadoop" target="_blank" onclick="LogClickCount(this,336);">Hadoop</a>
+<a title=".NET" href="http://www.csdn.net/tag/.net" target="_blank" onclick="LogClickCount(this,336);">.NET</a>
+<a title="API" href="http://www.csdn.net/tag/api" target="_blank" onclick="LogClickCount(this,336);">API</a>
+<a title="HTML" href="http://www.csdn.net/tag/html" target="_blank" onclick="LogClickCount(this,336);">HTML</a>
+<a title="SDK" href="http://www.csdn.net/tag/sdk" target="_blank" onclick="LogClickCount(this,336);">SDK</a>
+<a title="IIS" href="http://www.csdn.net/tag/iis" target="_blank" onclick="LogClickCount(this,336);">IIS</a>
+<a title="Fedora" href="http://www.csdn.net/tag/fedora" target="_blank" onclick="LogClickCount(this,336);">Fedora</a>
+<a title="XML" href="http://www.csdn.net/tag/xml" target="_blank" onclick="LogClickCount(this,336);">XML</a>
+<a title="LBS" href="http://www.csdn.net/tag/lbs" target="_blank" onclick="LogClickCount(this,336);">LBS</a>
+<a title="Unity" href="http://www.csdn.net/tag/unity" target="_blank" onclick="LogClickCount(this,336);">Unity</a>
+<a title="Splashtop" href="http://www.csdn.net/tag/splashtop" target="_blank" onclick="LogClickCount(this,336);">Splashtop</a>
+<a title="UML" href="http://www.csdn.net/tag/uml" target="_blank" onclick="LogClickCount(this,336);">UML</a>
+<a title="components" href="http://www.csdn.net/tag/components" target="_blank" onclick="LogClickCount(this,336);">components</a>
+<a title="Windows Mobile" href="http://www.csdn.net/tag/windowsmobile" target="_blank" onclick="LogClickCount(this,336);">Windows Mobile</a>
+<a title="Rails" href="http://www.csdn.net/tag/rails" target="_blank" onclick="LogClickCount(this,336);">Rails</a>
+<a title="QEMU" href="http://www.csdn.net/tag/qemu" target="_blank" onclick="LogClickCount(this,336);">QEMU</a>
+<a title="KDE" href="http://www.csdn.net/tag/kde" target="_blank" onclick="LogClickCount(this,336);">KDE</a>
+<a title="Cassandra" href="http://www.csdn.net/tag/cassandra" target="_blank" onclick="LogClickCount(this,336);">Cassandra</a>
+<a title="CloudStack" href="http://www.csdn.net/tag/cloudstack" target="_blank" onclick="LogClickCount(this,336);">CloudStack</a>
+<a title="FTC" href="http://www.csdn.net/tag/ftc" target="_blank" onclick="LogClickCount(this,336);">FTC</a>
+<a title="coremail" href="http://www.csdn.net/tag/coremail" target="_blank" onclick="LogClickCount(this,336);">coremail</a>
+<a title="OPhone " href="http://www.csdn.net/tag/ophone" target="_blank" onclick="LogClickCount(this,336);">OPhone </a>
+<a title="CouchBase" href="http://www.csdn.net/tag/couchbase" target="_blank" onclick="LogClickCount(this,336);">CouchBase</a>
+<a title="云计算" href="http://www.csdn.net/tag/%E4%BA%91%E8%AE%A1%E7%AE%97" target="_blank" onclick="LogClickCount(this,336);">云计算</a>
+<a title="iOS6" href="http://www.csdn.net/tag/iOS6" target="_blank" onclick="LogClickCount(this,336);">iOS6</a>
+<a title="Rackspace " href="http://www.csdn.net/tag/rackspace" target="_blank" onclick="LogClickCount(this,336);">Rackspace </a>
+<a title="Web App" href="http://www.csdn.net/tag/webapp" target="_blank" onclick="LogClickCount(this,336);">Web App</a>
+<a title="SpringSide" href="http://www.csdn.net/tag/springside" target="_blank" onclick="LogClickCount(this,336);">SpringSide</a>
+<a title="Maemo" href="http://www.csdn.net/tag/maemo" target="_blank" onclick="LogClickCount(this,336);">Maemo</a>
+<a title="Compuware" href="http://www.csdn.net/tag/compuware" target="_blank" onclick="LogClickCount(this,336);">Compuware</a>
+<a title="大数据" href="http://www.csdn.net/tag/%E5%A4%A7%E6%95%B0%E6%8D%AE" target="_blank" onclick="LogClickCount(this,336);">大数据</a>
+<a title="aptech" href="http://www.csdn.net/tag/aptech" target="_blank" onclick="LogClickCount(this,336);">aptech</a>
+<a title="Perl" href="http://www.csdn.net/tag/perl" target="_blank" onclick="LogClickCount(this,336);">Perl</a>
+<a title="Tornado" href="http://www.csdn.net/tag/tornado" target="_blank" onclick="LogClickCount(this,336);">Tornado</a>
+<a title="Ruby" href="http://www.csdn.net/tag/ruby" target="_blank" onclick="LogClickCount(this,336);">Ruby</a>
+<a title="Hibernate" href="http://www.csdn.net/hibernate" target="_blank" onclick="LogClickCount(this,336);">Hibernate</a>
+<a title="ThinkPHP" href="http://www.csdn.net/tag/thinkphp" target="_blank" onclick="LogClickCount(this,336);">ThinkPHP</a>
+<a title="Spark" href="http://www.csdn.net/tag/spark" target="_blank" onclick="LogClickCount(this,336);">Spark</a>
+<a title="HBase" href="http://www.csdn.net/tag/hbase" target="_blank" onclick="LogClickCount(this,336);">HBase</a>
+<a title="Pure" href="http://www.csdn.net/tag/pure" target="_blank" onclick="LogClickCount(this,336);">Pure</a>
+<a title="Solr" href="http://www.csdn.net/tag/solr" target="_blank" onclick="LogClickCount(this,336);">Solr</a>
+<a title="Angular" href="http://www.csdn.net/tag/angular" target="_blank" onclick="LogClickCount(this,336);">Angular</a>
+<a title="Cloud Foundry" href="http://www.csdn.net/tag/cloudfoundry" target="_blank" onclick="LogClickCount(this,336);">Cloud Foundry</a>
+<a title="Redis" href="http://www.csdn.net/tag/redis" target="_blank" onclick="LogClickCount(this,336);">Redis</a>
+<a title="Scala" href="http://www.csdn.net/tag/scala" target="_blank" onclick="LogClickCount(this,336);">Scala</a>
+<a title="Django" href="http://www.csdn.net/tag/django" target="_blank" onclick="LogClickCount(this,336);">Django</a>
+<a title="Bootstrap" href="http://www.csdn.net/tag/bootstrap" target="_blank" onclick="LogClickCount(this,336);">Bootstrap</a>
+    </div>
+</div>
+
+                    <div class="clear">
+                    </div>
+                </div>
+            </div>
+            <div id="side">
+    <div class="side">
+<div id="panel_Profile" class="panel">
+<ul class="panel_head"><span>个人资料</span></ul>
+<ul class="panel_body profile">
+<div id="blog_userface">
+    <a href="http://my.csdn.net/a9529lty" target="_blank">
+    <img src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/1_a9529lty.jpg" title="访问我的空间" style="max-width:90%">
+    </a>
+    <br>
+    <span><a href="http://my.csdn.net/a9529lty" class="user_name" target="_blank">a9529lty</a></span>
+</div>
+<div class="interact">
+<a href="javascript:void(0);" class="attent" id="span_add_follow" title="[加关注]"></a>
+<a href="javascript:void(0);" class="letter" onclick="loginto(1)" title="[发私信]"></a>
+</div>
+<div id="blog_medal">
+<div id="bms_box"></div></div>
+<ul id="blog_rank">
+    <li>访问：<span>873060次</span></li>
+    <li>积分：<span>11632分</span></li>
+    <li>排名：<span>第245名</span></li>
+</ul>
+<ul id="blog_statistics">
+    <li>原创：<span>133篇</span></li>
+    <li>转载：<span>866篇</span></li>
+    <li>译文：<span>0篇</span></li>
+    <li>评论：<span>327条</span></li>
+</ul>
+</ul>
+</div>
+
+
+<div class="panel" id="panel_Search">
+    <ul class="panel_head"><span>文章搜索</span></ul>
+    <ul class="panel_body">
+        <form id="frmSearch" action="http://so.csdn.net/search" class="form_search" target="_blank">
+        <span><input id="inputSearch" type="text" class="blogsearch" title="请输入关键字"></span>
+        <input id="btnSubmit" type="submit" value="搜索" title="search in blog">
+        <input type="hidden" name="q" id="inputQ">
+        <input type="hidden" name="t" value="blog">
+        <a id="btnSearchBlog" target="_blank"></a>
+        </form>
+    </ul>
+</div><div id="panel_Category" class="panel">
+<ul class="panel_head"><span>文章分类</span></ul>
+<ul class="panel_body">
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/354401">Ajax</a><span>(7)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/676984">.Net</a><span>(2)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/352346">C#</a><span>(11)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/699774">Cvs</a><span>(3)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/713117">Dojo</a><span>(5)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/799126">Dwr</a><span>(2)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/526658">Eclipse</a><span>(27)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/617977">Flex</a><span>(10)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/354338">Hibernate</a><span>(47)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/658372">iBatis</a><span>(12)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/731172">iReport</a><span>(1)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/352340">Java</a><span>(119)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/352342">Javascript</a><span>(132)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/797988">jQuery</a><span>(27)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/356239">Jsf</a><span>(3)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/356238">Jsp</a><span>(11)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/749823">Log4j</a><span>(2)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/600868">Lua</a><span>(5)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/828138">Memcached</a><span>(7)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/828323">MongoDB</a><span>(10)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/431500">Mysql</a><span>(21)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/352341">Netbeans</a><span>(9)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/828297">NoSql</a><span>(0)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/353973">Oracle</a><span>(163)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/797515">PowerDesigner</a><span>(0)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/640853">SecureCRT</a><span>(2)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/744790">Spring</a><span>(24)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/403584">Sql Server</a><span>(48)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/628388">SQL语句问题集锦</a><span>(15)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/628979">SSH框架</a><span>(4)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/430229">Struts</a><span>(11)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/804386">Struts 2</a><span>(15)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/354337">Tomcat</a><span>(18)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/645110">Unix</a><span>(4)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/627912">XML</a><span>(10)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/593722">基础知识(面试专用)</a><span>(13)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/449114">日语</a><span>(24)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/352351">正则表达式</a><span>(13)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/507814">算法</a><span>(18)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/663596">覆盖率插件</a><span>(2)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/912879">Axis2</a><span>(4)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1141162">Android</a><span>(8)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1279075">ActiveMQ</a><span>(13)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/865059">office软件</a><span>(1)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/888695">FusionCharts</a><span>(1)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/908363">webshpere</a><span>(1)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/910564">web Services</a><span>(1)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/930817">Html、Style</a><span>(6)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/932735">异常处理</a><span>(2)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/937309">Jsoup</a><span>(2)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/952891">网络爬虫</a><span>(1)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1092459">Ext 2.2</a><span>(15)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1231925">Svn</a><span>(2)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1257974">Velocity模板</a><span>(9)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1264924">Maven</a><span>(0)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1273828">CXF</a><span>(11)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1275102">Gson</a><span>(1)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1279391">SpringMVC</a><span>(5)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1290724">Jaxb annotation</a><span>(3)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1291103">jackson</a><span>(3)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1297465">JUnit</a><span>(2)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1301712">WdatePicker</a><span>(2)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1306312">Ext 4.1</a><span>(6)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1310819">Jquery Easy UI</a><span>(16)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1326835">GSoap</a><span>(1)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1379240">Redis</a><span>(2)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1379466">DBCP</a><span>(1)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1441187">MINA</a><span>(7)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1462195">Solaris</a><span>(3)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1590153">Jacob</a><span>(4)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/category/1740129">Linux</a><span>(3)</span>
+</li>
+</ul>
+</div><div id="panel_Archive" class="panel">
+<ul class="panel_head"><span>文章存档</span></ul>
+<ul class="panel_body">
+<div id="archive_list"><li><a href="http://blog.csdn.net/a9529lty/article/month/2013/12">2013年12月</a><span>(3)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2013/11">2013年11月</a><span>(4)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2013/10">2013年10月</a><span>(6)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2013/09">2013年09月</a><span>(7)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2013/08">2013年08月</a><span>(13)</span></li><span class="hidelist" style="display:none;"><li><a href="http://blog.csdn.net/a9529lty/article/month/2013/07">2013年07月</a><span>(17)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2013/06">2013年06月</a><span>(13)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2013/04">2013年04月</a><span>(4)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2013/03">2013年03月</a><span>(7)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2013/02">2013年02月</a><span>(3)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2013/01">2013年01月</a><span>(14)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2012/12">2012年12月</a><span>(35)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2012/11">2012年11月</a><span>(15)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2012/10">2012年10月</a><span>(17)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2012/09">2012年09月</a><span>(3)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2012/07">2012年07月</a><span>(1)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2012/06">2012年06月</a><span>(3)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2012/05">2012年05月</a><span>(8)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2012/04">2012年04月</a><span>(8)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2012/03">2012年03月</a><span>(11)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2012/02">2012年02月</a><span>(4)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2012/01">2012年01月</a><span>(8)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2011/12">2011年12月</a><span>(22)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2011/11">2011年11月</a><span>(28)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2011/10">2011年10月</a><span>(18)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2011/09">2011年09月</a><span>(9)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2011/08">2011年08月</a><span>(8)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2011/07">2011年07月</a><span>(5)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2011/06">2011年06月</a><span>(13)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2011/05">2011年05月</a><span>(22)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2011/04">2011年04月</a><span>(40)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2011/03">2011年03月</a><span>(21)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2011/02">2011年02月</a><span>(5)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2011/01">2011年01月</a><span>(19)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2010/12">2010年12月</a><span>(22)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2010/11">2010年11月</a><span>(28)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2010/10">2010年10月</a><span>(4)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2010/09">2010年09月</a><span>(8)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2010/08">2010年08月</a><span>(14)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2010/07">2010年07月</a><span>(7)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2010/06">2010年06月</a><span>(16)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2010/05">2010年05月</a><span>(12)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2010/04">2010年04月</a><span>(32)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2010/03">2010年03月</a><span>(21)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2010/02">2010年02月</a><span>(4)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2010/01">2010年01月</a><span>(10)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2009/12">2009年12月</a><span>(67)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2009/11">2009年11月</a><span>(57)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2009/10">2009年10月</a><span>(8)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2009/09">2009年09月</a><span>(10)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2009/07">2009年07月</a><span>(4)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2009/06">2009年06月</a><span>(6)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2009/05">2009年05月</a><span>(9)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2009/04">2009年04月</a><span>(16)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2009/03">2009年03月</a><span>(9)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2009/02">2009年02月</a><span>(4)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2009/01">2009年01月</a><span>(17)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2008/12">2008年12月</a><span>(34)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2008/11">2008年11月</a><span>(23)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2008/10">2008年10月</a><span>(16)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2008/09">2008年09月</a><span>(13)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2008/08">2008年08月</a><span>(21)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2008/07">2008年07月</a><span>(20)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2008/06">2008年06月</a><span>(1)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2008/05">2008年05月</a><span>(12)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2008/04">2008年04月</a><span>(2)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2008/03">2008年03月</a><span>(3)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2008/01">2008年01月</a><span>(4)</span></li><li><a href="http://blog.csdn.net/a9529lty/article/month/2007/12">2007年12月</a><span>(51)</span></li></span><div id="archive_list_button" class="list_closed">展开</div></div>
+</ul>
+</div>
+<div id="hotarticls" class="panel">
+<ul class="panel_head"><span>阅读排行</span></ul>
+<ul class="panel_body itemlist">
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/4923957" title="ORACLE WITH AS 用法">ORACLE WITH AS 用法</a><span>(16730)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/7066513" title="当jsp页面完全加载完成后执行一个js函数">当jsp页面完全加载完成后执行一个js函数</a><span>(10977)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/3206942" title="JAVA判断当前日期是星期几">JAVA判断当前日期是星期几</a><span>(8143)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/3351539" title="JavaScript无提示关闭当前页面窗口，兼容IE/Firefox/Chrome (Close the current page window without confirm by JavaScript, support all browsers) ">JavaScript无提示关闭当前页面窗口，兼容IE/Firefox/Chrome (Close the current page window without confirm by JavaScript, support all browsers) </a><span>(7967)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/1938228" title="Hibernate中使用SQLQuery">Hibernate中使用SQLQuery</a><span>(7966)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/7542828" title="Android开发之onClick事件的三种写法">Android开发之onClick事件的三种写法</a><span>(6966)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/5145780" title="SecureCRT右键粘贴的设置">SecureCRT右键粘贴的设置</a><span>(6872)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/3501101" title="java 判断对象是否为空或者传入集合对象的是否为空，以及判断数组的长度">java 判断对象是否为空或者传入集合对象的是否为空，以及判断数组的长度</a><span>(6803)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/6454145" title="HttpURLConnection的使用">HttpURLConnection的使用</a><span>(6734)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/8267856" title="免费的天气预报webservice接口">免费的天气预报webservice接口</a><span>(6369)</span>
+</li>
+</ul>
+</div>
+<div id="hotarticls2" class="panel">
+<ul class="panel_head"><span>评论排行</span></ul>
+<ul class="panel_body itemlist">
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/3459260" title=" 1st Javascript Editor V3.8绝对完美破解版"> 1st Javascript Editor V3.8绝对完美破解版</a><span>(21)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/6750724" title="解决 struts2上传的excel2007文件,在用poi处理时通过new XSSFWorkbook(inputStream)出错">解决 struts2上传的excel2007文件,在用poi处理时通过new XSSFWorkbook(inputStream)出错</a><span>(10)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/3500849" title="java中的arrayList传入oracle中的以数组(array)为参数的存储过程 ">java中的arrayList传入oracle中的以数组(array)为参数的存储过程 </a><span>(8)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/2787726" title="ORACLE按照拼音,部首,笔画排序">ORACLE按照拼音,部首,笔画排序</a><span>(7)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/4092702" title="打开网页即可连接远程电脑——一个applet的远程桌面客户端">打开网页即可连接远程电脑——一个applet的远程桌面客户端</a><span>(7)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/4031201" title="Cewolf+JFreeChart之报表代码实例大全(附效果图) ">Cewolf+JFreeChart之报表代码实例大全(附效果图) </a><span>(7)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/5336866" title="windows下tomcat开机启动设置">windows下tomcat开机启动设置</a><span>(6)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/4042019" title="活动安排问题（贪心算法）">活动安排问题（贪心算法）</a><span>(6)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/3780207" title="模拟退火遗传算法">模拟退火遗传算法</a><span>(6)</span>
+</li>
+<li>
+<a href="http://blog.csdn.net/a9529lty/article/details/4813393" title="RC4加密解密java算法">RC4加密解密java算法</a><span>(6)</span>
+</li>
+</ul>
+</div>
+<div id="homepageArticles" class="panel tracking-ad" data-mod="popu_4">
+<ul class="panel_head"><span>推荐文章</span></ul>
+<ul class="panel_body" id="ad_commend"><iframe id="ad_frm_1" frameborder="0" scrolling="no" style="border-width: 0px; overflow: hidden; width: 194px; height: 272px;" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/ad.htm"></iframe></ul>
+</div>
+<script type="text/javascript">
+ new Ad(12, 'ad_commend');
+</script><div id="newcomments" class="panel">
+<ul class="panel_head"><span>最新评论</span></ul>
+<ul class="panel_body itemlist">
+    <li>
+    <a href="http://blog.csdn.net/a9529lty/article/details/8251003#comments">Spring组件扫描&lt;context:component-scan/&gt;使用详解</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/cf2huihui" class="user_name">cf2huihui</a>:
+谢谢，帮助很大
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/a9529lty/article/details/8103059#comments">ibatis 属性详细分析</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/dreamxcl" class="user_name">dreamxcl</a>:
+赞+1
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/a9529lty/article/details/6175694#comments">一些Flex炫效果网址</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/sunxinzhe" class="user_name">sunxinzhe</a>:
+kao，也不排下版。。。不过还是谢谢博主无私分享，博主威武！
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/a9529lty/article/details/6296008#comments">ognl 取得request和session中的值</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/lxwslgo" class="user_name">lxwslgo</a>:
+感谢，解决问题了。
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/a9529lty/article/details/8492607#comments">Java模拟并发操作进行压力测试代码</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/sunny520520" class="user_name">sunbaby</a>:
+clicks.txt这个是干嘛的啊
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/a9529lty/article/details/7542828#comments">Android开发之onClick事件的三种写法</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/C_ROOKIES" class="user_name">C_ROOKIES</a>:
+学习，学习！
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/a9529lty/article/details/4813393#comments">RC4加密解密java算法</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/u012869385" class="user_name">乱了夏天凉了海-</a>:
+有点问题问你 加关注
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/a9529lty/article/details/9142785#comments">Solaris 环境下ActiveMQ关闭时出现异常</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/a9529lty" class="user_name">a9529lty</a>:
+@yu974027981:应该不会的~ 版本对应上就行。 单位不方便上qq。 对了， 你那边报什么错...
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/a9529lty/article/details/9142785#comments">Solaris 环境下ActiveMQ关闭时出现异常</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/yu974027981" class="user_name">yu974027981</a>:
+请问楼主怎么装上的啊！ 我装都装不上啊！qq  974027981求指教啊！！！
+    </p>
+    </li>
+    <li>
+    <a href="http://blog.csdn.net/a9529lty/article/details/2937693#comments">oracle forall 介绍</a>
+    <p style="margin:0px;"><a href="http://blog.csdn.net/asukaneo" class="user_name">asukaneo</a>:
+没看到清单3？只提到区别？
+    </p>
+    </li>
+</ul>
+</div>
+<div id="custom_column_8578677" class="panel">
+<ul class="panel_head"><span>姜混子的Blog</span></ul>
+<ul class="panel_body">
+
+<ul>
+<li><a href="http://blog.csdn.net/jiangxuchen/" target="_blank">姜混子的Blog</a></li></ul>
+
+</ul>
+</div><div id="custom_column_983097" class="panel">
+<ul class="panel_head"><span>好朋友的Blog</span></ul>
+<ul class="panel_body">
+<ul><li><a href="http://blog.csdn.net/jinhuiyu" target="_blank">晋会雨's Blog</a></li><li><a href="http://javamouse.blog.163.com/" target="_blank">John Yu's Blog</a></li><li><a href="http://maosiyan19840724.blog.163.com/" target="_blank">菲尔的Blog</a></li></ul>
+</ul>
+</div><div id="custom_column_983098" class="panel">
+<ul class="panel_head"><span>跳槽前的充电</span></ul>
+<ul class="panel_body">
+<ul><li><a href="http://www.mianwww.com/" target="_blank">超全的面试、笔试资料网站</a></li></ul>
+</ul>
+</div>    </div>
+    <div class="clear">
+    </div>
+</div>
+
+            <div class="clear">
+            </div>
+        </div>
+        
+
+<script type="text/javascript" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/newblog.min.js"></script>
+<script type="text/javascript" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/showblogmedal.ashx"></script>
+<script type="text/javascript">
+    document.write('<script type="text/javascript" src="http://csdnimg.cn/pubfooter/js/publib_footer.js?' + Math.floor(new Date() / 120000).toString(36) + '="></' + 'script>');
+</script><script type="text/javascript" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/publib_footer.js"></script><link rel="stylesheet" type="text/css" href="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/pub_footer_2012.css"><div id="pub_footerall" class="pub_footerall"><dl><dt></dt> <dd><a href="http://www.csdn.net/company/about.html" target="_blank">公司简介</a>|<a href="http://www.csdn.net/company/recruit.html" target="_blank">招贤纳士</a>|<a href="http://www.csdn.net/company/marketing.html" target="_blank">广告服务</a>|<a href="http://www.csdn.net/company/account.html" target="_blank">银行汇款帐号</a>|<a href="http://www.csdn.net/company/contact.html" target="_blank">联系方式</a>|<a href="http://www.csdn.net/company/statement.html" target="_blank">版权声明</a>|<a href="http://www.csdn.net/company/layer.html" target="_blank">法律顾问</a>|<a href="mailto:webmaster@csdn.net">问题报告</a></dd><dd><a href="http://wpa.qq.com/msgrd?v=3&uin=2355263776&site=qq&menu=yes" target="_blank" class="qq">QQ客服</a> <a href="http://e.weibo.com/csdnsupport/profile" target="_blank" class="weibo">微博客服</a> <a href="http://bbs.csdn.net/forums/Service" target="_blank" class="online">论坛反馈</a> <a href="mailto:webmaster@csdn.net" class="email">联系邮箱：webmaster@csdn.net</a> <span class="phone">服务热线：400-600-2320</span></dd><dd>京&nbsp;ICP&nbsp;证&nbsp;070598&nbsp;号</dd><dd>北京创新乐知信息技术有限公司 版权所有</dd><dd>世纪乐知(北京)网络技术有限公司 提供技术支持</dd><dd>江苏乐知网络技术有限公司 提供商务支持</dd><dd>Copyright © 1999-2012, CSDN.NET, All Rights Reserved&nbsp;<a href="http://www.hd315.gov.cn/beian/view.asp?bianhao=010202001032100010" target="_blank"><img src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/gongshang_logos.gif" alt="GongshangLogo" title=""></a></dd></dl></div><script id="noticeScript" type="text/javascript" btnid="header_notice_num" wrapid="note1" count="5" subcount="5" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/notify.js"></script>
+    <script type="text/javascript" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/login.js"></script>
+<script type="text/javascript">document.write("<img src=http://counter.csdn.net/pv.aspx?id=24 border=0 width=0 height=0>");</script><img src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/pv.aspx" border="0" width="0" height="0">
+<script type="text/javascript" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/counter.js"></script><script type="text/javascript" charset="UTF-8" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/msg.popup.js"></script>
+<script type="text/javascript" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/ad-blog.js"></script>
+<script type="text/javascript" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/count.js"></script><iframe src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/logs.htm" frameborder="0" width="0" height="0"></iframe>
+<script type="text/javascript">
+    $(function () {
+        function __get_code_toolbar(snippet_id) {
+            return $("<a href='https://code.csdn.net/snippets/"
+                    + snippet_id
+                    + "' target='_blank' title='在CODE上查看代码片' style='text-indent:0;'><img src='https://code.csdn.net/assets/CODE_ico.png' width=12 height=12 alt='在CODE上查看代码片' style='position:relative;top:1px;left:2px;'/></a>"
+                    + "<a href='https://code.csdn.net/snippets/"
+                    + snippet_id
+                    + "/fork' target='_blank' title='派生到我的代码片'  style='text-indent:0;'><img src='https://code.csdn.net/assets/ico_fork.svg' width=12 height=12 alt='派生到我的代码片' style='position:relative;top:2px;left:2px;'/></a>");
+        }
+        
+        $("[code_snippet_id]").each(function () {
+            __s_id = $(this).attr("code_snippet_id");
+            if (__s_id != null && __s_id != "" && __s_id != 0 && parseInt(__s_id) > 70020) {
+                __code_tool = __get_code_toolbar(__s_id);
+                $(this).prev().find(".tools").append(__code_tool);
+            }
+        });
+    });
+</script>
+
+    </div>
+
+
+<embed style="visibility: hidden;" type="application/xl_chrome_plugin" width="0" height="0"><div class="sogoutip" style="z-index: 2147483645; visibility: hidden; display: none;"></div><div class="sogoubottom" id="sougou_bottom" style="display: none;"></div><div id="ext_stophi" style="z-index: 2147483647;"><div class="extnoticebg"></div><div class="extnotice"><h2>关闭提示 <a href="http://blog.csdn.net/a9529lty/article/details/7174265#" title="关闭提示" id="closenotice" class="closenotice">关闭</a></h2><p id="sogouconfirmtxt"></p>  <a id="sogouconfirm" href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="extconfirm">确 认</a> <a id="sogoucancel" href="http://blog.csdn.net/a9529lty/article/details/7174265#" class="extconfirm">取 消</a></div></div><div id="ext_overlay" style="display: none; z-index: 2147483646;" class="ext_overlayBG"></div><iframe class="sogou_sugg_feedbackquan" style="background-color: transparent; border: none; display: none; z-index: 2147483645; background-position: initial initial; background-repeat: initial initial;" frameborder="0" scrolling="no" src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/yun1.htm"></iframe><script src="./Java Socket发送与接收HTTP消息简单实现 - - 博客频道 - CSDN.NET_files/pv.gif"></script></body></html>
